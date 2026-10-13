@@ -2,13 +2,13 @@
 import os
 from datetime import date
 from decimal import Decimal
-from .domain import sync_entity
+from app.domain import sync_entity
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from .db import make_engine, DATABASE_URL
-from .models import Entity, Source, Document, Relationship, Review, CompanyFacilityRelationship, EntityEvidence
-from .schemas import DocumentIn, ObservationIn
-from .services import acquire, add_observation
+from app.db import make_engine, DATABASE_URL
+from app.models import Entity, Source, Document, Relationship, Review, CompanyFacilityRelationship, EntityEvidence
+from app.schemas import DocumentIn, ObservationIn
+from app.services import acquire, add_observation
 
 def seed():
     engine=make_engine(DATABASE_URL)

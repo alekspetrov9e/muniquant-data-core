@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from uuid import uuid4
-from sqlalchemy import Column, String, Integer, BigInteger, Float, Text, ForeignKey, JSON, CheckConstraint, UniqueConstraint, Index, func, literal_column
+from sqlalchemy import Column, String, Integer, Float, Text, ForeignKey, JSON, CheckConstraint, UniqueConstraint
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -78,31 +78,6 @@ class Relationship(Base):
                       CheckConstraint("percentage IS NULL OR (CAST(percentage AS NUMERIC) >= 0 AND CAST(percentage AS NUMERIC) <= 100)"),
                       CheckConstraint("valid_to IS NULL OR valid_to >= valid_from"))
 
-class MarketObservation(Base):
-    __tablename__ = "market_observations"
-    id = Column(String, primary_key=True, default=uid)
-    instrument = Column(String, nullable=False, index=True)
-    exchange = Column(String, nullable=False)
-    market = Column(String, nullable=False)
-    contract_code = Column(String)
-    prompt_date = Column(String)
-    commodity = Column(String, nullable=False)
-    grade = Column(String)
-    region = Column(String, nullable=False)
-    price_type = Column(String, nullable=False)
-    value = Column(String, nullable=False)
-    currency = Column(String(3), nullable=False)
-    unit = Column(String, nullable=False)
-    effective_at = Column(String, nullable=False, index=True)
-    published_at = Column(String)
-    volume = Column(Integer)
-    open_interest = Column(Integer)
-    data_status = Column(String, nullable=False)
-    document_id = Column(String, ForeignKey("documents.id"), nullable=False)
-    evidence_reference = Column(String, nullable=False)
-    __table_args__ = (CheckConstraint("volume IS NULL OR volume >= 0"),
-                      CheckConstraint("open_interest IS NULL OR open_interest >= 0"))
-
 class Review(Base):
     __tablename__ = "reviews"
     id = Column(String, primary_key=True, default=uid)
@@ -130,32 +105,6 @@ class Audit(Base):
     action = Column(String, nullable=False)
     record_id = Column(String, nullable=False)
     detail = Column(JSON, nullable=False)
-
-class PaperAccount(Base):
-    __tablename__ = 'paper_accounts'
-    id = Column(String, primary_key=True)
-    cash_cents = Column(BigInteger, nullable=False)
-    cursor = Column(Integer, nullable=False)
-    version = Column(Integer, nullable=False)
-    __table_args__ = (CheckConstraint('cash_cents >= 0'), CheckConstraint('cursor >= 0 AND cursor < 120'))
-
-class PaperOrder(Base):
-    __tablename__ = 'paper_orders'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    request_id = Column(String, nullable=False, unique=True)
-    instrument = Column(String, nullable=False)
-    side = Column(String, nullable=False)
-    order_type = Column(String, nullable=False)
-    quantity = Column(Integer, nullable=False)
-    limit_cents = Column(Integer)
-    fill_cents = Column(Integer)
-    status = Column(String, nullable=False)
-    created_at = Column(String, nullable=False, default=now)
-    filled_at = Column(String)
-    session_index = Column(Integer, nullable=False)
-    actor = Column(String, nullable=False)
-    __table_args__ = (CheckConstraint('quantity > 0'),CheckConstraint("side IN ('buy','sell')"),
-                     CheckConstraint("status IN ('open','filled','cancelled','expired','settled')"))
 
 # Controlled reference and provenance records; legacy IDs remain stable.
 class Country(Base):
@@ -340,77 +289,3 @@ class EntityEvidence(Base):
     reviewer = Column(String, nullable=False)
     reason = Column(Text, nullable=False)
     created_at = Column(String, nullable=False, default=now)
-
-# Leads from licensed event feeds: curator work items, never exported evidence.
-class Lead(Base):
-    __tablename__ = 'lead'
-    id = Column(String, primary_key=True)
-    source_id = Column(String, ForeignKey('sources.id'), nullable=False, index=True)
-    external_id = Column(String(128), nullable=False)
-    ticker = Column(String(32), nullable=False)
-    status = Column(String, nullable=False, default='new')
-    first_seen_at = Column(String, nullable=False)
-    last_seen_at = Column(String, nullable=False)
-    # Current view of the newest vendor revision, kept for sorting and filtering only.
-    event_date = Column(String, index=True)
-    topic_name = Column(String)
-    vendor_updated_at = Column(String)
-    current_revision_hash = Column(String(64))
-    search_text = Column(Text, nullable=False, default='', server_default='')
-    matched_entity_count = Column(Integer, nullable=False, default=0, server_default='0')
-    reviewer = Column(String)
-    reason = Column(Text)
-    decided_at = Column(String)
-    primary_document_id = Column(String, ForeignKey('documents.id'))
-    observation_id = Column(String, ForeignKey('observations.id'))
-    __table_args__ = (Index('ix_lead_status_date', 'status', 'event_date', 'last_seen_at', 'id'),
-                      Index('ix_lead_topic_date', 'topic_name', 'event_date', 'last_seen_at', 'id'),
-                      Index('ix_lead_date_seen', 'event_date', 'last_seen_at', 'id'),
-                      UniqueConstraint('source_id', 'external_id', name='uq_lead_source_external'),
-                      CheckConstraint("status IN ('new','follow_up','dismissed','confirmed')", name='ck_lead_status'),
-                      CheckConstraint("status <> 'confirmed' OR primary_document_id IS NOT NULL", name='ck_lead_confirmed_evidence'))
-
-# Match the production expression index in schema metadata.
-Index('ix_lead_search_gin',
-      func.to_tsvector(literal_column("'simple'::regconfig"), Lead.search_text),
-      postgresql_using='gin', _table=Lead.__table__).ddl_if(dialect='postgresql')
-
-class LeadRevision(Base):
-    """One distinct factual state of a vendor event, kept with the first snapshot that carried it."""
-    __tablename__ = 'lead_revision'
-    id = Column(String, primary_key=True)
-    lead_id = Column(String, ForeignKey('lead.id'), nullable=False, index=True)
-    document_id = Column(String, ForeignKey('documents.id'), nullable=False, index=True)
-    content_hash = Column(String(64), nullable=False)
-    parser_version = Column(String, nullable=False)
-    event_name = Column(Text, nullable=False)
-    event_date = Column(String)
-    summary = Column(Text, nullable=False)
-    topic_name = Column(String)
-    event_type = Column(String)
-    vendor_updated_at = Column(String)
-    matched_entity_ids = Column(JSON, nullable=False, default=list)
-    recorded_at = Column(String, nullable=False, default=now)
-    __table_args__ = (UniqueConstraint('lead_id', 'content_hash', name='uq_lead_revision_content'),)
-
-class LeadHeadline(Base):
-    __tablename__ = 'lead_headline'
-    id = Column(String, primary_key=True)
-    lead_id = Column(String, ForeignKey('lead.id'), nullable=False, index=True)
-    document_id = Column(String, ForeignKey('documents.id'), nullable=False, index=True)
-    content_hash = Column(String(64), nullable=False)
-    parser_version = Column(String, nullable=False)
-    headline = Column(Text, nullable=False)
-    source_name = Column(String)
-    link = Column(String(2048))
-    published_at = Column(String)
-    language = Column(String(16))
-    recorded_at = Column(String, nullable=False, default=now)
-    __table_args__ = (UniqueConstraint('lead_id', 'content_hash', name='uq_lead_headline_content'),)
-
-# Import the isolated experimental models so Alembic sees the complete metadata.
-from . import research_models  # noqa: E402,F401
-
-from . import asset_map  # noqa: E402,F401
-
-from . import investigations  # noqa: E402,F401
