@@ -5,6 +5,7 @@ blocked until the real 10 October database, snapshots, manifest and frozen bundl
 """
 import hashlib
 import json
+import sqlite3
 from argparse import Namespace
 from pathlib import Path
 from tools import compare_pilot
@@ -12,8 +13,10 @@ from test_core_import import restore_pilot_shaped
 
 FIXTURE_HASH = 'd0df265b56abbb4d3f0f0e49651147b71f3ed7e8f012bb0753184be3bfee8a6f'
 
-def inputs(tmp_path, manifest=True):
+def inputs(tmp_path, manifest=True, change=None):
     database = restore_pilot_shaped(tmp_path)
+    if change:
+        with sqlite3.connect(database) as connection: connection.execute(change)
     if manifest:
         files = [database, *sorted((tmp_path / 'real-pilot-snapshots').iterdir()), *sorted((tmp_path / 'real-pilot-export').iterdir())]
         listed = {str(path.relative_to(tmp_path)): hashlib.sha256(path.read_bytes()).hexdigest() for path in files}
@@ -53,3 +56,8 @@ def test_unverified_inputs_block_the_comparison(tmp_path):
     snapshot.write_bytes(snapshot.read_bytes() + b' ')
     report = compare_pilot.compare(args)
     assert report['status'] == 'BLOCKED' and any('fingerprint mismatch' in problem for problem in report['problems'])
+
+def test_a_pilot_database_the_core_cannot_load_is_a_difference(tmp_path):
+    report = compare_pilot.compare(inputs(tmp_path, change="UPDATE observations SET reported_value='NaN' WHERE attribute='capacity'"))
+    assert report['status'] == 'DIFFERENT'
+    assert any('Core import of the pilot database failed' in item for item in report['differences'])

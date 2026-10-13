@@ -132,7 +132,13 @@ def compare(args):
     # 3. Copy the pilot's Core tables into a new Core database (the pilot database is only read).
     output.mkdir(parents=True)
     core_db = output / 'core.db'
-    imported = core_import.copy(str(args.database), str(core_db))
+    try: imported = core_import.copy(str(args.database), str(core_db))
+    except Exception as exc:
+        differences.append(f'Core import of the pilot database failed: {exc}')
+        check('Pilot rows copied unchanged into the Core (counts, IDs, fingerprints)', False, str(exc)[:200])
+        report.update({'status': 'DIFFERENT', 'checks': checks, 'differences': differences,
+                       'conclusion': 'Differences found: the step stops for a joint review.'})
+        return report
     (output / 'import-report.json').write_text(json.dumps(imported, indent=2))
     check('Pilot rows copied unchanged into the Core (counts, IDs, fingerprints)', imported['status'] == 'PASS', 'see import-report.json')
     check('Pilot database unchanged by the comparison', imported['source']['unchanged'], imported['source']['sha256_after'])
