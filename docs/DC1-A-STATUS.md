@@ -1,55 +1,60 @@
 # DC1-A status: separate the Data Core
 
-Status on 2026-10-13. Branch `feature/dc1-a-separate-core`; `main` holds only the unchanged import of today's Core files from the platform (commit `1f02c0b`), so the branch diff shows exactly what the separation changed. The platform itself is untouched in DC1-A: it keeps running all features, including its own copy of the Core code, until DC1-B reconnects the Workspace.
+Status on 2026-10-13, in the team's report form: Done, Evidence, Blockers, Decisions, Next. Work is on branch `feature/dc1-a-separate-core`, pull request [#1](https://github.com/alekspetrov9e/muniquant-data-core/pull/1). `main` holds only the unchanged import of today's Core files from the platform (commit `1f02c0b`), so the pull request shows exactly what the separation changed.
 
-## Steps
+## Done
 
-| Step | State | Evidence |
+| Step | State | Done when (specification) |
 |---|---|---|
-| A1 New home | Done; green CI pending the first run on GitHub | Own repository with its own tests and CI. The container job proves the image holds the runtime only, without tools or Workspace code, and runs migrations, health, seed, freeze, replay, export and recovery. |
-| A2 Fresh database | Done | One migration (`34e9de7241cf`) creates exactly the 26 tables and 3 views; no market table, no joined branches, no lead-search triggers. `tests/test_schema.py` checks the exact table list, reference rows, drift check, round trip, and equality with today's Core tables on SQLite, PostgreSQL 16 and 17. |
-| A3 One way only | Done | `tests/test_boundary.py` fails if any Core file imports or names a Workspace module, class, table, route or script, if runtime identifiers name a Workspace feature, or if the runtime loads tools. The test proves its scanner catches each kind of reference. |
-| A4 Same export | Done | `app/evidence-v1.schema.json` is byte for byte the released file (SHA-256 `7808149a…4151f`), its generator reproduces it, the API serves the same bytes, and the ten forbidden fields are unchanged (`tests/test_contract_schema.py`, `test_prohibited_contract_fields`). |
-| A5 Core tests | Done locally; CI pending | Evidence, hardening and platform tests moved. 93 tests pass on SQLite, PostgreSQL 16 and PostgreSQL 17. |
-| A6 Same results | **Blocked: missing input** | The real pilot files are not available. The comparison with the old result is **not established**. The tool is ready and proven (below). |
-| A7 Clean repository | Done locally; CI pending | gitleaks (default rules, one narrow exception for access-decision UUIDs) finds nothing in history or files and still catches a planted token. `tests/test_repository_hygiene.py`: no secrets, databases, PDFs or local data; every stored page is a declared, manifest-verified synthetic fixture. |
-| A8 Dates note | Written; needs review and agreement | [DATES.md](DATES.md). |
+| A1 New home | **Done** | Own repository `muniquant-data-core` with its own tests and CI. CI's container job shows the image holds the runtime only, with no tools and no Workspace code, and runs migrations, health, seed, freeze, replay, export and recovery. |
+| A2 Fresh database | **Done** | One migration creates exactly the 26 tables and 3 views: no market table, no joined branches. Setup and the drift check pass in CI on SQLite, PostgreSQL 16 and 17; `tests/test_schema.py` confirms the exact list of tables. |
+| A3 One way only | **Done** | `tests/test_boundary.py` fails if any Core file uses a Workspace module or class, names a Workspace table, route or script, if runtime code names a Workspace feature, or if the runtime loads tools. |
+| A4 Same export | **Done** | `app/evidence-v1.schema.json` is byte for byte the released file (SHA-256 `7808149a…4151f`); all ten forbidden-field checks stay (`tests/test_contract_schema.py`, `test_prohibited_contract_fields`). |
+| A5 Core tests | **Done** | Evidence, hardening and platform tests moved; Core CI is green on all three databases. |
+| A6 Same results | **Blocked: missing input** | The real pilot files are not available. The comparison with the old result is **not established**. |
+| A7 Clean repository | **Done** | The gitleaks secret scan passes in CI over all history and files. |
+| A8 Dates note | Written, **awaiting review and agreement** | [DATES.md](DATES.md) |
 
 ## Evidence
 
-- **Tests**: 93 passed on SQLite, PostgreSQL 16.15 and PostgreSQL 17.11 (local, 2026-10-13).
-- **Schema**: the baseline matches today's Core tables (platform revision `d8317b920a11`) in columns, column order, keys, indexes, checks and views. Deliberate differences: no `source_access.usage_scope` (see decisions) and, on PostgreSQL, no duplicate unnamed copies of two observation checks.
+- **CI** on the pull request: tests and migrations on SQLite, PostgreSQL 16 and PostgreSQL 17, container smoke and coordinated recovery, and the secret scan, all passing ([first green run](https://github.com/alekspetrov9e/muniquant-data-core/actions/runs/38443172666); the pull request shows the latest).
+- **Schema**: the baseline matches today's Core tables (platform revision `d8317b920a11`) in columns, column order, keys, indexes, checks and views. The only differences: no `source_access.usage_scope`, and on PostgreSQL no unnamed duplicate copies of two observation checks.
 - **Same results on available data**: the platform's bundled demo, copied with `tools/core_import.py`, exports a byte-identical package from the Core and from today's platform (build hash `c6f6b3d6…2b8a95`).
-- **A6 tool proven on old-code output**: `tests/fixtures/pilot-shaped` was produced by the 10 October pilot code itself (commit `c6d0411`, revision `fcf5b3d9e812`), with captures, curated identities, HTML/PDF/CSV extraction, an accepted and a rejected review, a manual fact, relationships, export, freeze and replay. `tools/compare_pilot.py` reports PASS on all 15 checks: byte-identical export and build hash, same records field by field, same matching decisions, identical frozen recipe and snapshots, same quality counts and summary numbers. It reports DIFFERENT when the Core's result changes and BLOCKED when an input is missing or fails its fingerprint. This proves the tool, not the pilot.
-- **Container and recovery**: rehearsed locally against PostgreSQL 16, including dump, restore and an identical build hash.
+- **The A6 tool works on output of the pilot code itself**: `tests/fixtures/pilot-shaped` was produced by the 10 October pilot code (commit `c6d0411`, revision `fcf5b3d9e812`) from fictional sources: captures, curated identities, HTML/PDF/CSV extraction, an accepted and a rejected review, a manual fact, relationships, export, freeze and replay. `tools/compare_pilot.py` passes all 15 checks on it (byte-identical export and build hash, every record field by field, the same matching decisions, identical frozen recipe and snapshots, the same quality counts and summary numbers). It reports DIFFERENT when the Core's result changes or the pilot database cannot be loaded, and BLOCKED when an input is missing or fails its fingerprint. This proves the tool, not the pilot.
+- **Secret scan**: default gitleaks rules with one narrow exception for access-decision UUIDs in run manifests. A planted token is still caught. `tests/test_repository_hygiene.py` adds: no secrets, databases, PDFs or local data, and every stored page is a declared, manifest-verified synthetic fixture.
 
 ## Blockers
 
-- **A6, and the handover's frozen pilot export, need the real pilot files**: `real-pilot.db`, its snapshot directory, the pilot output directory (`pilot-evidence-package.json`, `pilot-frozen-evidence.zip`, `pilot-validation.json`) and a manifest of their SHA-256 fingerprints. They are not on this machine; the platform's VALIDATION.md says the snapshots were kept in local deliverables. When available:
+- **A6, and the handover's frozen pilot export made by the Core, need the real pilot files**: `real-pilot.db`, its snapshot directory, the pilot output directory (`pilot-evidence-package.json`, `pilot-frozen-evidence.zip`, `pilot-validation.json`) and a manifest with their SHA-256 fingerprints. They are not on this machine; the platform's VALIDATION.md says the snapshots were kept in local deliverables. When they are available:
 
   ```sh
   python -m tools.compare_pilot --database PATH/real-pilot.db --snapshots PATH/real-pilot-snapshots \
     --export-dir PATH/real-pilot-export --manifest PATH/manifest.json --output data/a6-pilot-comparison
   ```
 
-  It expects build hash `415879f2f8a9c5feae9f966947f9be1765b3dd1bb9d490141d7294296edf59e2` and 13 warnings with no BLOCK or ERROR. Run today without the files, it reports `BLOCKED` and lists each missing input.
+  It expects build hash `415879f2f8a9c5feae9f966947f9be1765b3dd1bb9d490141d7294296edf59e2` and 13 warnings with no BLOCK or ERROR, and writes the report and the Core's frozen pilot export. Run without the files, it reports `BLOCKED` and lists each missing input.
+- **A8** is done only when the dates note is reviewed and agreed.
 
-## Decisions for review
+## Decisions
 
-1. **Lead material stays out of the Core.** The specification says the Core has no code referring to leads and Permutable material stays in the Workspace. So `source_access.usage_scope` and the lead-only guard (`LEAD_SOURCE_CITED`, lead checks on observations, relationships and identity evidence) are not in the Core; `quality.py` and `pipeline.py` are back to their 10 October form. Licensed-credential support stays, as generic source access with no credential registered by default. The import tool refuses databases that still mark hint-only sources.
-2. **The draft export left the runtime.** `GET /api/export/draft` and the 0.1.0-draft package moved to `tools/legacy_bundle.py`, marked as a demo and migration utility. CommodityEvidencePackage 1.0.0 is the only runtime export.
-3. **The baseline copies today's databases, not the model text**: same column order and the deployed wording of one percentage check, so `SELECT *` views match.
-4. **Existing databases enter through `tools/core_import.py`.** It is read-only on the source, writes only to new databases, has a dry run and a per-table report. The two hardening tests that used the old migration chain now prove the same guarantees through it; the originals still run in the platform. DC1-B's split tool can build on it.
-5. **Package name stays `app`**, so every Core file diffs cleanly against its platform original.
-6. **The repository is private on GitHub** until the team decides otherwise; the v1.0.0 tag follows at the end of DC1.
+Each follows the specification as closely as possible.
 
-## Found while separating
-
-- A hidden connection the specification did not list: on PostgreSQL the platform's migration `d8317b920a11` puts a trigger (`search_entity_changed`) on the Core table `entities` that refreshes the Workspace's lead search text when a plant is renamed. It is not in the Core. DC1-B must replace it, for example by refreshing lead search from Core names read through the API.
-- Workspace tables with database links to Core tables (to change into plain reference fields in B1): `lead.primary_document_id`, `lead.observation_id`, `lead.source_id`, `lead_revision.document_id`, `lead_headline.document_id`, `investigation_entry.document_id`, `asset_location.entity_id`/`document_id`, `asset_dependency.from_entity_id`/`to_entity_id`/`document_id`, and the old `market_observations.document_id`.
+1. **Own repository**, as A1 asks, with the suggested name. It is private on GitHub until the team decides otherwise; the v1.0.0 tag comes with the DC1 handover.
+2. **The platform is untouched in DC1-A.** Every feature keeps working there, including its own copy of the Core code, until DC1-B reconnects the Workspace.
+3. **No lead code in the Core.** The specification says the Core has no code that refers to leads and that Permutable data stays in the Workspace. So the platform's `source_access.usage_scope` column and its lead-only checks are not in the Core; `quality.py` and `pipeline.py` are in their 10 October form. Licensed-credential support stays as generic source access, with no credential registered by default.
+4. **One export.** CommodityEvidencePackage 1.0.0 is "the one and only export". `GET /api/export/draft` and the 0.1.0 draft package left the runtime; the draft tool is `tools/legacy_bundle.py`, marked as a demo and migration utility, as the specification describes `bundle.py`.
+5. **The baseline copies today's databases** ("never redesign parts that already work"): same columns in the same order and the deployed constraint wording, so ready-made lists match. It leaves out only what DC1 removes: the other tables, the joined branches and, on PostgreSQL, the redundant duplicate checks.
+6. **Existing databases enter through `tools/core_import.py`**, needed to export the pilot inside the Core (A6). It follows the split-tool rules: read-only source, new empty targets only, dry run, and a report comparing counts, IDs and fingerprints. It never drops data: a source holding data in a column the Core does not define is refused and left to the DC1-B split tool.
+7. **Moved tests changed only where they used parts the Core no longer has.** Two hardening tests used the platform's old migration chain; they now prove the same guarantees through the import tool. Two platform tests used the draft export; they now use the draft tool.
+8. **Names that predate DC1 stay.** The Core's `/api/workspace` endpoint and the "Workspace access" labels in its screens return and protect Core data only. The schema's `$id` still points to the platform repository, because A4 requires the file byte for byte. Renaming either is left to an agreed later change.
 
 ## Next
 
-- Obtain the real pilot files, run A6, and keep the report and the Core-made frozen pilot export with its fingerprint.
-- Review and agree the dates note and the decisions above.
-- DC1-B: Workspace migrations (B1), API client (B2; proposals of candidate facts may need a Core endpoint, to be agreed), split tool building on `tools/core_import.py` with Permutable material going to the Workspace (B3), A6 again on the split result (B4), running together (B5), docs (B6).
+- Obtain the real pilot files, run A6, and keep the report and the Core's frozen pilot export with its fingerprint.
+- Review and agree the dates note (A8).
+- DC1-B, after DC1-A has passed:
+  - **B1**: the Workspace's database links to Core tables become reference fields: `lead.source_id`, `lead.primary_document_id`, `lead.observation_id`, `lead_revision.document_id`, `lead_headline.document_id`, `investigation_entry.document_id`, `asset_location.entity_id`/`document_id`, `asset_dependency.from_entity_id`/`to_entity_id`/`document_id`, and the old `market_observations.document_id`.
+  - Replace a connection the specification does not list: on PostgreSQL the platform migration `d8317b920a11` puts a trigger (`search_entity_changed`) on the Core table `entities` that refreshes the Workspace's lead search when a plant is renamed.
+  - **B2**: API client; proposals of candidate facts may need a Core endpoint, to be agreed.
+  - **B3**: split tool building on `tools/core_import.py`, with Permutable material going to the Workspace side.
+  - **B4** to **B6**.
