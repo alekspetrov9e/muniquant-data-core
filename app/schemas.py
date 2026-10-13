@@ -88,7 +88,6 @@ class SourceAccessIn(Input):
     # Environment variable NAME holding a licensed API credential; the secret never enters the database.
     credential_ref: str | None = Field(default=None, pattern=r'^[A-Z][A-Z0-9_]{2,63}$')
     auth_header: Literal['x-api-key', 'authorization'] | None = None
-    usage_scope: Literal['evidence', 'leads_only'] = 'evidence'
     @field_validator('allowed_hosts')
     @classmethod
     def hosts(cls, value):

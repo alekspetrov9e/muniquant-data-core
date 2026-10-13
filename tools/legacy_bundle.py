@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from jsonschema import validate
 from app.db import make_engine, DATABASE_URL
 from app.models import Entity, Source, Document, Observation, Relationship
-from app.services import record, lead_only_source
+from app.services import record
 
 PIPELINE_VERSION='0.1.0'
 SCHEMA=Path(__file__).parent/'package.schema.json'
@@ -23,9 +23,7 @@ SCHEMA=Path(__file__).parent/'package.schema.json'
 MODELS={'entities':Entity,'sources':Source,'documents':Document,'observations':Observation,'relationships':Relationship}
 
 def export_package(session, storage):
-    # Lead-only documents (licensed event feeds) are curator work items, never package evidence.
-    lead_sources = {src.id for src in session.scalars(select(Source)) if lead_only_source(session,src.id)}
-    docs = {d.id:record(d) for d in session.scalars(select(Document)).all() if d.source_id not in lead_sources}
+    docs = {d.id:record(d) for d in session.scalars(select(Document)).all()}
     for doc in docs.values():
         path=Path(storage)/doc['content_hash']
         if not path.exists() or hashlib.sha256(path.read_bytes()).hexdigest()!=doc['content_hash']:
@@ -33,7 +31,7 @@ def export_package(session, storage):
         doc['evidence_url']='/api/documents/'+doc['id']+'/content'
     package={'package_version':'0.1.0-draft','pipeline_version':PIPELINE_VERSION,
              'entities': [record(e) for e in session.scalars(select(Entity).order_by(Entity.id))],
-             'sources': [record(s) for s in session.scalars(select(Source).order_by(Source.id)) if s.id not in lead_sources],
+             'sources': [record(s) for s in session.scalars(select(Source).order_by(Source.id))],
              'documents':sorted(docs.values(),key=lambda d:d['id']),
              'observations': [dict(record(o),resolution_status='resolved') for o in session.scalars(select(Observation).order_by(Observation.id))],
              'relationships':[record(r) for r in session.scalars(select(Relationship).order_by(Relationship.id))],

@@ -6,9 +6,10 @@ tables. The tool creates the Core schema there with the Core migrations, copies 
 unchanged (same IDs, values, dates and hashes) and compares counts, IDs and per-table fingerprints
 of source and target. --dry-run checks the source and writes only the report.
 
-Only the 26 Core tables are read. Sources limited to hint-only use (usage_scope 'leads_only') are
-refused; separating that material belongs to the DC1-B split tool. Snapshot files are not copied:
-point SNAPSHOT_DIR at the source's evidence directory (or a copy of it) when using the target.
+Only the 26 Core tables are read. A monolith database whose source_access.usage_scope marks any
+source as hint-only material (anything but 'evidence') is refused: that material stays with the
+Workspace and is separated by the DC1-B split tool. Snapshot files are not copied: point
+SNAPSHOT_DIR at the source's evidence directory (or a copy of it) when using the target.
 
     python -m tools.core_import SOURCE TARGET --report REPORT.json [--dry-run]
 
@@ -35,8 +36,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TABLES = [table for table in Base.metadata.sorted_tables]
 REFERENCE_TABLES = ('country', 'commodity', 'facility_type')
 # Core columns added after the first pilot run, with the value their migration gave existing rows.
-LATER_COLUMNS = {('source_access', 'credential_ref'): None, ('source_access', 'auth_header'): None,
-                 ('source_access', 'usage_scope'): 'evidence'}
+LATER_COLUMNS = {('source_access', 'credential_ref'): None, ('source_access', 'auth_header'): None}
 STATUSES = ('operating', 'closed', 'suspended', 'planned', 'construction')
 
 def location_url(location):
@@ -76,13 +76,16 @@ def identity(table, row):
     return tuple(str(row[column.name]) for column in table.primary_key.columns)
 
 def read_core(connection, check_columns=True):
-    """Read every Core row through the Core column types, filling columns added after the pilot."""
+    """Read every Core row through the Core column types, filling columns added after the pilot.
+
+    Returns the rows, the defaults applied and the source columns that are not part of the Core."""
     present_tables = set(inspect(connection).get_table_names())
     missing = [table.name for table in TABLES if table.name not in present_tables]
     if missing: raise ValueError('Not a MuniQuant database with the Data Core tables; missing: ' + ', '.join(missing))
-    data, defaults = {}, {}
+    data, defaults, extra = {}, {}, {}
     for table in TABLES:
         present = {column['name'] for column in inspect(connection).get_columns(table.name)}
+        for name in sorted(present - set(table.c.keys())): extra[f'{table.name}.{name}'] = None
         absent = [name for name in table.c.keys() if name not in present]
         unsupported = [name for name in absent if (table.name, name) not in LATER_COLUMNS]
         if check_columns and unsupported: raise ValueError(f'Unsupported source schema: {table.name} lacks ' + ', '.join(unsupported))
@@ -95,9 +98,13 @@ def read_core(connection, check_columns=True):
             rows.append(values)
         # Key order in Python, not SQL collation, so SQLite and PostgreSQL compare identically.
         data[table.name] = sorted(rows, key=lambda row: identity(table, row))
-    return data, defaults
+    if 'source_access.usage_scope' in extra:
+        # The monolith marks hint-only (lead) sources here; every Core source must be evidence.
+        values = sorted(connection.execute(text('SELECT DISTINCT usage_scope FROM source_access')).scalars())
+        extra['source_access.usage_scope'] = values
+    return data, defaults, extra
 
-def preflight(data):
+def preflight(data, extra):
     """Reject unsafe or Workspace-only source data before any target is created."""
     problems = []
     def check(condition, message):
@@ -105,8 +112,8 @@ def preflight(data):
     def iso(value):
         try: return date.fromisoformat(value)
         except (TypeError, ValueError): return None
-    for row in data['source_access']:
-        check(row['usage_scope'] != 'leads_only', f"source {row['source_id']}: hint-only (leads_only) material belongs to the Workspace; split it with the DC1-B tool")
+    scopes = extra.get('source_access.usage_scope') or ['evidence']
+    check(scopes == ['evidence'], 'source_access.usage_scope holds ' + ', '.join(map(str, scopes)) + ': hint-only material stays with the Workspace; separate it with the DC1-B split tool')
     for row in data['entities']:
         check(bool(row['country']) and re.fullmatch('[A-Z]{2}', row['country'] or '') is not None, f"entity {row['id']}: invalid country")
         check(row['kind'] != 'facility' or row['facility_type'] in ('smelter', 'refinery', 'bauxite_mine'), f"entity {row['id']}: invalid facility type")
@@ -164,13 +171,13 @@ def copy(source, target, dry_run=False):
     engine = open_source(source_url)
     try:
         source_revision = revision(engine)
-        with engine.connect() as connection: data, defaults = read_core(connection)
+        with engine.connect() as connection: data, defaults, extra = read_core(connection)
     finally: engine.dispose()
-    preflight(data)
+    preflight(data, extra)
     report = {'tool': 'tools.core_import', 'mode': 'dry-run' if dry_run else 'copy',
               'source': {'url': source_url.render_as_string(hide_password=True), 'revision': source_revision, 'sha256_before': before},
               'target': {'url': target_url.render_as_string(hide_password=True)},
-              'defaults_applied': defaults, 'tables': {}}
+              'defaults_applied': defaults, 'source_columns_not_in_core': extra, 'tables': {}}
     for table in TABLES:
         rows = data[table.name]
         report['tables'][table.name] = {'source_rows': len(rows), 'source_fingerprint': fingerprint(rows)}
@@ -184,7 +191,7 @@ def copy(source, target, dry_run=False):
             target_engine = make_engine(target_url.render_as_string(hide_password=False))
             try:
                 with target_engine.begin() as connection:
-                    existing, _ = read_core(connection, check_columns=False)
+                    existing, _, _ = read_core(connection, check_columns=False)
                     for table in TABLES:
                         rows = data[table.name]
                         if table.name in REFERENCE_TABLES:
@@ -195,7 +202,7 @@ def copy(source, target, dry_run=False):
                             report['tables'][table.name]['seeded_by_baseline'] = len(seeded)
                         elif existing[table.name]: raise ValueError('Target is not empty: ' + table.name)
                         if rows: connection.execute(table.insert(), rows)
-                with target_engine.connect() as connection: copied, _ = read_core(connection)
+                with target_engine.connect() as connection: copied, _, _ = read_core(connection)
             finally: target_engine.dispose()
             for table in TABLES:
                 expected, actual = data[table.name], copied[table.name]

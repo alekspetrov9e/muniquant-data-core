@@ -10,6 +10,9 @@ Column order and constraint wording follow the existing databases, not the model
 SELECT * views list the same columns in the same order. PostgreSQL monolith databases also
 carry two unnamed duplicates of the observation interval and non-negative checks from their
 first migration; the named checks below enforce the same rules once.
+
+source_access keeps the licensed-credential columns but not the monolith's usage_scope column:
+hint-only (lead) material stays in the Workspace, so every Core source is evidence.
 """
 from alembic import op
 import sqlalchemy as sa
@@ -192,9 +195,7 @@ def upgrade():
     sa.Column('decided_at', sa.String(), nullable=False),
     sa.Column('credential_ref', sa.String(length=64), nullable=True),
     sa.Column('auth_header', sa.String(length=64), nullable=True),
-    sa.Column('usage_scope', sa.String(), server_default='evidence', nullable=False),
     sa.CheckConstraint("status IN ('permitted','review_required','restricted')", name='ck_source_access_status'),
-    sa.CheckConstraint("usage_scope IN ('evidence','leads_only')", name='ck_source_access_usage'),
     sa.CheckConstraint('(credential_ref IS NULL) = (auth_header IS NULL)', name='ck_source_access_credential'),
     sa.ForeignKeyConstraint(['source_id'], ['sources.id'], ),
     sa.PrimaryKeyConstraint('id')

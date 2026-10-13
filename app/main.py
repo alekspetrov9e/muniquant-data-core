@@ -72,7 +72,7 @@ def create_app(database_url=None, storage=None, write_token=None):
             request._body=bytes(body)
         response=await call_next(request)
         response.headers['X-Content-Type-Options']='nosniff'
-        response.headers.setdefault('Referrer-Policy','same-origin')
+        response.headers['Referrer-Policy']='same-origin'
         if request.url.path in ('/','/static/app.js','/static/style.css'):
             response.headers['Content-Security-Policy']="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'"
         logger.info(json.dumps({'method':request.method,'path':request.url.path,'status':response.status_code,'duration_ms':round((time.monotonic()-start)*1000)}))
@@ -155,8 +155,7 @@ def create_app(database_url=None, storage=None, write_token=None):
     def relationship(data:RelationshipIn,s:Session=Depends(session),actor=Depends(writer)):
         if get(s,Entity,data.company_id).kind!='company' or get(s,Entity,data.facility_id).kind!='facility':
             raise ValueError('Relationship requires a company and a facility')
-        from .services import require_citable
-        require_citable(s,get(s,Document,data.document_id))
+        get(s,Document,data.document_id)
         obj=Relationship(**data.model_dump(mode='json',exclude={'evidence_reference'})); s.add(obj); s.flush()
         from .models import CompanyFacilityRelationship
         from decimal import Decimal
@@ -225,8 +224,7 @@ def create_app(database_url=None, storage=None, write_token=None):
     from .models import EntityEvidence
     @app.post('/api/entities/{identifier}/evidence',status_code=201)
     def identity_evidence(identifier:str,data:EntityEvidenceIn,s:Session=Depends(session),actor=Depends(writer)):
-        from .services import require_citable
-        get(s,Entity,identifier);require_citable(s,get(s,Document,data.document_id))
+        get(s,Entity,identifier);get(s,Document,data.document_id)
         key=(identifier,data.document_id)
         if s.get(EntityEvidence,key): raise HTTPException(409,'Identity evidence already registered')
         obj=EntityEvidence(entity_id=identifier,**data.model_dump(),reviewer=actor);s.add(obj)
@@ -248,8 +246,7 @@ def create_app(database_url=None, storage=None, write_token=None):
         source=get(s,Source,identifier)
         values=data.model_dump()
         previous=s.scalar(select(SourceAccess).where(SourceAccess.source_id==identifier).order_by(SourceAccess.decided_at.desc(),SourceAccess.id.desc()))
-        # A re-review that omits usage or credential fields keeps them; dropping them needs an explicit value.
-        if previous and 'usage_scope' not in data.model_fields_set: values['usage_scope']=previous.usage_scope
+        # A re-review that omits the credential fields keeps them; dropping them needs an explicit value.
         if previous and 'credential_ref' not in data.model_fields_set and 'auth_header' not in data.model_fields_set:
             values['credential_ref'],values['auth_header']=previous.credential_ref,previous.auth_header
         from .acquisition import check_credential_binding

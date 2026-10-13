@@ -67,25 +67,11 @@ def acquire(session,storage,data):
     session.add(Run(status='duplicate' if duplicate else 'success',pipeline_version='1.0.0',manifest={'content_hash':obj.content_hash,'document_id':obj.id,'adapter':'text-upload-v1'}))
     return obj,duplicate
 
-def lead_only_source(session, source_id):
-    """True when the latest audited access decision limits a source to curator leads."""
-    from .models import SourceAccess
-    policy=session.scalar(select(SourceAccess).where(SourceAccess.source_id==source_id).order_by(SourceAccess.decided_at.desc(),SourceAccess.id.desc()))
-    return bool(policy and policy.usage_scope=='leads_only')
-
-def lead_only(session, document):
-    return lead_only_source(session, document.source_id)
-
-def require_citable(session, document):
-    if lead_only(session, document):
-        raise ValueError('Lead-only sources (licensed event feeds) cannot be cited as evidence; capture and cite the primary source')
-
 def add_observation(session, data):
     entity = session.get(Entity, data.entity_id)
     doc = session.get(Document, data.document_id)
     if not entity or entity.kind != 'facility': raise ValueError('Unknown facility')
     if not doc: raise ValueError('Unknown evidence document')
-    require_citable(session, doc)
     messages=[]
     normalized=None; unit=None
     if data.attribute != 'status':

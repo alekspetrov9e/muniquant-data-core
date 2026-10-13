@@ -174,10 +174,7 @@ class SourceAccess(Base):
     # Name of the server environment variable holding an API credential; never the secret itself.
     credential_ref = Column(String(64))
     auth_header = Column(String(64))
-    # 'leads_only' sources (licensed news/event feeds) point curators to changes but are never cited as evidence.
-    usage_scope = Column(String, nullable=False, default='evidence', server_default='evidence')
     __table_args__ = (CheckConstraint("status IN ('permitted','review_required','restricted')", name='ck_source_access_status'),
-                      CheckConstraint("usage_scope IN ('evidence','leads_only')", name='ck_source_access_usage'),
                       CheckConstraint('(credential_ref IS NULL) = (auth_header IS NULL)', name='ck_source_access_credential'))
 
 class SourceSnapshot(Base):
