@@ -1,0 +1,1859 @@
+{
+ "tables": {
+  "audit": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "created_at",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "actor",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "action",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "record_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "detail",
+     "JSON",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [],
+   "unique": [],
+   "indexes": [],
+   "checks": []
+  },
+  "candidate": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "build_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "raw_name",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "country",
+     "VARCHAR(2)",
+     true,
+     null
+    ],
+    [
+     "reported_value",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "unit",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "evidence_reference",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "status",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "entity_id",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "observation_id",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "review_id",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "findings",
+     "JSON",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "build_id"
+     ],
+     "evidence_build",
+     [
+      "id"
+     ]
+    ],
+    [
+     [
+      "entity_id"
+     ],
+     "entities",
+     [
+      "id"
+     ]
+    ],
+    [
+     [
+      "observation_id"
+     ],
+     "observations",
+     [
+      "id"
+     ]
+    ],
+    [
+     [
+      "review_id"
+     ],
+     "reviews",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [
+    [
+     "ix_candidate_build_id",
+     [
+      "build_id"
+     ],
+     false
+    ]
+   ],
+   "checks": []
+  },
+  "commodity": {
+   "columns": [
+    [
+     "code",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "name",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "code"
+   ],
+   "foreign_keys": [],
+   "unique": [],
+   "indexes": [],
+   "checks": []
+  },
+  "company": {
+   "columns": [
+    [
+     "entity_id",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "entity_id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "entity_id"
+     ],
+     "entities",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [],
+   "checks": []
+  },
+  "company_facility_relationship": {
+   "columns": [
+    [
+     "relationship_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "company_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "facility_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "document_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "role",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "evidence_reference",
+     "TEXT",
+     false,
+     null
+    ],
+    [
+     "percentage",
+     "NUMERIC(30, 6)",
+     true,
+     null
+    ],
+    [
+     "valid_from",
+     "DATE",
+     false,
+     null
+    ],
+    [
+     "valid_to",
+     "DATE",
+     true,
+     null
+    ]
+   ],
+   "primary_key": [
+    "relationship_id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "company_id"
+     ],
+     "company",
+     [
+      "entity_id"
+     ]
+    ],
+    [
+     [
+      "document_id"
+     ],
+     "document_version",
+     [
+      "document_id"
+     ]
+    ],
+    [
+     [
+      "facility_id"
+     ],
+     "facility",
+     [
+      "entity_id"
+     ]
+    ],
+    [
+     [
+      "relationship_id"
+     ],
+     "relationships",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [],
+   "checks": [
+    [
+     "ck_relationship_interval",
+     "valid_to IS NULL OR valid_to >= valid_from"
+    ],
+    [
+     "ck_relationship_role",
+     "role::text = ANY (ARRAY['OWNS'::character varying, 'OPERATES'::character varying]::text[])"
+    ],
+    [
+     "ck_relationship_share",
+     "percentage IS NULL OR percentage::numeric >= 0::numeric AND percentage::numeric <= 100::numeric"
+    ]
+   ]
+  },
+  "country": {
+   "columns": [
+    [
+     "code",
+     "VARCHAR(2)",
+     false,
+     null
+    ],
+    [
+     "name",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "code"
+   ],
+   "foreign_keys": [],
+   "unique": [],
+   "indexes": [],
+   "checks": []
+  },
+  "document_version": {
+   "columns": [
+    [
+     "document_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "snapshot_hash",
+     "VARCHAR(64)",
+     false,
+     null
+    ],
+    [
+     "version",
+     "INTEGER",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "document_id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "document_id"
+     ],
+     "documents",
+     [
+      "id"
+     ]
+    ],
+    [
+     [
+      "snapshot_hash"
+     ],
+     "source_snapshot",
+     [
+      "content_hash"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [],
+   "checks": [
+    [
+     "ck_document_version_positive",
+     "version > 0"
+    ]
+   ]
+  },
+  "documents": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "source_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "title",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "original_url",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "published_at",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "retrieved_at",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "media_type",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "content_hash",
+     "VARCHAR(64)",
+     false,
+     null
+    ],
+    [
+     "version",
+     "INTEGER",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "source_id"
+     ],
+     "sources",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [
+    [
+     "content_hash",
+     "original_url",
+     "source_id"
+    ],
+    [
+     "original_url",
+     "source_id",
+     "version"
+    ]
+   ],
+   "indexes": [
+    [
+     "documents_source_id_original_url_content_hash_key",
+     [
+      "source_id",
+      "original_url",
+      "content_hash"
+     ],
+     true
+    ],
+    [
+     "documents_source_id_original_url_version_key",
+     [
+      "source_id",
+      "original_url",
+      "version"
+     ],
+     true
+    ],
+    [
+     "ix_documents_content_hash",
+     [
+      "content_hash"
+     ],
+     false
+    ],
+    [
+     "ix_documents_source_id",
+     [
+      "source_id"
+     ],
+     false
+    ]
+   ],
+   "checks": [
+    [
+     "documents_version_check",
+     "version > 0"
+    ]
+   ]
+  },
+  "entities": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "name",
+     "VARCHAR(256)",
+     false,
+     null
+    ],
+    [
+     "kind",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "facility_type",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "country",
+     "VARCHAR(2)",
+     true,
+     null
+    ],
+    [
+     "region",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "commodity",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "aliases",
+     "JSON",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [],
+   "unique": [],
+   "indexes": [],
+   "checks": [
+    [
+     "entities_kind_check",
+     "kind::text = ANY (ARRAY['company'::character varying, 'facility'::character varying]::text[])"
+    ]
+   ]
+  },
+  "entity_alias": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "entity_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "name",
+     "VARCHAR(256)",
+     false,
+     null
+    ],
+    [
+     "normalized_name",
+     "VARCHAR(256)",
+     false,
+     null
+    ],
+    [
+     "actor",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "reason",
+     "TEXT",
+     false,
+     null
+    ],
+    [
+     "created_at",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "entity_id"
+     ],
+     "entities",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [
+    [
+     "entity_id",
+     "normalized_name"
+    ]
+   ],
+   "indexes": [
+    [
+     "entity_alias_entity_id_normalized_name_key",
+     [
+      "entity_id",
+      "normalized_name"
+     ],
+     true
+    ],
+    [
+     "ix_entity_alias_entity_id",
+     [
+      "entity_id"
+     ],
+     false
+    ],
+    [
+     "ix_entity_alias_normalized_name",
+     [
+      "normalized_name"
+     ],
+     false
+    ]
+   ],
+   "checks": []
+  },
+  "entity_evidence": {
+   "columns": [
+    [
+     "entity_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "document_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "evidence_reference",
+     "TEXT",
+     false,
+     null
+    ],
+    [
+     "reviewer",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "reason",
+     "TEXT",
+     false,
+     null
+    ],
+    [
+     "created_at",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "document_id",
+    "entity_id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "document_id"
+     ],
+     "document_version",
+     [
+      "document_id"
+     ]
+    ],
+    [
+     [
+      "entity_id"
+     ],
+     "entities",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [],
+   "checks": []
+  },
+  "entity_supersession": {
+   "columns": [
+    [
+     "old_entity_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "new_entity_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "actor",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "reason",
+     "TEXT",
+     false,
+     null
+    ],
+    [
+     "created_at",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "old_entity_id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "new_entity_id"
+     ],
+     "entities",
+     [
+      "id"
+     ]
+    ],
+    [
+     [
+      "old_entity_id"
+     ],
+     "entities",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [],
+   "checks": [
+    [
+     "ck_supersession_distinct",
+     "old_entity_id::text <> new_entity_id::text"
+    ]
+   ]
+  },
+  "evidence_build": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR(64)",
+     false,
+     null
+    ],
+    [
+     "document_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "content_hash",
+     "VARCHAR(64)",
+     false,
+     null
+    ],
+    [
+     "parser_version",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "pipeline_version",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "specification",
+     "JSON",
+     false,
+     null
+    ],
+    [
+     "logical_output",
+     "JSON",
+     false,
+     null
+    ],
+    [
+     "output_hash",
+     "VARCHAR(64)",
+     false,
+     null
+    ],
+    [
+     "actor",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "created_at",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "document_id"
+     ],
+     "documents",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [],
+   "checks": []
+  },
+  "facility": {
+   "columns": [
+    [
+     "entity_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "type_code",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "country_code",
+     "VARCHAR(2)",
+     false,
+     null
+    ],
+    [
+     "region_id",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "commodity_code",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "entity_id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "commodity_code"
+     ],
+     "commodity",
+     [
+      "code"
+     ]
+    ],
+    [
+     [
+      "country_code"
+     ],
+     "country",
+     [
+      "code"
+     ]
+    ],
+    [
+     [
+      "entity_id"
+     ],
+     "entities",
+     [
+      "id"
+     ]
+    ],
+    [
+     [
+      "region_id"
+     ],
+     "region",
+     [
+      "id"
+     ]
+    ],
+    [
+     [
+      "type_code"
+     ],
+     "facility_type",
+     [
+      "code"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [],
+   "checks": []
+  },
+  "facility_type": {
+   "columns": [
+    [
+     "code",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "name",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "code"
+   ],
+   "foreign_keys": [],
+   "unique": [],
+   "indexes": [],
+   "checks": []
+  },
+  "observation_detail": {
+   "columns": [
+    [
+     "observation_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "normalized_value",
+     "NUMERIC(30, 6)",
+     true,
+     null
+    ],
+    [
+     "normalized_unit",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "valid_from",
+     "DATE",
+     false,
+     null
+    ],
+    [
+     "valid_to",
+     "DATE",
+     true,
+     null
+    ]
+   ],
+   "primary_key": [
+    "observation_id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "observation_id"
+     ],
+     "observations",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [],
+   "checks": [
+    [
+     "ck_detail_interval",
+     "valid_to IS NULL OR valid_to >= valid_from"
+    ],
+    [
+     "ck_detail_nonnegative",
+     "normalized_value IS NULL OR normalized_value >= 0::numeric"
+    ],
+    [
+     "ck_detail_unit",
+     "normalized_unit IS NULL OR (normalized_unit::text = ANY (ARRAY['t/year'::character varying, 'MW'::character varying, 'percentage'::character varying]::text[]))"
+    ]
+   ]
+  },
+  "observations": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "entity_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "document_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "attribute",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "reported_value",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "reported_unit",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "normalized_value",
+     "DOUBLE PRECISION",
+     true,
+     null
+    ],
+    [
+     "normalized_unit",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "valid_from",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "valid_to",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "evidence_reference",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "quality_status",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "quality_messages",
+     "JSON",
+     false,
+     null
+    ],
+    [
+     "recorded_at",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "parser_version",
+     "VARCHAR",
+     false,
+     "'manual-v1'::character varying"
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "document_id"
+     ],
+     "documents",
+     [
+      "id"
+     ]
+    ],
+    [
+     [
+      "entity_id"
+     ],
+     "entities",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [
+    [
+     "ix_observations_entity_id",
+     [
+      "entity_id"
+     ],
+     false
+    ]
+   ],
+   "checks": [
+    [
+     "ck_observation_dimension",
+     "attribute::text = 'capacity'::text AND (reported_unit::text = ANY (ARRAY['t/year'::character varying, 'kt/year'::character varying, 'Mt/year'::character varying]::text[])) OR attribute::text = 'power'::text AND reported_unit::text = 'MW'::text OR attribute::text = 'ownership_percentage'::text AND reported_unit::text = 'percentage'::text OR attribute::text = 'status'::text AND reported_unit::text = 'status'::text"
+    ],
+    [
+     "ck_observation_interval",
+     "valid_to IS NULL OR valid_to::text >= valid_from::text"
+    ],
+    [
+     "ck_observation_nonnegative",
+     "normalized_value IS NULL OR normalized_value >= 0::double precision"
+    ],
+    [
+     "observations_check",
+     "valid_to IS NULL OR valid_to::text >= valid_from::text"
+    ],
+    [
+     "observations_normalized_value_check",
+     "normalized_value IS NULL OR normalized_value >= 0::double precision"
+    ]
+   ]
+  },
+  "region": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "country_code",
+     "VARCHAR(2)",
+     false,
+     null
+    ],
+    [
+     "name",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "country_code"
+     ],
+     "country",
+     [
+      "code"
+     ]
+    ]
+   ],
+   "unique": [
+    [
+     "country_code",
+     "name"
+    ]
+   ],
+   "indexes": [
+    [
+     "region_country_code_name_key",
+     [
+      "country_code",
+      "name"
+     ],
+     true
+    ]
+   ],
+   "checks": []
+  },
+  "relationships": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "company_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "facility_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "role",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "percentage",
+     "DOUBLE PRECISION",
+     true,
+     null
+    ],
+    [
+     "valid_from",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "valid_to",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "document_id",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "company_id"
+     ],
+     "entities",
+     [
+      "id"
+     ]
+    ],
+    [
+     [
+      "document_id"
+     ],
+     "documents",
+     [
+      "id"
+     ]
+    ],
+    [
+     [
+      "facility_id"
+     ],
+     "entities",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [],
+   "checks": [
+    [
+     "relationships_check",
+     "valid_to IS NULL OR valid_to::text >= valid_from::text"
+    ],
+    [
+     "relationships_percentage_check",
+     "percentage IS NULL OR percentage >= 0::double precision AND percentage <= 100::double precision"
+    ],
+    [
+     "relationships_role_check",
+     "role::text = ANY (ARRAY['OWNS'::character varying, 'OPERATES'::character varying]::text[])"
+    ]
+   ]
+  },
+  "retrieval_attempt": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "run_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "url",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "attempt",
+     "INTEGER",
+     false,
+     null
+    ],
+    [
+     "status",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "error",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "http_status",
+     "INTEGER",
+     true,
+     null
+    ],
+    [
+     "recorded_at",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "run_id"
+     ],
+     "runs",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [
+    [
+     "ix_retrieval_attempt_run_id",
+     [
+      "run_id"
+     ],
+     false
+    ]
+   ],
+   "checks": []
+  },
+  "reviews": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "raw_name",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "candidate_ids",
+     "JSON",
+     false,
+     null
+    ],
+    [
+     "status",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "selected_entity_id",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "reviewer",
+     "VARCHAR",
+     true,
+     null
+    ],
+    [
+     "reason",
+     "TEXT",
+     true,
+     null
+    ],
+    [
+     "decided_at",
+     "VARCHAR",
+     true,
+     null
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "selected_entity_id"
+     ],
+     "entities",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [],
+   "checks": []
+  },
+  "runs": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "started_at",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "pipeline_version",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "status",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "manifest",
+     "JSON",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [],
+   "unique": [],
+   "indexes": [],
+   "checks": []
+  },
+  "source_access": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "source_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "status",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "allowed_hosts",
+     "JSON",
+     false,
+     null
+    ],
+    [
+     "basis",
+     "TEXT",
+     false,
+     null
+    ],
+    [
+     "retention",
+     "TEXT",
+     false,
+     null
+    ],
+    [
+     "reviewer",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "decided_at",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "credential_ref",
+     "VARCHAR(64)",
+     true,
+     null
+    ],
+    [
+     "auth_header",
+     "VARCHAR(64)",
+     true,
+     null
+    ],
+    [
+     "usage_scope",
+     "VARCHAR",
+     false,
+     "'evidence'::character varying"
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "source_id"
+     ],
+     "sources",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [
+    [
+     "ix_source_access_source_id",
+     [
+      "source_id"
+     ],
+     false
+    ]
+   ],
+   "checks": [
+    [
+     "ck_source_access_credential",
+     "(credential_ref IS NULL) = (auth_header IS NULL)"
+    ],
+    [
+     "ck_source_access_status",
+     "status::text = ANY (ARRAY['permitted'::character varying, 'review_required'::character varying, 'restricted'::character varying]::text[])"
+    ],
+    [
+     "ck_source_access_usage",
+     "usage_scope::text = ANY (ARRAY['evidence'::character varying, 'leads_only'::character varying]::text[])"
+    ]
+   ]
+  },
+  "source_document_relation": {
+   "columns": [
+    [
+     "source_id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "document_id",
+     "VARCHAR",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "document_id",
+    "source_id"
+   ],
+   "foreign_keys": [
+    [
+     [
+      "document_id"
+     ],
+     "documents",
+     [
+      "id"
+     ]
+    ],
+    [
+     [
+      "source_id"
+     ],
+     "sources",
+     [
+      "id"
+     ]
+    ]
+   ],
+   "unique": [],
+   "indexes": [],
+   "checks": []
+  },
+  "source_snapshot": {
+   "columns": [
+    [
+     "content_hash",
+     "VARCHAR(64)",
+     false,
+     null
+    ],
+    [
+     "storage_reference",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "byte_size",
+     "INTEGER",
+     true,
+     null
+    ]
+   ],
+   "primary_key": [
+    "content_hash"
+   ],
+   "foreign_keys": [],
+   "unique": [],
+   "indexes": [],
+   "checks": [
+    [
+     "ck_snapshot_size",
+     "byte_size >= 0"
+    ]
+   ]
+  },
+  "sources": {
+   "columns": [
+    [
+     "id",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "name",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "publisher",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "source_type",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "url",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "access_status",
+     "VARCHAR",
+     false,
+     null
+    ],
+    [
+     "notes",
+     "TEXT",
+     false,
+     null
+    ]
+   ],
+   "primary_key": [
+    "id"
+   ],
+   "foreign_keys": [],
+   "unique": [],
+   "indexes": [],
+   "checks": []
+  }
+ },
+ "views": {
+  "capacity_observation": [
+   "id",
+   "entity_id",
+   "document_id",
+   "attribute",
+   "reported_value",
+   "reported_unit",
+   "normalized_value",
+   "normalized_unit",
+   "valid_from",
+   "valid_to",
+   "evidence_reference",
+   "quality_status",
+   "quality_messages",
+   "recorded_at",
+   "parser_version",
+   "exact_value"
+  ],
+  "facility_alias": [
+   "id",
+   "entity_id",
+   "name",
+   "normalized_name",
+   "actor",
+   "reason",
+   "created_at"
+  ],
+  "status_observation": [
+   "id",
+   "entity_id",
+   "document_id",
+   "attribute",
+   "reported_value",
+   "reported_unit",
+   "normalized_value",
+   "normalized_unit",
+   "valid_from",
+   "valid_to",
+   "evidence_reference",
+   "quality_status",
+   "quality_messages",
+   "recorded_at",
+   "parser_version"
+  ]
+ }
+}
