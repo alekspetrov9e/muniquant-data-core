@@ -1,18 +1,17 @@
 """Data Core baseline: 26 tables and 3 views.
 
-One straight starting point for the Data Core. It creates the Core tables exactly as the
-monolith schema defines them on 2026-10-13 (revision d8317b920a11), without the market,
-paper-trading, lead, research, investigation or map tables, the joined migration branches,
-or the PostgreSQL lead-search triggers. Existing monolith databases are not upgraded in
-place: their Core rows are copied into a new database created by this baseline.
+One straight starting point for the Data Core. It creates the 26 Core tables exactly as the
+platform schema defines them on 2026-10-13 (revision d8317b920a11), and nothing else: no other
+tables, no joined migration branches, no triggers. Existing platform databases are not upgraded
+in place: their Core rows are copied into a new database created by this baseline.
 
 Column order and constraint wording follow the existing databases, not the model text, so
-SELECT * views list the same columns in the same order. PostgreSQL monolith databases also
+SELECT * views list the same columns in the same order. PostgreSQL platform databases also
 carry two unnamed duplicates of the observation interval and non-negative checks from their
 first migration; the named checks below enforce the same rules once.
 
-source_access keeps the licensed-credential columns but not the monolith's usage_scope column:
-hint-only (lead) material stays in the Workspace, so every Core source is evidence.
+source_access keeps the licensed-credential columns. The platform's usage_scope column is not a
+Core column: every Core source is evidence.
 """
 from alembic import op
 import sqlalchemy as sa
@@ -22,12 +21,12 @@ down_revision = None
 branch_labels = None
 depends_on = None
 
-# Controlled references seeded exactly as the monolith migration ba950f257a0e seeds them.
+# Controlled references seeded exactly as the platform migration ba950f257a0e seeds them.
 COUNTRIES = {'AU': 'Australia', 'NO': 'Norway', 'IS': 'Iceland', 'CA': 'Canada', 'US': 'United States', 'BR': 'Brazil', 'QA': 'Qatar', 'SK': 'Slovakia', 'DE': 'Germany', 'FR': 'France', 'IN': 'India', 'CN': 'China', 'RU': 'Russia', 'AE': 'United Arab Emirates', 'BH': 'Bahrain', 'NZ': 'New Zealand', 'GB': 'United Kingdom', 'ZA': 'South Africa', 'JM': 'Jamaica', 'GN': 'Guinea', 'IE': 'Ireland', 'ES': 'Spain', 'GR': 'Greece', 'MZ': 'Mozambique', 'ID': 'Indonesia', 'MY': 'Malaysia', 'OM': 'Oman', 'SA': 'Saudi Arabia'}
 COMMODITIES = {'aluminium': 'Aluminium', 'alumina': 'Alumina', 'bauxite': 'Bauxite'}
 FACILITY_TYPES = {'smelter': 'Primary aluminium smelter', 'refinery': 'Alumina refinery', 'bauxite_mine': 'Bauxite mine'}
 
-# Ready-made lists over the fact and name tables, identical to the monolith definitions.
+# Ready-made lists over the fact and name tables, identical to the platform definitions.
 VIEWS = [
     ('capacity_observation', "SELECT o.*, d.normalized_value AS exact_value FROM observations o JOIN observation_detail d ON d.observation_id=o.id WHERE o.attribute='capacity'"),
     ('status_observation', "SELECT * FROM observations WHERE attribute='status'"),

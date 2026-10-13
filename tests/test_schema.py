@@ -75,7 +75,7 @@ def test_baseline_matches_todays_core_tables(new_database, monkeypatch):
     finally: engine.dispose()
     expected = json.loads((TODAY / f'today-{engine.dialect.name}.json').read_text())
     # Deliberate differences, documented in the baseline migration:
-    # - hint-only (lead) material stays in the Workspace, so source_access has no usage_scope;
+    # - the platform's source_access.usage_scope is not a Core column: every Core source is evidence;
     # - PostgreSQL databases carry two unnamed duplicates of the observation interval and
     #   non-negative checks from their first migration; the named checks enforce the same rules.
     source_access = expected['tables']['source_access']

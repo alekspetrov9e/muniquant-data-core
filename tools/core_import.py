@@ -6,10 +6,10 @@ tables. The tool creates the Core schema there with the Core migrations, copies 
 unchanged (same IDs, values, dates and hashes) and compares counts, IDs and per-table fingerprints
 of source and target. --dry-run checks the source and writes only the report.
 
-Only the 26 Core tables are read. A monolith database whose source_access.usage_scope marks any
-source as hint-only material (anything but 'evidence') is refused: that material stays with the
-Workspace and is separated by the DC1-B split tool. Snapshot files are not copied: point
-SNAPSHOT_DIR at the source's evidence directory (or a copy of it) when using the target.
+Only the 26 Core tables are read, and only the columns the Core defines. Nothing is dropped: a
+source that holds data in a column the Core does not define is refused, and the DC1-B split tool
+separates databases like that. Snapshot files are not copied: point SNAPSHOT_DIR at the source's
+evidence directory (or a copy of it) when using the target.
 
     python -m tools.core_import SOURCE TARGET --report REPORT.json [--dry-run]
 
@@ -85,7 +85,6 @@ def read_core(connection, check_columns=True):
     data, defaults, extra = {}, {}, {}
     for table in TABLES:
         present = {column['name'] for column in inspect(connection).get_columns(table.name)}
-        for name in sorted(present - set(table.c.keys())): extra[f'{table.name}.{name}'] = None
         absent = [name for name in table.c.keys() if name not in present]
         unsupported = [name for name in absent if (table.name, name) not in LATER_COLUMNS]
         if check_columns and unsupported: raise ValueError(f'Unsupported source schema: {table.name} lacks ' + ', '.join(unsupported))
@@ -98,22 +97,20 @@ def read_core(connection, check_columns=True):
             rows.append(values)
         # Key order in Python, not SQL collation, so SQLite and PostgreSQL compare identically.
         data[table.name] = sorted(rows, key=lambda row: identity(table, row))
-    if 'source_access.usage_scope' in extra:
-        # The monolith marks hint-only (lead) sources here; every Core source must be evidence.
-        values = sorted(connection.execute(text('SELECT DISTINCT usage_scope FROM source_access')).scalars())
-        extra['source_access.usage_scope'] = values
+        # Columns the Core does not define, with the number of rows that would lose their values.
+        for name in sorted(present - set(table.c.keys())): extra[f'{table.name}.{name}'] = len(rows)
     return data, defaults, extra
 
 def preflight(data, extra):
-    """Reject unsafe or Workspace-only source data before any target is created."""
+    """Reject unsafe source data, or data the Core cannot hold, before any target is created."""
     problems = []
     def check(condition, message):
         if not condition: problems.append(message)
     def iso(value):
         try: return date.fromisoformat(value)
         except (TypeError, ValueError): return None
-    scopes = extra.get('source_access.usage_scope') or ['evidence']
-    check(scopes == ['evidence'], 'source_access.usage_scope holds ' + ', '.join(map(str, scopes)) + ': hint-only material stays with the Workspace; separate it with the DC1-B split tool')
+    for column, rows in extra.items():
+        check(not rows, f'{column} is not a Core column but holds data in {rows} rows; split this database with the DC1-B tool')
     for row in data['entities']:
         check(bool(row['country']) and re.fullmatch('[A-Z]{2}', row['country'] or '') is not None, f"entity {row['id']}: invalid country")
         check(row['kind'] != 'facility' or row['facility_type'] in ('smelter', 'refinery', 'bauxite_mine'), f"entity {row['id']}: invalid facility type")

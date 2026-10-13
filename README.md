@@ -53,7 +53,7 @@ python -m tools.core_import data/platform.db data/core.db --report data/core-imp
 python -m tools.core_import data/platform.db data/core.db --report data/core-import-report.json
 ```
 
-The source is opened read-only; the target must be new; the report compares counts, IDs and fingerprints of every table. Databases that still hold Permutable (hint-only) sources are refused: that material stays in the Workspace.
+The source is opened read-only; the target must be new; the report compares counts, IDs and fingerprints of every table. Nothing is dropped: a database whose Core tables hold data in columns the Core does not define (today's platform databases with recorded access decisions, for example) is refused, and the DC1-B split tool separates those.
 
 ## Export, freeze and replay
 
