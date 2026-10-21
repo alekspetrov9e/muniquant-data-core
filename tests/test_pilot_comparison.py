@@ -67,3 +67,22 @@ def test_a_manifest_other_than_the_recorded_one_blocks(tmp_path):
     args.expected_manifest = '0' * 64
     report = compare_pilot.compare(args)
     assert report['status'] == 'BLOCKED' and any('not the recorded one' in problem for problem in report['problems'])
+
+def test_b4_compares_a_core_database_made_elsewhere(tmp_path):
+    from tools import core_import
+    args = inputs(tmp_path)
+    made = tmp_path / 'split-core.db'
+    assert core_import.copy(args.database, str(made))['status'] == 'PASS'
+    args.core_database = str(made)
+    before = hashlib.sha256(made.read_bytes()).hexdigest()
+    report = compare_pilot.compare(args)
+    assert report['status'] == 'PASS', report
+    assert 'Core database unchanged by the comparison' in {check['check'] for check in report['checks']}
+    assert hashlib.sha256(made.read_bytes()).hexdigest() == before and not (tmp_path / 'result' / 'core.db').exists()
+    assert (tmp_path / 'result' / 'core-database-report.json').exists()
+    # A Core database whose rows differ from the pilot's is a difference, field by field.
+    with sqlite3.connect(made) as connection: connection.execute("UPDATE observations SET evidence_reference = 'changed'")
+    args.output = str(tmp_path / 'result-changed')
+    report = compare_pilot.compare(args)
+    assert report['status'] == 'DIFFERENT'
+    assert not next(check for check in report['checks'] if check['check'].startswith('Pilot rows copied'))['passed']
