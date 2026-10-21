@@ -47,11 +47,14 @@ def test_never_drops_data_in_columns_the_core_does_not_define(client, example, n
     # Today's platform databases have one such column on a Core table.
     with client.app.state.engine.begin() as connection:
         connection.execute(text("ALTER TABLE source_access ADD COLUMN usage_scope VARCHAR DEFAULT 'evidence' NOT NULL"))
-    report = core_import.copy(source_url(client), new_database('empty-column'))
-    assert report['status'] == 'PASS' and report['source_columns_not_in_core'] == {'source_access.usage_scope': 0}
     policy = {'status': 'permitted', 'allowed_hosts': ['example.org'], 'basis': 'Fixture access decision for tests', 'retention': 'Fixture only'}
     assert client.post('/api/sources/' + source['id'] + '/access', json=policy).status_code == 201
-    with pytest.raises(ValueError, match='source_access.usage_scope is not a Core column but holds data in 1 rows'):
+    # Every value equals the column's own default: nothing would be lost.
+    report = core_import.copy(source_url(client), new_database('default-only'))
+    assert report['status'] == 'PASS' and report['source_columns_not_in_core'] == {'source_access.usage_scope': 0}
+    with client.app.state.engine.begin() as connection:
+        connection.execute(text("UPDATE source_access SET usage_scope='not-the-default'"))
+    with pytest.raises(ValueError, match='source_access.usage_scope is not a Core column but holds other values than its default in 1 rows'):
         core_import.copy(source_url(client), new_database('refused'))
 
 def test_pilot_era_database_is_copied_unchanged(tmp_path):

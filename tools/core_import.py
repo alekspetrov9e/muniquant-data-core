@@ -7,9 +7,10 @@ unchanged (same IDs, values, dates and hashes) and compares counts, IDs and per-
 of source and target. --dry-run checks the source and writes only the report.
 
 Only the 26 Core tables are read, and only the columns the Core defines. Nothing is dropped: a
-source that holds data in a column the Core does not define is refused, and the DC1-B split tool
-separates databases like that. Snapshot files are not copied: point SNAPSHOT_DIR at the source's
-evidence directory (or a copy of it) when using the target.
+column the Core does not define is accepted only while it carries no information, that is, every
+value is empty or equals the column's own declared default. A source holding anything else there is
+refused, and the DC1-B split tool separates databases like that. Snapshot files are not copied:
+point SNAPSHOT_DIR at the source's evidence directory (or a copy of it) when using the target.
 
     python -m tools.core_import SOURCE TARGET --report REPORT.json [--dry-run]
 
@@ -26,7 +27,7 @@ from pathlib import Path
 from alembic import command
 from alembic.config import Config
 from alembic.script import ScriptDirectory
-from sqlalchemy import create_engine, inspect, select, text
+from sqlalchemy import column, create_engine, inspect, select, table as table_clause, text
 from sqlalchemy.engine import make_url
 from app.db import make_engine
 from app.models import Base
@@ -38,6 +39,14 @@ REFERENCE_TABLES = ('country', 'commodity', 'facility_type')
 # Core columns added after the first pilot run, with the value their migration gave existing rows.
 LATER_COLUMNS = {('source_access', 'credential_ref'): None, ('source_access', 'auth_header'): None}
 STATUSES = ('operating', 'closed', 'suspended', 'planned', 'construction')
+# A column default the tool can compare with: a quoted string (optionally cast) or a plain number.
+LITERAL_DEFAULT = re.compile(r"^'((?:[^']|'')*)'(?:::[\w ]+)?$|^(-?\d+(?:\.\d+)?)$")
+
+def literal_default(info):
+    """The column's declared default when it is a plain literal, else None."""
+    match = LITERAL_DEFAULT.match(str(info.get('default') or '').strip())
+    if not match: return None
+    return match.group(1).replace("''", "'") if match.group(1) is not None else match.group(2)
 
 def location_url(location):
     url = make_url(location if '://' in location else 'sqlite:///' + str(Path(location).resolve()))
@@ -84,7 +93,8 @@ def read_core(connection, check_columns=True):
     if missing: raise ValueError('Not a MuniQuant database with the Data Core tables; missing: ' + ', '.join(missing))
     data, defaults, extra = {}, {}, {}
     for table in TABLES:
-        present = {column['name'] for column in inspect(connection).get_columns(table.name)}
+        columns = {info['name']: info for info in inspect(connection).get_columns(table.name)}
+        present = set(columns)
         absent = [name for name in table.c.keys() if name not in present]
         unsupported = [name for name in absent if (table.name, name) not in LATER_COLUMNS]
         if check_columns and unsupported: raise ValueError(f'Unsupported source schema: {table.name} lacks ' + ', '.join(unsupported))
@@ -97,8 +107,12 @@ def read_core(connection, check_columns=True):
             rows.append(values)
         # Key order in Python, not SQL collation, so SQLite and PostgreSQL compare identically.
         data[table.name] = sorted(rows, key=lambda row: identity(table, row))
-        # Columns the Core does not define, with the number of rows that would lose their values.
-        for name in sorted(present - set(table.c.keys())): extra[f'{table.name}.{name}'] = len(rows)
+        # Columns the Core does not define, with the number of rows whose value would be lost:
+        # neither empty nor the column's own declared default.
+        for name in sorted(present - set(table.c.keys())):
+            default = literal_default(columns[name])
+            values = connection.execute(select(column(name)).select_from(table_clause(table.name))).scalars()
+            extra[f'{table.name}.{name}'] = sum(value is not None and (default is None or str(value) != default) for value in values)
     return data, defaults, extra
 
 def preflight(data, extra):
@@ -110,7 +124,7 @@ def preflight(data, extra):
         try: return date.fromisoformat(value)
         except (TypeError, ValueError): return None
     for column, rows in extra.items():
-        check(not rows, f'{column} is not a Core column but holds data in {rows} rows; split this database with the DC1-B tool')
+        check(not rows, f'{column} is not a Core column but holds other values than its default in {rows} rows; split this database with the DC1-B tool')
     for row in data['entities']:
         check(bool(row['country']) and re.fullmatch('[A-Z]{2}', row['country'] or '') is not None, f"entity {row['id']}: invalid country")
         check(row['kind'] != 'facility' or row['facility_type'] in ('smelter', 'refinery', 'bauxite_mine'), f"entity {row['id']}: invalid facility type")
