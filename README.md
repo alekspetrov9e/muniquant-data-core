@@ -4,7 +4,15 @@ The source of truth for aluminium plant data on the MuniQuant platform: companie
 
 The Data Core was separated from the MuniQuant Aluminium Trading Platform in DC1 step A. Everything here existed there before; it now has its own code, database and tests. Research, practice trading, Permutable leads, investigations and the map stay in the **Workspace**, which talks to the Core only through this API. The Core has no Workspace code, and a test ([tests/test_boundary.py](tests/test_boundary.py)) fails if any appears.
 
-Status of the separation: [docs/DC1-A-STATUS.md](docs/DC1-A-STATUS.md); same results on real data: [docs/A6-PILOT-COMPARISON.md](docs/A6-PILOT-COMPARISON.md). Dates we store and their limits: [docs/DATES.md](docs/DATES.md). Export contract: [docs/CONTRACT.md](docs/CONTRACT.md).
+Status of the separation: [docs/DC1-A-STATUS.md](docs/DC1-A-STATUS.md); same results on real data: [docs/A6-PILOT-COMPARISON.md](docs/A6-PILOT-COMPARISON.md). Dates we store and their limits: [docs/DATES.md](docs/DATES.md). Export contract and record API: [docs/CONTRACT.md](docs/CONTRACT.md). Operations: [docs/RUNBOOK.md](docs/RUNBOOK.md). Tables: [docs/DATA_DIAGRAM.md](docs/DATA_DIAGRAM.md).
+
+## Used by other programs
+
+The Workspace (leads, research, investigations and the map) runs as its own project with its own database. It reads
+plants, names, documents and facts through `GET /api/records/{type}` (with equality filters) and
+`GET /api/records/{type}/{id}`, and sends candidate facts as extraction requests that the Core checks like any other.
+Give such a program its own entry in `WRITE_IDENTITIES_JSON`, so the history names it. The Core has no code that refers
+to it. See [docs/CONTRACT.md](docs/CONTRACT.md#reading-core-records-through-the-api).
 
 ## Run locally with Python
 
@@ -53,7 +61,7 @@ python -m tools.core_import data/platform.db data/core.db --report data/core-imp
 python -m tools.core_import data/platform.db data/core.db --report data/core-import-report.json
 ```
 
-The source is opened read-only; the target must be new; the report compares counts, IDs and fingerprints of every table. Nothing is dropped: a database whose Core tables hold data in columns the Core does not define (today's platform databases with recorded access decisions, for example) is refused, and the DC1-B split tool separates those.
+The source is opened read-only; the target must be new; the report compares counts, IDs and fingerprints of every table. Nothing is dropped: a database whose Core tables hold data in columns the Core does not define (platform databases with licensed lead feeds, for example) is refused. Those are split by the Workspace's split tool (DC1 step B3), which runs this tool with `--exclude` (rows to leave out) and `--snapshots`/`--target-snapshots` (copy the saved pages of the copied rows).
 
 ## Export, freeze and replay
 
@@ -74,7 +82,7 @@ The same package is served at `GET /api/export` and its schema at `GET /api/expo
 | `python scripts/restore_demo.py` | Restore the bundled fictional demo database ([fixtures/demo](fixtures/demo/README.md)) |
 | `python -m tools.pilot --online --as-of DATE --output DIR` | The real-source pilot: explicit captures of seven official pages |
 | `python -m tools.core_import SOURCE TARGET --report FILE` | Copy the Core tables of an existing database into a new Core database |
-| `python -m tools.compare_pilot --output DIR` | DC1 steps A6 and B4: export and replay the real-source pilot baseline of 2026-10-21 inside the Core and compare field by field ([docs/A6-PILOT-COMPARISON.md](docs/A6-PILOT-COMPARISON.md)) |
+| `python -m tools.compare_pilot --output DIR [--core-database DB]` | DC1 steps A6 and B4: export and replay the real-source pilot baseline of 2026-10-21 inside the Core and compare field by field; `--core-database` compares a Core database made elsewhere, such as the split tool's ([docs/A6-PILOT-COMPARISON.md](docs/A6-PILOT-COMPARISON.md)) |
 | `python -m tools.legacy_bundle freeze\|verify\|restore PATH` | Demo and migration utility for the old 0.1.0-draft package. **Not** the evidence contract |
 | `python scripts/export_v1_schema.py` | Regenerate the v1 schema (must stay byte for byte the same) |
 | `python scripts/benchmark_native.py` | Native name-distance microbenchmark |
@@ -89,7 +97,7 @@ tools/        Seed, pilot, import, pilot comparison and legacy draft tools
 scripts/      Demo restore, schema generation, example consumer, benchmark
 fixtures/     Bundled fictional demo database
 tests/        Core tests, including one test file per DC1-A step
-docs/         Status, dates note and export contract
+docs/         Status, dates note, export contract and record API, runbook, data diagram
 ```
 
 No licence for redistribution of third-party source data is implied by this repository. Raw publisher snapshots are kept in local evidence storage, never in git.
