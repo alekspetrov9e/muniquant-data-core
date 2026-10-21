@@ -1,10 +1,15 @@
-"""Export and replay the real-source pilot inside the Data Core and compare with the pilot's own results.
+"""Export and replay the real-source pilot baseline inside the Data Core and compare with its own results.
 
-DC1 steps A6 and B4. Inputs, all required (README layout of the 10 October 2026 pilot):
-  --database    pilot SQLite database               (data/real-pilot.db)
-  --snapshots   pilot snapshot directory            (data/real-pilot-snapshots)
+DC1 steps A6 and B4. The baseline is a real-source pilot captured on 2026-10-21 by the platform at
+commit 26a0bcd. The files of the 10 October 2026 pilot were lost, and the team approved this fresh
+run as the baseline instead. Its manifest fingerprint and build hash are pinned below; the files
+hold copies of third-party pages, so they stay out of git in data/pilot-baseline-2026-10-21.
+
+Inputs, all required (defaults: the baseline):
+  --database    pilot SQLite database               (real-pilot.db)
+  --snapshots   pilot snapshot directory            (real-pilot-snapshots)
   --export-dir  pilot output directory with pilot-evidence-package.json,
-                pilot-frozen-evidence.zip and pilot-validation.json (data/real-pilot-export)
+                pilot-frozen-evidence.zip and pilot-validation.json (real-pilot-export)
   --manifest    JSON {"files": {"relative/path": "sha256"}}, paths relative to the manifest;
                 it must cover the database, the three output files and every referenced snapshot
 --output must be a new directory. It receives the Core database, the Core export and frozen
@@ -13,8 +18,8 @@ bundle, report.json and report.md. The inputs are only read.
 PASS       the Core export is byte-identical, frozen replay and recipe are equal, matching
            decisions and quality counts are the same.
 DIFFERENT  anything differs. The step stops; the report lists every difference.
-BLOCKED    an input is missing or does not match its manifest fingerprint. The comparison with
-           the old result is then not established.
+BLOCKED    an input is missing, the manifest is not the recorded one, or a file does not match
+           its manifest fingerprint. The comparison with the baseline is then not established.
 """
 import argparse
 import hashlib
@@ -30,7 +35,10 @@ from app.quality import inspect_quality
 from app.services import record
 from tools import core_import
 
-PILOT_BUILD_HASH = '415879f2f8a9c5feae9f966947f9be1765b3dd1bb9d490141d7294296edf59e2'
+BASELINE = Path('data/pilot-baseline-2026-10-21')
+BASELINE_BUILD_HASH = '878944013542732000b9efaa80b714d4aeb8e35abac9fa84506b165ca668695e'
+BASELINE_MANIFEST_SHA256 = '1466d814d3210f1134e2eab1dca89bba77928152928d54735ec6d42a28b4871f'
+BASELINE_WARNINGS = 11
 OUTPUTS = ('pilot-evidence-package.json', 'pilot-frozen-evidence.zip', 'pilot-validation.json')
 SECTIONS = {'records': 'record_id', 'entities': 'external_entity_id', 'relationships': 'relationship_id',
             'sources': 'source_id', 'documents': 'document_id', 'build_manifest': 'build_id'}
@@ -78,6 +86,9 @@ def inputs_status(args):
     if problems: return problems, fingerprints
     manifest_path = Path(args.manifest)
     fingerprints['manifest'] = sha256(manifest_path)
+    expected = getattr(args, 'expected_manifest', None)
+    if expected and fingerprints['manifest'] != expected:
+        return [f"manifest {manifest_path} is not the recorded one (SHA-256 {fingerprints['manifest']}, recorded {expected})"], fingerprints
     try: listed = json.loads(manifest_path.read_text())['files']
     except (ValueError, KeyError, TypeError): return ['manifest is not a {"files": {path: sha256}} document'], fingerprints
     base = manifest_path.parent.resolve()
@@ -209,12 +220,13 @@ def markdown(report):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--database', default='data/real-pilot.db')
-    parser.add_argument('--snapshots', default='data/real-pilot-snapshots')
-    parser.add_argument('--export-dir', default='data/real-pilot-export')
-    parser.add_argument('--manifest', default='data/real-pilot-manifest.json')
-    parser.add_argument('--expected-hash', default=PILOT_BUILD_HASH)
-    parser.add_argument('--expected-warnings', type=int, default=13, help='WARN findings recorded for the pilot')
+    parser.add_argument('--database', default=str(BASELINE / 'real-pilot.db'))
+    parser.add_argument('--snapshots', default=str(BASELINE / 'real-pilot-snapshots'))
+    parser.add_argument('--export-dir', default=str(BASELINE / 'real-pilot-export'))
+    parser.add_argument('--manifest', default=str(BASELINE / 'manifest.json'))
+    parser.add_argument('--expected-manifest', default=BASELINE_MANIFEST_SHA256, help="the manifest's own SHA-256; empty to skip")
+    parser.add_argument('--expected-hash', default=BASELINE_BUILD_HASH)
+    parser.add_argument('--expected-warnings', type=int, default=BASELINE_WARNINGS, help='WARN findings recorded for the pilot')
     parser.add_argument('--output', required=True, type=Path, help='new directory for the Core results and the report')
     args = parser.parse_args()
     if args.output.exists(): parser.error('Output directory already exists; choose a new one')

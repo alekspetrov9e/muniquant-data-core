@@ -1,6 +1,6 @@
 # Pilot-shaped legacy fixture
 
-Synthetic, fictional data in the exact shape of the 10 October 2026 real-source pilot. It lets the tests prove that `tools/compare_pilot.py` (DC1 step A6) works while the real pilot files are unavailable. **It is not the real pilot and never replaces it**: step A6 stays blocked until the real database, snapshots, manifest and frozen bundle are supplied.
+Synthetic, fictional data in the exact shape of the 10 October 2026 real-source pilot. It lets the tests prove that `tools/compare_pilot.py` (DC1 step A6) works on output of the pilot's own code. **It is not real data and never replaces the real-source baseline** that A6 runs against ([docs/A6-PILOT-COMPARISON.md](../../../docs/A6-PILOT-COMPARISON.md)).
 
 ## Provenance
 

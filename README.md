@@ -4,7 +4,7 @@ The source of truth for aluminium plant data on the MuniQuant platform: companie
 
 The Data Core was separated from the MuniQuant Aluminium Trading Platform in DC1 step A. Everything here existed there before; it now has its own code, database and tests. Research, practice trading, Permutable leads, investigations and the map stay in the **Workspace**, which talks to the Core only through this API. The Core has no Workspace code, and a test ([tests/test_boundary.py](tests/test_boundary.py)) fails if any appears.
 
-Status of the separation: [docs/DC1-A-STATUS.md](docs/DC1-A-STATUS.md). Dates we store and their limits: [docs/DATES.md](docs/DATES.md). Export contract: [docs/CONTRACT.md](docs/CONTRACT.md).
+Status of the separation: [docs/DC1-A-STATUS.md](docs/DC1-A-STATUS.md); same results on real data: [docs/A6-PILOT-COMPARISON.md](docs/A6-PILOT-COMPARISON.md). Dates we store and their limits: [docs/DATES.md](docs/DATES.md). Export contract: [docs/CONTRACT.md](docs/CONTRACT.md).
 
 ## Run locally with Python
 
@@ -74,7 +74,7 @@ The same package is served at `GET /api/export` and its schema at `GET /api/expo
 | `python scripts/restore_demo.py` | Restore the bundled fictional demo database ([fixtures/demo](fixtures/demo/README.md)) |
 | `python -m tools.pilot --online --as-of DATE --output DIR` | The real-source pilot: explicit captures of seven official pages |
 | `python -m tools.core_import SOURCE TARGET --report FILE` | Copy the Core tables of an existing database into a new Core database |
-| `python -m tools.compare_pilot --output DIR` | DC1 step A6: export and replay the 10 October pilot inside the Core and compare field by field |
+| `python -m tools.compare_pilot --output DIR` | DC1 steps A6 and B4: export and replay the real-source pilot baseline of 2026-10-21 inside the Core and compare field by field ([docs/A6-PILOT-COMPARISON.md](docs/A6-PILOT-COMPARISON.md)) |
 | `python -m tools.legacy_bundle freeze\|verify\|restore PATH` | Demo and migration utility for the old 0.1.0-draft package. **Not** the evidence contract |
 | `python scripts/export_v1_schema.py` | Regenerate the v1 schema (must stay byte for byte the same) |
 | `python scripts/benchmark_native.py` | Native name-distance microbenchmark |

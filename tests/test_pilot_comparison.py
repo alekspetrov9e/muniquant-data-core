@@ -1,7 +1,7 @@
 """DC1 step A6 tooling: tools/compare_pilot.py proven on the pilot-shaped fixture made by the pilot code.
 
-These tests prove the comparison works. They do not replace the real pilot: A6 itself stays
-blocked until the real 10 October database, snapshots, manifest and frozen bundle are supplied.
+These tests prove the comparison works. They do not replace the real-source baseline that A6
+runs against (docs/A6-PILOT-COMPARISON.md).
 """
 import hashlib
 import json
@@ -61,3 +61,9 @@ def test_a_pilot_database_the_core_cannot_load_is_a_difference(tmp_path):
     report = compare_pilot.compare(inputs(tmp_path, change="UPDATE observations SET reported_value='NaN' WHERE attribute='capacity'"))
     assert report['status'] == 'DIFFERENT'
     assert any('Core import of the pilot database failed' in item for item in report['differences'])
+
+def test_a_manifest_other_than_the_recorded_one_blocks(tmp_path):
+    args = inputs(tmp_path)
+    args.expected_manifest = '0' * 64
+    report = compare_pilot.compare(args)
+    assert report['status'] == 'BLOCKED' and any('not the recorded one' in problem for problem in report['problems'])
