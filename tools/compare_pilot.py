@@ -15,6 +15,10 @@ Inputs, all required (defaults: the baseline):
 --output must be a new directory. It receives the Core database, the Core export and frozen
 bundle, report.json and report.md. The inputs are only read.
 
+--core-database runs the comparison on an existing Core database instead of copying the pilot into
+a new one (DC1 step B4: the Core database the split tool made). It is only read: its rows are
+compared with the pilot's (counts, IDs, fingerprints), then it is exported, frozen and replayed.
+
 PASS       the Core export is byte-identical, frozen replay and recipe are equal, matching
            decisions and quality counts are the same.
 DIFFERENT  anything differs. The step stops; the report lists every difference.
@@ -29,7 +33,6 @@ from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app.contract import export_v1, freeze_v1, replay_v1, validate_package
-from app.db import make_engine
 from app.models import Candidate, Document, Entity, Review, Source
 from app.quality import inspect_quality
 from app.services import record
@@ -140,20 +143,25 @@ def compare(args):
     check('Frozen pilot bundle replays equivalently in the Core', replayed.get('equivalent') and replayed.get('build_hash') == args.expected_hash, json.dumps(replayed))
     reference_recipe, reference_snapshots = recipe(reference_bundle)
     check('Frozen bundle package equals the pilot package', reference_recipe['package'] == reference)
-    # 3. Copy the pilot's Core tables into a new Core database (the pilot database is only read).
+    # 3. Copy the pilot's Core tables into a new Core database (the pilot database is only read),
+    #    or, with --core-database, compare the pilot's rows with a Core database made elsewhere.
     output.mkdir(parents=True)
-    core_db = output / 'core.db'
-    try: imported = core_import.copy(str(args.database), str(core_db))
+    given = getattr(args, 'core_database', None)
+    core_db = given or str(output / 'core.db')
+    name = 'core-database-report.json' if given else 'import-report.json'
+    try: imported = core_import.compare(str(args.database), given) if given else core_import.copy(str(args.database), core_db)
     except Exception as exc:
-        differences.append(f'Core import of the pilot database failed: {exc}')
+        differences.append(f"{'Reading' if given else 'Core import of'} the pilot database failed: {exc}")
         check('Pilot rows copied unchanged into the Core (counts, IDs, fingerprints)', False, str(exc)[:200])
         report.update({'status': 'DIFFERENT', 'checks': checks, 'differences': differences,
                        'conclusion': 'Differences found: the step stops for a joint review.'})
         return report
-    (output / 'import-report.json').write_text(json.dumps(imported, indent=2))
-    check('Pilot rows copied unchanged into the Core (counts, IDs, fingerprints)', imported['status'] == 'PASS', 'see import-report.json')
+    (output / name).write_text(json.dumps(imported, indent=2))
+    report['core_database'] = imported['target']['url']
+    tables_equal = all(entry['equal'] for entry in imported['tables'].values())
+    check('Pilot rows copied unchanged into the Core (counts, IDs, fingerprints)', tables_equal, 'see ' + name)
     check('Pilot database unchanged by the comparison', imported['source']['unchanged'], imported['source']['sha256_after'])
-    engine = make_engine('sqlite:///' + str(core_db.resolve()))
+    engine = core_import.open_source(core_import.location_url(core_db))
     try:
         with Session(engine) as s:
             # 4. Quality: the pilot was WARN with the recorded number of warnings and no BLOCK/ERROR.
@@ -179,8 +187,14 @@ def compare(args):
             # 7. Freeze inside the Core and replay offline; the recipe must equal the pilot's.
             if package is not None:
                 core_bundle = output / 'core-frozen-evidence.zip'
-                freeze_v1(s, args.snapshots, core_bundle)
-                core_replay = replay_v1(core_bundle)
+                try:
+                    freeze_v1(s, args.snapshots, core_bundle)
+                    core_replay = replay_v1(core_bundle)
+                except Exception as exc:
+                    package = None
+                    differences.append(f'Core freeze or replay failed: {exc}')
+                    check('Core frozen bundle replays equivalently', False, str(exc)[:200])
+            if package is not None:
                 core_recipe, core_snapshots = recipe(core_bundle)
                 check('Core frozen bundle replays equivalently', core_replay['equivalent'] and core_replay['build_hash'] == args.expected_hash, json.dumps(core_replay))
                 check('Core frozen recipe equals the pilot recipe', core_recipe['recipe_hash'] == reference_recipe['recipe_hash'], core_recipe['recipe_hash'])
@@ -199,6 +213,9 @@ def compare(args):
                 differences += summary
                 check("Pilot summary numbers match the Core's", not summary, json.dumps({key: derived[key] for key in derived if key != 'replay'}))
     finally: engine.dispose()
+    if given:
+        after = core_import.file_sha256(core_import.location_url(given))
+        check('Core database unchanged by the comparison', after == imported['target']['sha256_after'], str(after))
     status = 'PASS' if all(item['passed'] for item in checks) and not differences else 'DIFFERENT'
     report.update({'status': status, 'checks': checks, 'differences': differences,
                    'conclusion': 'Same result as the pilot.' if status == 'PASS' else 'Differences found: the step stops for a joint review.'})
@@ -207,6 +224,8 @@ def compare(args):
 def markdown(report):
     lines = ['# Pilot comparison inside the Data Core', '', f"Status: **{report['status']}**", '', report['conclusion'], '',
              f"Expected build hash: `{report['expected_build_hash']}`", '']
+    if report.get('core_database'):
+        lines += [f"Core database: `{report['core_database']}`", '']
     if report.get('problems'):
         lines += ['## Problems', ''] + [f'- {problem}' for problem in report['problems']] + ['']
     if report.get('checks'):
@@ -227,6 +246,7 @@ def main():
     parser.add_argument('--expected-manifest', default=BASELINE_MANIFEST_SHA256, help="the manifest's own SHA-256; empty to skip")
     parser.add_argument('--expected-hash', default=BASELINE_BUILD_HASH)
     parser.add_argument('--expected-warnings', type=int, default=BASELINE_WARNINGS, help='WARN findings recorded for the pilot')
+    parser.add_argument('--core-database', help='existing Core database to compare instead of copying the pilot (B4); only read')
     parser.add_argument('--output', required=True, type=Path, help='new directory for the Core results and the report')
     args = parser.parse_args()
     if args.output.exists(): parser.error('Output directory already exists; choose a new one')

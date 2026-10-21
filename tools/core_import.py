@@ -9,10 +9,19 @@ of source and target. --dry-run checks the source and writes only the report.
 Only the 26 Core tables are read, and only the columns the Core defines. Nothing is dropped: a
 column the Core does not define is accepted only while it carries no information, that is, every
 value is empty or equals the column's own declared default. A source holding anything else there is
-refused, and the DC1-B split tool separates databases like that. Snapshot files are not copied:
+refused.
+
+--exclude FILE leaves out exact rows: a JSON object mapping Core table names to primary keys (a string,
+or a list of strings for a composite key). Every listed row must exist, and the copy must stay
+consistent without it. The DC1-B split tool uses this to keep material that belongs elsewhere out of
+the Core. The report counts the rows left out per table.
+
+--snapshots DIR --target-snapshots NEW_DIR copies the saved page copies of the copied documents and
+snapshots into a new directory, each verified against its SHA-256. Without them no files are copied:
 point SNAPSHOT_DIR at the source's evidence directory (or a copy of it) when using the target.
 
-    python -m tools.core_import SOURCE TARGET --report REPORT.json [--dry-run]
+    python -m tools.core_import SOURCE TARGET --report REPORT.json [--dry-run] [--exclude FILE]
+                                [--snapshots DIR --target-snapshots NEW_DIR]
 
 SOURCE and TARGET are SQLAlchemy URLs or SQLite file paths.
 """
@@ -21,6 +30,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
@@ -84,36 +94,45 @@ def fingerprint(rows):
 def identity(table, row):
     return tuple(str(row[column.name]) for column in table.primary_key.columns)
 
-def read_core(connection, check_columns=True):
+def read_core(connection, check_columns=True, excluded=None):
     """Read every Core row through the Core column types, filling columns added after the pilot.
 
-    Returns the rows, the defaults applied and the source columns that are not part of the Core."""
+    Rows whose key is in excluded[table] are left out. Returns the rows, the defaults applied, the
+    source columns that are not part of the Core and the number of rows left out per table."""
     present_tables = set(inspect(connection).get_table_names())
     missing = [table.name for table in TABLES if table.name not in present_tables]
     if missing: raise ValueError('Not a MuniQuant database with the Data Core tables; missing: ' + ', '.join(missing))
-    data, defaults, extra = {}, {}, {}
+    excluded = excluded or {}
+    data, defaults, extra, left_out = {}, {}, {}, {}
     for table in TABLES:
+        skip = excluded.get(table.name, set())
         columns = {info['name']: info for info in inspect(connection).get_columns(table.name)}
         present = set(columns)
         absent = [name for name in table.c.keys() if name not in present]
         unsupported = [name for name in absent if (table.name, name) not in LATER_COLUMNS]
         if check_columns and unsupported: raise ValueError(f'Unsupported source schema: {table.name} lacks ' + ', '.join(unsupported))
-        rows = []
+        rows, found = [], set()
         for row in connection.execute(select(*[table.c[name] for name in table.c.keys() if name in present])):
             values = dict(row._mapping)
+            if identity(table, values) in skip:
+                found.add(identity(table, values)); continue
             for name in absent:
                 values[name] = LATER_COLUMNS[(table.name, name)]
                 defaults[f'{table.name}.{name}'] = LATER_COLUMNS[(table.name, name)]
             rows.append(values)
         # Key order in Python, not SQL collation, so SQLite and PostgreSQL compare identically.
+        if skip - found: raise ValueError(f'{table.name}: rows to leave out are not in the source: ' + ', '.join('/'.join(key) for key in sorted(skip - found)[:5]))
+        if skip: left_out[table.name] = len(skip)
         data[table.name] = sorted(rows, key=lambda row: identity(table, row))
-        # Columns the Core does not define, with the number of rows whose value would be lost:
-        # neither empty nor the column's own declared default.
+        # Columns the Core does not define, with the number of copied rows whose value would be
+        # lost: neither empty nor the column's own declared default.
+        keys = [column(c.name) for c in table.primary_key.columns]
         for name in sorted(present - set(table.c.keys())):
             default = literal_default(columns[name])
-            values = connection.execute(select(column(name)).select_from(table_clause(table.name))).scalars()
-            extra[f'{table.name}.{name}'] = sum(value is not None and (default is None or str(value) != default) for value in values)
-    return data, defaults, extra
+            values = connection.execute(select(*keys, column(name)).select_from(table_clause(table.name)))
+            extra[f'{table.name}.{name}'] = sum(row[-1] is not None and (default is None or str(row[-1]) != default)
+                                                for row in values if tuple(str(key) for key in row[:-1]) not in skip)
+    return data, defaults, extra, left_out
 
 def preflight(data, extra):
     """Reject unsafe source data, or data the Core cannot hold, before any target is created."""
@@ -146,6 +165,15 @@ def preflight(data, extra):
     for row in data['documents']:
         check(re.fullmatch('[a-f0-9]{64}', row['content_hash'] or '') is not None, f"document {row['id']}: malformed content hash")
         check(not row['published_at'] or iso(row['published_at']) is not None, f"document {row['id']}: invalid publication date")
+    # Every reference must point to a copied row; this matters when rows are left out.
+    for table in TABLES:
+        for key in table.foreign_key_constraints:
+            parent, columns = key.referred_table, [c.name for c in key.columns]
+            present = {tuple(str(row[e.column.name]) for e in key.elements) for row in data[parent.name]}
+            for row in data[table.name]:
+                value = tuple(row[name] for name in columns)
+                if None not in value and tuple(map(str, value)) not in present:
+                    problems.append(f"{table.name} {'/'.join(identity(table, row))} refers to {parent.name} {'/'.join(map(str, value))}, which is not copied")
     if problems: raise ValueError('Correct the source data before import: ' + '; '.join(problems[:20]))
 
 def migrate(url):
@@ -173,36 +201,81 @@ def require_new_target(url):
         if inspector.get_table_names() or inspector.get_view_names(): raise ValueError('Target PostgreSQL database must be empty')
     finally: engine.dispose()
 
-def copy(source, target, dry_run=False):
+def exclusions(spec):
+    """Validate {table: [key, ...]} and return {table: {key tuple}}."""
+    names = {table.name: table for table in TABLES}
+    if not isinstance(spec, dict): raise ValueError('Rows to leave out must be a JSON object of table names')
+    result = {}
+    for name, keys in spec.items():
+        table = names.get(name)
+        if table is None or name in REFERENCE_TABLES: raise ValueError('Cannot leave out rows of ' + str(name))
+        width = len(table.primary_key.columns)
+        result[name] = set()
+        for key in keys if isinstance(keys, list) else [None]:
+            key = [key] if isinstance(key, str) else key
+            if not isinstance(key, list) or len(key) != width or not all(isinstance(part, str) for part in key):
+                raise ValueError(f'{name}: each key must be {width} string(s)')
+            result[name].add(tuple(key))
+    return result
+
+def snapshot_hashes(data):
+    return sorted({row['content_hash'] for row in data['source_snapshot']} | {row['content_hash'] for row in data['documents']})
+
+def check_snapshots(directory, hashes):
+    """Return the hashes whose file is missing or does not match its SHA-256."""
+    problems = []
+    for digest in hashes:
+        path = Path(directory) / digest
+        if not path.is_file(): problems.append(digest + ': missing')
+        elif hashlib.sha256(path.read_bytes()).hexdigest() != digest: problems.append(digest + ': content does not match')
+    return problems
+
+def copy_snapshots(directory, target, hashes):
+    target = Path(target)
+    target.mkdir(parents=True)
+    for digest in hashes:
+        shutil.copy2(Path(directory) / digest, target / digest)
+    return check_snapshots(target, hashes)
+
+def copy(source, target, dry_run=False, exclude=None, snapshots=None, target_snapshots=None):
     """Copy Core rows from source to a new target; return the comparison report."""
     source_url, target_url = location_url(source), location_url(target)
     if source_url.render_as_string(hide_password=False) == target_url.render_as_string(hide_password=False):
         raise ValueError('Source and target must differ')
+    if (snapshots is None) != (target_snapshots is None): raise ValueError('Give both the snapshot directory and the new target directory')
+    if target_snapshots is not None and Path(target_snapshots).exists(): raise ValueError('Target snapshot directory must be new')
+    excluded = exclusions(exclude or {})
     before = file_sha256(source_url)
     engine = open_source(source_url)
     try:
         source_revision = revision(engine)
-        with engine.connect() as connection: data, defaults, extra = read_core(connection)
+        with engine.connect() as connection: data, defaults, extra, left_out = read_core(connection, excluded=excluded)
     finally: engine.dispose()
     preflight(data, extra)
     report = {'tool': 'tools.core_import', 'mode': 'dry-run' if dry_run else 'copy',
               'source': {'url': source_url.render_as_string(hide_password=True), 'revision': source_revision, 'sha256_before': before},
               'target': {'url': target_url.render_as_string(hide_password=True)},
-              'defaults_applied': defaults, 'source_columns_not_in_core': extra, 'tables': {}}
+              'defaults_applied': defaults, 'source_columns_not_in_core': extra, 'rows_left_out': left_out, 'tables': {}}
     for table in TABLES:
         rows = data[table.name]
         report['tables'][table.name] = {'source_rows': len(rows), 'source_fingerprint': fingerprint(rows)}
+    hashes = snapshot_hashes(data)
+    if snapshots is not None:
+        problems = check_snapshots(snapshots, hashes)
+        report['snapshots'] = {'source': str(snapshots), 'files': len(hashes), 'problems': problems}
+        if problems: raise ValueError('Saved page copies are missing or damaged: ' + '; '.join(problems[:5]))
     if dry_run:
         report['status'] = 'DRY_RUN_OK'
     else:
         require_new_target(target_url)
         created = target_url.drivername.startswith('sqlite')
+        snapshots_created = False
         try:
             report['target']['revision'] = migrate(target_url)
             target_engine = make_engine(target_url.render_as_string(hide_password=False))
             try:
                 with target_engine.begin() as connection:
-                    existing, _, _ = read_core(connection, check_columns=False)
+                    existing, _, _, _ = read_core(connection, check_columns=False)
                     for table in TABLES:
                         rows = data[table.name]
                         if table.name in REFERENCE_TABLES:
@@ -213,7 +286,7 @@ def copy(source, target, dry_run=False):
                             report['tables'][table.name]['seeded_by_baseline'] = len(seeded)
                         elif existing[table.name]: raise ValueError('Target is not empty: ' + table.name)
                         if rows: connection.execute(table.insert(), rows)
-                with target_engine.connect() as connection: copied, _, _ = read_core(connection)
+                with target_engine.connect() as connection: copied, _, _, _ = read_core(connection)
             finally: target_engine.dispose()
             for table in TABLES:
                 expected, actual = data[table.name], copied[table.name]
@@ -228,13 +301,49 @@ def copy(source, target, dry_run=False):
                 entry.update({'target_rows': len(copied[table.name]), 'ids_equal': equal,
                               'target_fingerprint': fingerprint(actual)})
                 entry['equal'] = equal and entry['target_fingerprint'] == entry['source_fingerprint']
+            if snapshots is not None:
+                snapshots_created = True
+                report['snapshots'].update({'target': str(target_snapshots), 'target_problems': copy_snapshots(snapshots, target_snapshots, hashes)})
         except Exception:
             if created: Path(target_url.database).unlink(missing_ok=True)
+            if snapshots_created: shutil.rmtree(target_snapshots, ignore_errors=True)
             raise
-        report['status'] = 'PASS' if all(entry['equal'] for entry in report['tables'].values()) else 'FAIL'
+        report['status'] = 'PASS' if all(entry['equal'] for entry in report['tables'].values()) and not report.get('snapshots', {}).get('target_problems') else 'FAIL'
     after = file_sha256(source_url)
     report['source'].update({'sha256_after': after, 'unchanged': before == after})
     if not report['source']['unchanged']: report['status'] = 'FAIL'
+    return report
+
+def compare(source, target):
+    """Compare the Core rows of a source database with an existing Core database; both are only read.
+
+    Used to check a Core database another tool made (DC1-B4): same counts, IDs and fingerprints."""
+    source_url, target_url = location_url(source), location_url(target)
+    before = {'source': file_sha256(source_url), 'target': file_sha256(target_url)}
+    tables = {}
+    for name, url in (('source', source_url), ('target', target_url)):
+        engine = open_source(url)
+        try:
+            with engine.connect() as connection: tables[name], _, extra, _ = read_core(connection, check_columns=name == 'target')
+        finally: engine.dispose()
+    report = {'tool': 'tools.core_import compare', 'source': {'url': source_url.render_as_string(hide_password=True)},
+              'target': {'url': target_url.render_as_string(hide_password=True)}, 'tables': {}}
+    for table in TABLES:
+        expected, actual = tables['source'][table.name], tables['target'][table.name]
+        if table.name in REFERENCE_TABLES:
+            present = {row['code']: row for row in actual}
+            equal = all(present.get(row['code']) == row for row in expected)
+            actual = [present[row['code']] for row in expected if row['code'] in present]
+        else:
+            equal = [identity(table, row) for row in expected] == [identity(table, row) for row in actual]
+        entry = {'source_rows': len(expected), 'target_rows': len(tables['target'][table.name]), 'ids_equal': equal,
+                 'source_fingerprint': fingerprint(expected), 'target_fingerprint': fingerprint(actual)}
+        entry['equal'] = equal and entry['source_fingerprint'] == entry['target_fingerprint']
+        report['tables'][table.name] = entry
+    for name, url in (('source', source_url), ('target', target_url)):
+        after = file_sha256(url)
+        report[name].update({'sha256_before': before[name], 'sha256_after': after, 'unchanged': before[name] == after})
+    report['status'] = 'PASS' if all(entry['equal'] for entry in report['tables'].values()) and report['source']['unchanged'] and report['target']['unchanged'] else 'FAIL'
     return report
 
 def main():
@@ -242,9 +351,13 @@ def main():
     parser.add_argument('source'); parser.add_argument('target')
     parser.add_argument('--report', required=True, type=Path, help='new JSON report path')
     parser.add_argument('--dry-run', action='store_true', help='check the source and write the report only')
+    parser.add_argument('--exclude', type=Path, help='JSON file of rows to leave out: {"table": ["key", ...]}')
+    parser.add_argument('--snapshots', type=Path, help="the source's snapshot directory")
+    parser.add_argument('--target-snapshots', type=Path, help='new directory for the copied snapshot files')
     args = parser.parse_args()
     if args.report.exists(): parser.error('Report path already exists; choose a new one')
-    report = copy(args.source, args.target, args.dry_run)
+    exclude = json.loads(args.exclude.read_text()) if args.exclude else None
+    report = copy(args.source, args.target, args.dry_run, exclude, args.snapshots, args.target_snapshots)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     with args.report.open('x') as stream: json.dump(report, stream, indent=2)
     print(json.dumps({'status': report['status'], 'report': str(args.report)}))
