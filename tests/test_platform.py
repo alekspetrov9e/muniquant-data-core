@@ -96,7 +96,8 @@ def test_upstream_boundary(client, example):
     assert not any('trading' in path or 'market' in path for path in paths)
     assert 'market' not in client.get('/api/workspace').json()
     assert 'market_observations' not in client.get('/api/export').json()
-    assert client.get('/api/export/draft').json()['market_observations'] == []
+    # The old draft package is a tool (tools/legacy_bundle.py), not a second runtime export.
+    assert client.get('/api/export/draft').status_code == 404
     html = client.get('/').text
     assert '#trading' not in html and '#market' not in html
     assert client.get('/static/trading.js').status_code == 404
@@ -119,17 +120,16 @@ def test_static_ui_and_no_inline_scripts(client):
     assert client.get('/static/app.js').status_code==200
 
 def test_frozen_bundle_restore(client,example,tmp_path):
-    from app.bundle import freeze,restore,load_verified
+    from tools.legacy_bundle import freeze,restore,load_verified,export_package
     from app.db import make_engine
     from app.models import Base
-    from app.services import export_package
     e,_,d,_=example
     client.post('/api/observations',json=observation(e,d))
     target=tmp_path/'frozen.zip'
     with Session(client.app.state.engine) as s:
         original=export_package(s,client.app.state.storage)
         freeze(s,client.app.state.storage,target)
-    assert load_verified(target)[0]==original
+    assert load_verified(target)[0]==original and original['market_observations']==[]
     engine=make_engine('sqlite:///'+str(tmp_path/'restored.db'))
     Base.metadata.create_all(engine)
     with Session(engine) as s:

@@ -1,0 +1,16 @@
+{
+  "dataset": "Real-source pilot baseline captured 2026-10-21 by the platform at commit 26a0bcd (replaces the lost 10 October 2026 pilot files)",
+  "files": {
+    "real-pilot.db": "289b68472f4c22f95e5471bd0568107b3b0446843f419c814e1ade218fbbbdb0",
+    "real-pilot-snapshots/28551d86135f2f23187ca4b54419d0b0c458e40a6b99e98926d436fd88497a5f": "28551d86135f2f23187ca4b54419d0b0c458e40a6b99e98926d436fd88497a5f",
+    "real-pilot-snapshots/2f4fc3de1044e2a99155c0543460c71e544006e1ecd2e822ebf9d51dc7a5532e": "2f4fc3de1044e2a99155c0543460c71e544006e1ecd2e822ebf9d51dc7a5532e",
+    "real-pilot-snapshots/7d73160edda47bca8a65654af524240645c9f81ba71188a31d5e5ad11567f495": "7d73160edda47bca8a65654af524240645c9f81ba71188a31d5e5ad11567f495",
+    "real-pilot-snapshots/af61213c7b3838264161b417b42f1feef7ad7e7c6ad346991233eed3b0e85390": "af61213c7b3838264161b417b42f1feef7ad7e7c6ad346991233eed3b0e85390",
+    "real-pilot-snapshots/be04acbf2309aae77f08d2f059bbdb2831a921848fb306c0d7ea17cdad955ece": "be04acbf2309aae77f08d2f059bbdb2831a921848fb306c0d7ea17cdad955ece",
+    "real-pilot-snapshots/c7e555adf7da61469060c165dede9cece2ca77aece43e4e1cccd3342be88d849": "c7e555adf7da61469060c165dede9cece2ca77aece43e4e1cccd3342be88d849",
+    "real-pilot-snapshots/f9f9eb04f43e379656f44ce77575b735c326543475844a9155af0e53fa786ae9": "f9f9eb04f43e379656f44ce77575b735c326543475844a9155af0e53fa786ae9",
+    "real-pilot-export/pilot-evidence-package.json": "abfc10ff7e5756c1fd2bbb462436d4335966a40d47c9223e6396726c1feabd32",
+    "real-pilot-export/pilot-frozen-evidence.zip": "25dc5f00118d69c91f7e9fa3fd7b31acecb0826751a958b88e681354ee1cf241",
+    "real-pilot-export/pilot-validation.json": "145f7d0478f000cd55519b4202b3e7cf8cd7034600225c409bd71069d2be76e4"
+  }
+}

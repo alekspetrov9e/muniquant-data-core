@@ -11,13 +11,13 @@ from uuid import uuid5,NAMESPACE_URL
 from urllib.parse import urlsplit
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from .db import make_engine,DATABASE_URL
-from .models import Entity,Source,SourceAccess,EntityEvidence,Document,Relationship,CompanyFacilityRelationship,Audit
-from .domain import sync_entity
-from .acquisition import acquire_remote
-from .pipeline import extract,PlainHTML
-from .schemas import RetrievalIn,ExtractionIn
-from .contract import export_v1,freeze_v1,replay_v1
+from app.db import make_engine,DATABASE_URL
+from app.models import Entity,Source,SourceAccess,EntityEvidence,Document,Relationship,CompanyFacilityRelationship,Audit
+from app.domain import sync_entity
+from app.acquisition import acquire_remote
+from app.pipeline import extract,PlainHTML
+from app.schemas import RetrievalIn,ExtractionIn
+from app.contract import export_v1,freeze_v1,replay_v1
 from decimal import Decimal
 
 ACTOR='authorized-pilot-curator'

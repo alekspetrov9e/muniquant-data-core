@@ -1,0 +1,15 @@
+{
+  "dataset": "Synthetic pilot-shaped fixture made by the 10 October 2026 pilot code (commit c6d0411, revision fcf5b3d9e812)",
+  "synthetic": true,
+  "files": {
+    "database.sql": "44fdf78b6f1cc11db6d6daf57ca1c7b6809a835a862015e77ea6f2a35087bdc0",
+    "real-pilot-snapshots/18ae6ed358f32caff1637874b92df569e559c73e15970e538e48ba77ad0c308a": "18ae6ed358f32caff1637874b92df569e559c73e15970e538e48ba77ad0c308a",
+    "real-pilot-snapshots/25cfb138a1b164c8ce6e4e0aaaa669d83c2566c11f747592e3b676a062b1ff27": "25cfb138a1b164c8ce6e4e0aaaa669d83c2566c11f747592e3b676a062b1ff27",
+    "real-pilot-snapshots/48badb380aa4ba007433298887f6e956d5dd8b3293922ccaa4ca2fa9dc574165": "48badb380aa4ba007433298887f6e956d5dd8b3293922ccaa4ca2fa9dc574165",
+    "real-pilot-snapshots/868123cfcafa57f8bb7297c1f6c3bc2845e2321ef523daec273197455f1841d2": "868123cfcafa57f8bb7297c1f6c3bc2845e2321ef523daec273197455f1841d2",
+    "real-pilot-snapshots/a342868ffefabf74e89c2a51ee3c344da564cae8f1344d161d6a9946c0fadff3": "a342868ffefabf74e89c2a51ee3c344da564cae8f1344d161d6a9946c0fadff3",
+    "real-pilot-export/pilot-evidence-package.json": "4665e62b67d062e46a1f750565b9ef4e73a71bcd525474a4b59008fb32f70538",
+    "real-pilot-export/pilot-frozen-evidence.zip": "9afdaea71563ec55b7dfcd922b1540859275dca58c0953452ada6ee3d6afb4f1",
+    "real-pilot-export/pilot-validation.json": "32226da2e6b29329b8eb51c17b67ec45e0a7185dbf3a63a223e02cfb06e049e0"
+  }
+}

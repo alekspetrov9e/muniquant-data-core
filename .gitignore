@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.env
+data/
+*.db
+*.db-*
+
+# Private planning and vendor documents (confidential sections)
+*.pdf
+docs/private/

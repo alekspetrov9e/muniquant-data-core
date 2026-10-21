@@ -40,10 +40,10 @@ def licensed_credentials():
     """Server-side binding of credential variable names to the only hosts allowed to receive them.
 
     Without this binding a writer could name any server secret (WRITE_TOKEN, DATABASE_URL...) as a
-    credential and send it to a host they approve. Override with LICENSED_CREDENTIALS_JSON."""
+    credential and send it to a host they approve. Configure with LICENSED_CREDENTIALS_JSON; none by default."""
     import json
     raw=os.getenv('LICENSED_CREDENTIALS_JSON')
-    bindings=json.loads(raw) if raw else {'PERMUTABLE_API_KEY':['copilot-api.permutable.ai']}
+    bindings=json.loads(raw) if raw else {}
     if not isinstance(bindings,dict) or any(not isinstance(h,list) or not all(isinstance(x,str) for x in h) for h in bindings.values()):
         raise ValueError('LICENSED_CREDENTIALS_JSON must map credential names to host lists')
     return {name:{h.lower() for h in hosts} for name,hosts in bindings.items()}

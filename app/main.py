@@ -8,16 +8,15 @@ import hashlib
 import time
 from pathlib import Path
 from fastapi import FastAPI, Request, Depends, HTTPException, Query
-from fastapi.responses import FileResponse, JSONResponse, Response, RedirectResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from jsonschema import validate
 from .db import make_engine, DATABASE_URL
-from .models import Entity, Source, Document, Observation, MarketObservation, Relationship, Review, Run, Audit, now
+from .models import Entity, Source, Document, Observation, Relationship, Review, Run, Audit, now
 from .schemas import EntityIn, SourceIn, DocumentIn, ObservationIn, RelationshipIn, ResolveIn, DecisionIn, CsvIn
-from .services import record, acquire, add_observation, resolve, export_package
+from .services import record, acquire, add_observation, resolve
 
 logging.basicConfig(level=logging.INFO)
 logger=logging.getLogger('muniquant')
@@ -59,7 +58,7 @@ def create_app(database_url=None, storage=None, write_token=None):
     @app.middleware('http')
     async def request_log(request, call_next):
         start=time.monotonic()
-        if app.state.require_read_auth and (request.method=='GET' or request.url.path in ('/api/chat','/api/chat/stream')) and request.url.path.startswith('/api/') and request.url.path!='/api/health':
+        if app.state.require_read_auth and request.method=='GET' and request.url.path.startswith('/api/') and request.url.path!='/api/health':
             token=request.headers.get('authorization','').removeprefix('Bearer ')
             allowed=[app.state.write_token,app.state.read_token,*json.loads(os.getenv('WRITE_IDENTITIES_JSON') or '{}')]
             if not token or not any(credential and secrets.compare_digest(token,credential) for credential in allowed):
@@ -73,9 +72,9 @@ def create_app(database_url=None, storage=None, write_token=None):
             request._body=bytes(body)
         response=await call_next(request)
         response.headers['X-Content-Type-Options']='nosniff'
-        response.headers.setdefault('Referrer-Policy','same-origin')
+        response.headers['Referrer-Policy']='same-origin'
         if request.url.path in ('/','/static/app.js','/static/style.css'):
-            response.headers['Content-Security-Policy']="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-src 'self' https://www.tradingview-widget.com; object-src 'none'; frame-ancestors 'none'; base-uri 'self'"
+            response.headers['Content-Security-Policy']="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'"
         logger.info(json.dumps({'method':request.method,'path':request.url.path,'status':response.status_code,'duration_ms':round((time.monotonic()-start)*1000)}))
         return response
 
@@ -90,96 +89,6 @@ def create_app(database_url=None, storage=None, write_token=None):
     async def busy(request, exc):
         if 'locked' not in str(exc.orig).lower(): raise exc
         return JSONResponse({'detail':'The database is busy with another write; retry in a moment'},status_code=503)
-
-    from .investigations import Investigation, InvestigationRevision, CaseIn, RevisionIn, CaseConflict
-    from . import investigations
-
-    @app.exception_handler(CaseConflict)
-    async def case_conflict(request,exc):
-        return JSONResponse({'detail':str(exc)},status_code=409)
-
-    @app.get('/api/investigations')
-    def cases(status:str|None=Query(None,pattern='^(investigating|confirmed|disproven|resolved|inconclusive)$'),
-              offset:int=Query(0,ge=0),limit:int=Query(100,ge=1,le=100),s:Session=Depends(session)):
-        query=select(Investigation)
-        if status: query=query.where(Investigation.status==status)
-        return [record(c) for c in s.scalars(query.order_by(Investigation.updated_at.desc(),Investigation.id).offset(offset).limit(limit))]
-
-    @app.post('/api/investigations',status_code=201)
-    def create_case(data:CaseIn,s:Session=Depends(session),actor=Depends(writer)):
-        c=investigations.create(s,data,actor);audit(s,actor,'investigation_created',c);s.commit();return record(c)
-
-    @app.get('/api/investigations/{identifier}')
-    def case_detail(identifier:str,s:Session=Depends(session)):
-        c=get(s,Investigation,identifier)
-        return {'case':record(c),'revisions':[record(r) for r in s.scalars(select(InvestigationRevision)
-            .where(InvestigationRevision.case_id==identifier).order_by(InvestigationRevision.version))]}
-
-    @app.get('/api/investigations/{identifier}/notebook')
-    def case_notebook(identifier:str,s:Session=Depends(session)):
-        get(s,Investigation,identifier)
-        from .investigations import InvestigationEntry, InvestigationTask, InvestigationTaskEvidence
-        entries=[record(e) for e in s.scalars(select(InvestigationEntry).where(InvestigationEntry.case_id==identifier)
-            .order_by(InvestigationEntry.recorded_at,InvestigationEntry.id))]
-        tasks=[record(t) for t in s.scalars(select(InvestigationTask).where(InvestigationTask.case_id==identifier)
-            .order_by(InvestigationTask.created_at,InvestigationTask.id))]
-        for task in tasks:
-            task['evidence_entry_ids']=list(s.scalars(select(InvestigationTaskEvidence.entry_id)
-                .where(InvestigationTaskEvidence.task_id==task['id']).order_by(InvestigationTaskEvidence.entry_id)))
-        return {'entries':entries,'tasks':tasks}
-
-    @app.post('/api/investigations/{identifier}/revisions',status_code=201)
-    def revise_case(identifier:str,data:RevisionIn,s:Session=Depends(session),actor=Depends(writer)):
-        c=investigations.revise(s,get(s,Investigation,identifier),data,actor)
-        audit(s,actor,'investigation_revised',c);s.commit();return record(c)
-
-    from .asset_map import LocationIn, DependencyIn, AssetLocation, AssetDependency
-    from . import asset_map
-    from datetime import date
-
-    @app.get('/api/asset-map')
-    def asset_graph(product:str|None=Query(None,pattern='^(bauxite|alumina|primary_aluminium|electricity|other)$'),as_of:date|None=None,s:Session=Depends(session)):
-        return asset_map.graph(s,product,as_of)
-
-    @app.post('/api/asset-map/locations',status_code=201)
-    def asset_location(data:LocationIn,s:Session=Depends(session),actor=Depends(writer)):
-        values=data.model_dump();asset_map.validate_references(s,values)
-        obj=AssetLocation(**values,actor=actor);s.add(obj);audit(s,actor,'asset_location',obj);s.commit();return record(obj)
-
-    @app.post('/api/asset-map/dependencies',status_code=201)
-    def asset_dependency(data:DependencyIn,s:Session=Depends(session),actor=Depends(writer)):
-        values=data.model_dump(mode='json');asset_map.validate_references(s,values)
-        obj=AssetDependency(**values,actor=actor);s.add(obj);audit(s,actor,'asset_dependency',obj);s.commit();return record(obj)
-
-    @app.get('/asset-map-view')
-    def map_view():
-        response=FileResponse(STATIC/'asset-map-view.html')
-        response.headers['Content-Security-Policy']="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"
-        return response
-
-    from . import chatbot
-
-    @app.get('/api/chat/status')
-    def chat_status():
-        return {'ai_available':chatbot.ai_enabled(), 'default_mode':'local'}
-
-    @app.post('/api/chat')
-    def chat(data:chatbot.ChatIn,request:Request,s:Session=Depends(session)):
-        if data.use_ai:
-            writer(request)  # Paid provider access requires an attributable workspace identity.
-            if not chatbot.ai_enabled():
-                raise HTTPException(503,'AI summaries are not configured; use local mode')
-        return chatbot.answer(s,data)
-
-    @app.post('/api/chat/stream')
-    def chat_stream(data:chatbot.ChatIn,request:Request,s:Session=Depends(session)):
-        if data.use_ai:
-            writer(request)
-            if not chatbot.ai_enabled():
-                raise HTTPException(503,'AI summaries are not configured; use local mode')
-        scope, sources = chatbot.retrieve(s,data)
-        return StreamingResponse(chatbot.stream_answer(data,scope,sources), media_type='text/event-stream',
-            headers={'Cache-Control':'no-store','X-Accel-Buffering':'no'})
 
     @app.get('/api/health')
     def health(s:Session=Depends(session)):
@@ -205,8 +114,8 @@ def create_app(database_url=None, storage=None, write_token=None):
     @app.get('/api/records/{record_type}')
     def records(record_type:str,offset:int=Query(0,ge=0),limit:int=Query(100,ge=1,le=1000),s:Session=Depends(session)):
         from sqlalchemy import func
-        from .models import Candidate,EvidenceBuild,RetrievalAttempt,SourceAccess,Lead,LeadRevision,LeadHeadline
-        models={'entities':Entity,'sources':Source,'documents':Document,'observations':Observation,'relationships':Relationship,'reviews':Review,'runs':Run,'audit':Audit,'candidates':Candidate,'builds':EvidenceBuild,'retrieval_attempts':RetrievalAttempt,'source_access':SourceAccess,'leads':Lead,'lead_revisions':LeadRevision,'lead_headlines':LeadHeadline}
+        from .models import Candidate,EvidenceBuild,RetrievalAttempt,SourceAccess
+        models={'entities':Entity,'sources':Source,'documents':Document,'observations':Observation,'relationships':Relationship,'reviews':Review,'runs':Run,'audit':Audit,'candidates':Candidate,'builds':EvidenceBuild,'retrieval_attempts':RetrievalAttempt,'source_access':SourceAccess}
         model=models.get(record_type)
         if model is None: raise HTTPException(404,'Unknown record type')
         return {'records':[record(o) for o in s.scalars(select(model).order_by(model.id).offset(offset).limit(limit))],'total':s.scalar(select(func.count()).select_from(model)),'offset':offset,'limit':limit}
@@ -246,8 +155,7 @@ def create_app(database_url=None, storage=None, write_token=None):
     def relationship(data:RelationshipIn,s:Session=Depends(session),actor=Depends(writer)):
         if get(s,Entity,data.company_id).kind!='company' or get(s,Entity,data.facility_id).kind!='facility':
             raise ValueError('Relationship requires a company and a facility')
-        from .services import require_citable
-        require_citable(s,get(s,Document,data.document_id))
+        get(s,Document,data.document_id)
         obj=Relationship(**data.model_dump(mode='json',exclude={'evidence_reference'})); s.add(obj); s.flush()
         from .models import CompanyFacilityRelationship
         from decimal import Decimal
@@ -304,12 +212,6 @@ def create_app(database_url=None, storage=None, write_token=None):
         candidates=s.scalars(select(Candidate).where(Candidate.build_id==build.id)).all()
         return {'inserted':0 if duplicate else sum(c.observation_id is not None for c in candidates),'ids':[c.observation_id for c in candidates if c.observation_id],'duplicate':duplicate,'build_id':build.id,'pending_review':sum(c.status!='resolved' for c in candidates)}
 
-    @app.get('/api/export/draft')
-    def export(s:Session=Depends(session)):
-        package=export_package(s,app.state.storage)
-        validate(package,json.loads((Path(__file__).parent/'package.schema.json').read_text()))
-        return JSONResponse(package,headers={'Content-Disposition':'attachment; filename="commodity-evidence-package.json"'})
-
 
     from .schemas import SourceAccessIn,RetrievalIn,ExtractionIn,AliasIn,SupersessionIn
     from .models import SourceAccess,Country,FacilityType,Commodity,Candidate,EvidenceBuild
@@ -322,8 +224,7 @@ def create_app(database_url=None, storage=None, write_token=None):
     from .models import EntityEvidence
     @app.post('/api/entities/{identifier}/evidence',status_code=201)
     def identity_evidence(identifier:str,data:EntityEvidenceIn,s:Session=Depends(session),actor=Depends(writer)):
-        from .services import require_citable
-        get(s,Entity,identifier);require_citable(s,get(s,Document,data.document_id))
+        get(s,Entity,identifier);get(s,Document,data.document_id)
         key=(identifier,data.document_id)
         if s.get(EntityEvidence,key): raise HTTPException(409,'Identity evidence already registered')
         obj=EntityEvidence(entity_id=identifier,**data.model_dump(),reviewer=actor);s.add(obj)
@@ -345,8 +246,7 @@ def create_app(database_url=None, storage=None, write_token=None):
         source=get(s,Source,identifier)
         values=data.model_dump()
         previous=s.scalar(select(SourceAccess).where(SourceAccess.source_id==identifier).order_by(SourceAccess.decided_at.desc(),SourceAccess.id.desc()))
-        # A re-review that omits usage or credential fields keeps them; dropping them needs an explicit value.
-        if previous and 'usage_scope' not in data.model_fields_set: values['usage_scope']=previous.usage_scope
+        # A re-review that omits the credential fields keeps them; dropping them needs an explicit value.
         if previous and 'credential_ref' not in data.model_fields_set and 'auth_header' not in data.model_fields_set:
             values['credential_ref'],values['auth_header']=previous.credential_ref,previous.auth_header
         from .acquisition import check_credential_binding
@@ -384,104 +284,6 @@ def create_app(database_url=None, storage=None, write_token=None):
     @app.get('/api/export/schema')
     def contract_schema():
         return FileResponse(Path(__file__).parent/'evidence-v1.schema.json',media_type='application/schema+json')
-
-    # Licensed Permutable feed: lead-only, factual events/headlines, never exported as evidence.
-    from .schemas import PermutableSourceIn,PermutableCaptureIn,LeadDecisionIn
-    from . import permutable
-
-    @app.post('/api/permutable/source',status_code=201)
-    def permutable_source(data:PermutableSourceIn,s:Session=Depends(session),actor=Depends(writer)):
-        source,policy=permutable.register_source(s,actor,data)
-        return {'source':record(source),'access':record(policy)}
-
-    @app.post('/api/permutable/capture')
-    def permutable_capture(data:PermutableCaptureIn,s:Session=Depends(session),actor=Depends(writer)):
-        result=permutable.capture(s,app.state.storage,actor,data)
-        if data.feed in ('events','event_headlines'):
-            try:
-                result['research_bridge']=research.import_leads(s,actor,result['document_ids'],live=data.mode=='live')
-            except (ValueError,LookupError) as exc:
-                s.rollback()
-                result['research_bridge']={'status':'blocked','reason':str(exc)}
-        return result
-
-    @app.post('/api/permutable/documents/{identifier}/replay')
-    def permutable_replay(identifier:str,s:Session=Depends(session),actor=Depends(writer)):
-        return permutable.replay_document(s,app.state.storage,identifier)
-
-    @app.get('/api/leads')
-    def leads(status:str|None=Query(None,pattern='^(new|follow_up|dismissed|confirmed)$'),topic:str|None=Query(None,max_length=200),matched:bool|None=None,search:str|None=Query(None,max_length=500),
-              offset:int=Query(0,ge=0),limit:int=Query(100,ge=1,le=500),s:Session=Depends(session)):
-        return {**permutable.list_leads(s,status,offset,limit,topic,matched,search),'source_id':permutable.SOURCE_ID}
-
-    @app.post('/api/leads/{identifier}/decision')
-    def lead_decision(identifier:str,data:LeadDecisionIn,s:Session=Depends(session),actor=Depends(writer)):
-        try: return record(permutable.decide(s,identifier,data,actor))
-        except LookupError: raise HTTPException(404,'Lead not found')
-        except permutable.LeadConflict as exc: raise HTTPException(409,str(exc))
-
-    from . import research
-    from .research_schemas import EventIn, QuoteIn, OutcomeIn, PolicyIn
-    from .research_models import ResearchEvent, PaperAccount, PaperPolicy
-
-    @app.exception_handler(research.Conflict)
-    async def research_conflict(request, exc):
-        return JSONResponse({'detail': str(exc)}, status_code=409)
-
-    @app.get('/api/research')
-    def research_workspace(s:Session=Depends(session)):
-        return research.dashboard(s)
-
-    @app.get('/api/research/influence')
-    def event_influence(as_of:str|None=Query(None,max_length=40),s:Session=Depends(session)):
-        from .event_influence import report
-        return report(s,as_of)
-
-    @app.get('/api/research/performance')
-    def paper_performance(s:Session=Depends(session)):
-        from .paper_performance import performance
-        return performance(s)
-
-    @app.post('/api/research/policy')
-    def paper_policy(data:PolicyIn,s:Session=Depends(session),actor=Depends(writer)):
-        return research.configure(s,data,actor)
-
-    @app.post('/api/research/events',status_code=201)
-    def research_event(data:EventIn,s:Session=Depends(session),actor=Depends(writer)):
-        try: return research.ingest_event(s,data,actor)
-        except LookupError as exc: raise HTTPException(404,str(exc))
-
-    @app.post('/api/research/quotes',status_code=201)
-    def research_quote(data:QuoteIn,s:Session=Depends(session),actor=Depends(writer)):
-        return research.ingest_quote(s,data,actor)
-
-    @app.post('/api/research/outcomes',status_code=201)
-    def research_outcome(data:OutcomeIn,s:Session=Depends(session),actor=Depends(writer)):
-        try: return research.label_outcome(s,data,actor)
-        except LookupError as exc: raise HTTPException(404,str(exc))
-
-    @app.get('/api/research/events/{identifier}/analogues')
-    def event_analogues(identifier:str,s:Session=Depends(session)):
-        event=get(s,ResearchEvent,identifier)
-        account=s.get(PaperAccount,'paper')
-        policy=PolicyIn(**get(s,PaperPolicy,account.policy_id).settings) if account else PolicyIn()
-        return research.analogues(s,event,policy)
-
-    @app.post('/api/research/import-leads')
-    def research_import(s:Session=Depends(session),actor=Depends(writer)):
-        return research.import_leads(s,actor)
-
-    @app.get('/market-chart',include_in_schema=False)
-    def market_chart(symbol:str=Query('NYSE:AA',min_length=1,max_length=80,pattern=r'^[A-Z0-9_:./-]+$'),
-                     interval:str=Query('D',pattern=r'^(15|60|D|W)$'),
-                     theme:str=Query('light',pattern=r'^(light|dark)$')):
-        from urllib.parse import quote
-        config={'autosize':True,'width':'100%','height':'100%','symbol':symbol,'interval':interval,
-                'timezone':'Etc/UTC','theme':theme,'style':'1','locale':'en','allow_symbol_change':False,
-                'hide_side_toolbar':False,'calendar':False,'support_host':'https://www.tradingview.com',
-                'utm_source':'muniquant','utm_medium':'widget_new','utm_campaign':'advanced-chart'}
-        url='https://www.tradingview-widget.com/embed-widget/advanced-chart/?locale=en#'+quote(json.dumps(config))
-        return RedirectResponse(url,status_code=307,headers={'Referrer-Policy':'no-referrer','Cache-Control':'no-store'})
 
     app.mount('/static',StaticFiles(directory=STATIC),name='static')
     @app.get('/',include_in_schema=False)
