@@ -3,7 +3,7 @@ import unicodedata
 from sqlalchemy import select
 from .models import Country, Commodity, FacilityType, Region, Company, Facility, EntityAlias, EntitySupersession, Entity
 
-COUNTRIES = dict(AU='Australia', NO='Norway', IS='Iceland', CA='Canada', US='United States', BR='Brazil', QA='Qatar', SK='Slovakia', DE='Germany', FR='France', IN='India', CN='China', RU='Russia', AE='United Arab Emirates', BH='Bahrain', NZ='New Zealand', GB='United Kingdom', ZA='South Africa', JM='Jamaica', GN='Guinea', IE='Ireland', ES='Spain', GR='Greece', MZ='Mozambique', ID='Indonesia', MY='Malaysia', OM='Oman', SA='Saudi Arabia')
+COUNTRIES = dict(AU='Australia', NO='Norway', IS='Iceland', CA='Canada', US='United States', BR='Brazil', QA='Qatar', SK='Slovakia', DE='Germany', FR='France', IN='India', CN='China', RU='Russia', AE='United Arab Emirates', BH='Bahrain', NZ='New Zealand', GB='United Kingdom', ZA='South Africa', JM='Jamaica', GN='Guinea', IE='Ireland', ES='Spain', GR='Greece', MZ='Mozambique', ID='Indonesia', MY='Malaysia', OM='Oman', SA='Saudi Arabia', AT='Austria', JP='Japan')
 TYPES = {'smelter':'Primary aluminium smelter', 'refinery':'Alumina refinery', 'bauxite_mine':'Bauxite mine'}
 PRODUCTS = {'aluminium':'Aluminium', 'alumina':'Alumina', 'bauxite':'Bauxite'}
 

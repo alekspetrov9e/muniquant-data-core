@@ -31,8 +31,8 @@ def test_dry_run_reports_without_creating_the_target(client, example, tmp_path):
 def test_copy_keeps_every_row_and_verifies_it(client, example, new_database):
     report = core_import.copy(source_url(client), new_database('copy'))
     assert report['status'] == 'PASS' and report['target']['revision']
-    assert all(entry['equal'] for entry in report['tables'].values()) and len(report['tables']) == 26
-    assert report['tables']['country']['seeded_by_baseline'] == 28
+    assert all(entry['equal'] for entry in report['tables'].values()) and len(report['tables']) == 29
+    assert report['tables']['country']['seeded_by_baseline'] == 30
 
 def test_refuses_targets_that_are_not_new(client, example, new_database, tmp_path):
     target = new_database('used')
@@ -61,8 +61,10 @@ def test_pilot_era_database_is_copied_unchanged(tmp_path):
     database = restore_pilot_shaped(tmp_path)
     report = core_import.copy(str(database), str(tmp_path / 'core.db'))
     assert report['status'] == 'PASS' and report['source']['revision'] == 'fcf5b3d9e812'
-    assert report['defaults_applied'] == {'source_access.credential_ref': None, 'source_access.auth_header': None}
+    assert report['defaults_applied'] == {'source_access.credential_ref': None, 'source_access.auth_header': None, 'source_access.export_allowed': True,
+                                          **{name: 'table not in the source: no rows' for name in core_import.LATER_TABLES}}
     assert report['source']['sha256_before'] == report['source']['sha256_after']
+    assert all(report['tables'][name]['target_rows'] == 0 for name in core_import.LATER_TABLES)
 
 def test_command_line_writes_a_report_and_refuses_overwrites(tmp_path):
     database = restore_pilot_shaped(tmp_path)

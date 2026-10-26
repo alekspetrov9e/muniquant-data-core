@@ -93,7 +93,11 @@ def test_export_determinism_and_corruption_detection(client,example):
 def test_upstream_boundary(client, example):
     assert client.post('/api/market', json={}).status_code == 404
     paths = client.get('/openapi.json').json()['paths']
-    assert not any('trading' in path or 'market' in path for path in paths)
+    assert not any('trading' in path for path in paths)
+    # Market data (approved 2026-10-26) is recorded, checked and exported, never traded or scored.
+    assert sorted(path for path in paths if 'market' in path) == ['/api/documents/{identifier}/market-import', '/api/market/builds/{identifier}/replay',
+                                                               '/api/market/export', '/api/market/export/schema', '/api/market/instruments', '/api/market/quality',
+                                                               '/api/market/summary']
     assert 'market' not in client.get('/api/workspace').json()
     assert 'market_observations' not in client.get('/api/export').json()
     # The old draft package is a tool (tools/legacy_bundle.py), not a second runtime export.

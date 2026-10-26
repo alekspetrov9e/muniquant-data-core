@@ -69,6 +69,12 @@ def redact(message,headers):
         if secret: message=message.replace(secret,'[redacted]')
     return message
 
+def user_agent():
+    """The declared client; CAPTURE_CONTACT adds the operator's contact, as some publishers (e.g. SEC EDGAR) require."""
+    contact=os.getenv('CAPTURE_CONTACT','').strip()
+    if contact and (len(contact)>120 or any(not 32<=ord(c)<=126 or c in '()' for c in contact)): raise ValueError('CAPTURE_CONTACT must be one short printable line')
+    return 'MuniQuantEvidence/1.0 (bounded industrial research capture'+('; contact: '+contact if contact else '')+')'
+
 def fetch_once(url, allowed_hosts, headers=None):
     for hop in range(4):
         host,address,parts=public_target(url,allowed_hosts)
@@ -76,7 +82,7 @@ def fetch_once(url, allowed_hosts, headers=None):
         try:
             path=parts.path or '/'
             if parts.query: path+='?'+parts.query
-            connection.request('GET',path,headers={'User-Agent':'MuniQuantEvidence/1.0 (bounded industrial research capture)', 'Accept-Encoding':'identity', **(headers or {})})
+            connection.request('GET',path,headers={'User-Agent':user_agent(), 'Accept-Encoding':'identity', **(headers or {})})
             response=connection.getresponse()
             status=response.status
             if status in (301,302,303,307,308):

@@ -1,0 +1,628 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/alekspetrov9e/muniquant-data-core/blob/main/app/market-v1.schema.json",
+  "title": "MarketDataPackage 1.0.0",
+  "description": "Source-traceable aluminium market observations from the Data Core. Each instrument, price type and field is separate and in the source's own currency and unit; no derived values or signals.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "build_hash",
+    "build_manifest",
+    "documents",
+    "instruments",
+    "observations",
+    "package_version",
+    "pipeline_version",
+    "selection",
+    "sources",
+    "withheld"
+  ],
+  "properties": {
+    "package_version": {
+      "const": "1.0.0"
+    },
+    "pipeline_version": {
+      "const": "1.0.0"
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "instruments",
+        "to"
+      ],
+      "properties": {
+        "instruments": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "from": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "to": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        }
+      }
+    },
+    "instruments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "commodity",
+          "contract_code",
+          "contract_month",
+          "currency",
+          "description",
+          "exchange",
+          "grade",
+          "market",
+          "name",
+          "quantity_unit",
+          "region",
+          "tenor",
+          "unit"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{1,63}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "exchange": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "market": {
+            "enum": [
+              "forward",
+              "futures",
+              "physical"
+            ]
+          },
+          "commodity": {
+            "type": "string"
+          },
+          "grade": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "region": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tenor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "contract_code": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "contract_month": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "unit": {
+            "enum": [
+              "USD/t",
+              "USc/lb",
+              "USD/lb",
+              "CNY/t",
+              "EUR/t",
+              "JPY/t"
+            ]
+          },
+          "quantity_unit": {
+            "enum": [
+              "lots",
+              "contracts",
+              "t",
+              null
+            ]
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ask",
+          "bid",
+          "build_id",
+          "close",
+          "commodity",
+          "content_hash",
+          "contract_code",
+          "contract_month",
+          "currency",
+          "data_status",
+          "document_id",
+          "effective_at",
+          "effective_date",
+          "evidence_reference",
+          "exchange",
+          "grade",
+          "high",
+          "instrument_code",
+          "instrument_name",
+          "low",
+          "market",
+          "observation_id",
+          "open",
+          "open_interest",
+          "package_version",
+          "parser_version",
+          "pipeline_version",
+          "price_type",
+          "prompt_date",
+          "published_at",
+          "publisher",
+          "quality_codes",
+          "quality_status",
+          "quantity_unit",
+          "region",
+          "retrieved_at",
+          "settlement",
+          "source_id",
+          "source_series",
+          "synthetic",
+          "tenor",
+          "unit",
+          "volume"
+        ],
+        "properties": {
+          "observation_id": {
+            "type": "string"
+          },
+          "instrument_code": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{1,63}$"
+          },
+          "instrument_name": {
+            "type": "string"
+          },
+          "exchange": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "market": {
+            "enum": [
+              "forward",
+              "futures",
+              "physical"
+            ]
+          },
+          "commodity": {
+            "type": "string"
+          },
+          "grade": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "region": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tenor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "contract_code": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "contract_month": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "prompt_date": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "price_type": {
+            "enum": [
+              "official",
+              "closing",
+              "settlement",
+              "daily",
+              "assessment",
+              "intraday"
+            ]
+          },
+          "bid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]*[1-9])?$"
+          },
+          "ask": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]*[1-9])?$"
+          },
+          "open": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]*[1-9])?$"
+          },
+          "high": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]*[1-9])?$"
+          },
+          "low": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]*[1-9])?$"
+          },
+          "close": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]*[1-9])?$"
+          },
+          "settlement": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]*[1-9])?$"
+          },
+          "volume": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]*[1-9])?$"
+          },
+          "open_interest": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]*[1-9])?$"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "unit": {
+            "enum": [
+              "USD/t",
+              "USc/lb",
+              "USD/lb",
+              "CNY/t",
+              "EUR/t",
+              "JPY/t"
+            ]
+          },
+          "quantity_unit": {
+            "enum": [
+              "lots",
+              "contracts",
+              "t",
+              null
+            ]
+          },
+          "effective_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "effective_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          },
+          "data_status": {
+            "enum": [
+              "reported",
+              "provisional",
+              "final",
+              "carried_forward",
+              "corrected"
+            ]
+          },
+          "source_id": {
+            "type": "string"
+          },
+          "publisher": {
+            "type": "string"
+          },
+          "source_series": {
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "bid",
+                "ask",
+                "open",
+                "high",
+                "low",
+                "close",
+                "settlement",
+                "volume",
+                "open_interest"
+              ]
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "document_id": {
+            "type": "string"
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "evidence_reference": {
+            "type": "string",
+            "minLength": 1
+          },
+          "build_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "quality_status": {
+            "enum": [
+              "PASS",
+              "WARN"
+            ]
+          },
+          "quality_codes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "synthetic": {
+            "type": "boolean"
+          },
+          "parser_version": {
+            "type": "string"
+          },
+          "pipeline_version": {
+            "const": "1.0.0"
+          },
+          "package_version": {
+            "const": "1.0.0"
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "access_notes",
+          "name",
+          "publisher",
+          "source_id",
+          "source_type",
+          "url"
+        ],
+        "properties": {
+          "source_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "publisher": {
+            "type": "string"
+          },
+          "source_type": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "access_notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "content_hash",
+          "document_id",
+          "media_type",
+          "original_url",
+          "published_at",
+          "retrieved_at",
+          "source_id",
+          "title",
+          "version"
+        ],
+        "properties": {
+          "document_id": {
+            "type": "string"
+          },
+          "source_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "original_url": {
+            "type": "string"
+          },
+          "media_type": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "retrieved_at": {
+            "type": "string"
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "build_manifest": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "build_id",
+          "content_hash",
+          "document_id",
+          "output_hash",
+          "parser_version",
+          "pipeline_version"
+        ],
+        "properties": {
+          "build_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "document_id": {
+            "type": "string"
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "parser_version": {
+            "type": "string"
+          },
+          "pipeline_version": {
+            "type": "string"
+          },
+          "output_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "withheld": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "observations",
+          "publisher",
+          "source_id"
+        ],
+        "properties": {
+          "source_id": {
+            "type": "string"
+          },
+          "publisher": {
+            "type": "string"
+          },
+          "observations": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "build_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

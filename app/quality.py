@@ -8,6 +8,15 @@ from sqlalchemy import select
 from .models import Entity, Source, Document, Observation, ObservationDetail, Candidate, SourceAccess, DocumentVersion, SourceSnapshot, EntityEvidence, CompanyFacilityRelationship, Relationship
 from .services import normalize_value
 
+def snapshot_problem(storage,doc):
+    """(code, message) when a document's saved bytes are missing or differ from its hash, else None."""
+    if not re.fullmatch(r'[a-f0-9]{64}',doc.content_hash): return 'INVALID_CONTENT_HASH','Malformed content hash'
+    path=Path(storage)/doc.content_hash
+    if not path.is_file(): return 'MISSING_SNAPSHOT','Raw snapshot is missing'
+    if path.stat().st_size>10_000_000 or hashlib.sha256(path.read_bytes()).hexdigest()!=doc.content_hash:
+        return 'CORRUPT_SNAPSHOT','Raw snapshot does not match its content hash'
+    return None
+
 def inspect_quality(s,storage):
     findings=[]
     def add(code,severity,kind,identifier,message):
@@ -34,16 +43,21 @@ def inspect_quality(s,storage):
             if doc.published_at and date.fromisoformat(doc.published_at)>date.fromisoformat(doc.retrieved_at[:10]):
                 add('PUBLICATION_AFTER_RETRIEVAL','BLOCK','document',doc.id,'Publication is after retrieval date')
         except ValueError: add('INVALID_DOCUMENT_DATE','BLOCK','document',doc.id,'Invalid source date')
-        if not re.fullmatch(r'[a-f0-9]{64}',doc.content_hash):
-            add('INVALID_CONTENT_HASH','BLOCK','document',doc.id,'Malformed content hash')
-            continue
-        path=Path(storage)/doc.content_hash
-        if not path.is_file(): add('MISSING_SNAPSHOT','BLOCK','document',doc.id,'Raw snapshot is missing')
-        elif path.stat().st_size>10_000_000 or hashlib.sha256(path.read_bytes()).hexdigest()!=doc.content_hash:
-            add('CORRUPT_SNAPSHOT','BLOCK','document',doc.id,'Raw snapshot does not match its content hash')
+        problem=snapshot_problem(storage,doc)
+        if problem: add(problem[0],'BLOCK','document',doc.id,problem[1])
+        if problem and problem[0]=='INVALID_CONTENT_HASH': continue
         if not s.get(DocumentVersion,doc.id) or not s.get(SourceSnapshot,doc.content_hash):
             add('MISSING_VERSION_METADATA','BLOCK','document',doc.id,'Version/snapshot registry linkage is absent')
         if counts[doc.content_hash]>1: add('DUPLICATE_CONTENT','INFO','document',doc.id,'Identical bytes occur under distinct provenance')
+    internal=set()
+    for source in sources.values():
+        policy=s.scalar(select(SourceAccess).where(SourceAccess.source_id==source.id).order_by(SourceAccess.decided_at.desc(),SourceAccess.id.desc()))
+        if policy and not policy.export_allowed: internal.add(source.id)
+    cited=[(kind,identifier,document_id) for kind,model,key in (('observation',Observation,'id'),('relationship',Relationship,'id')) for identifier,document_id in s.execute(select(getattr(model,key),model.document_id))]
+    cited+=[('entity',entity_id,document_id) for entity_id,document_id in s.execute(select(EntityEvidence.entity_id,EntityEvidence.document_id))]
+    for kind,identifier,document_id in cited:
+        if document_id in documents and documents[document_id].source_id in internal:
+            add('EXPORT_NOT_ALLOWED','BLOCK',kind,identifier,'Cites a source whose data must stay inside the Core')
     seen=set()
     historical={}
     for obs in s.scalars(select(Observation).order_by(Observation.id)):

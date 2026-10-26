@@ -31,11 +31,16 @@ def normalize_value(value, unit, attribute='capacity'):
 def normalize_capacity(value,unit):
     return float(normalize_value(value,unit)[0])
 
+def exact_text(value):
+    """An exact decimal as plain text without trailing zeros, so SQLite and PostgreSQL read back the same."""
+    text=format(value,'f')
+    return text.rstrip('0').rstrip('.') if '.' in text else text
+
 def record(obj):
     from datetime import date,datetime
     def encode(value):
         if isinstance(value,(date,datetime)): return value.isoformat()
-        if isinstance(value,Decimal): return format(value,'f')
+        if isinstance(value,Decimal): return exact_text(value)
         return value
     return {c.name: encode(getattr(obj,c.name)) for c in obj.__table__.columns}
 

@@ -6,7 +6,9 @@ tables. The tool creates the Core schema there with the Core migrations, copies 
 unchanged (same IDs, values, dates and hashes) and compares counts, IDs and per-table fingerprints
 of source and target. --dry-run checks the source and writes only the report.
 
-Only the 26 Core tables are read, and only the columns the Core defines. Nothing is dropped: a
+Only the Core tables are read, and only the columns the Core defines: the 26 tables of the platform,
+and the market data tables added after DC1, which platform databases do not have (they start empty).
+Nothing is dropped: a
 column the Core does not define is accepted only while it carries no information, that is, every
 value is empty or equals the column's own declared default. A source holding anything else there is
 refused.
@@ -47,7 +49,10 @@ ROOT = Path(__file__).resolve().parents[1]
 TABLES = [table for table in Base.metadata.sorted_tables]
 REFERENCE_TABLES = ('country', 'commodity', 'facility_type')
 # Core columns added after the first pilot run, with the value their migration gave existing rows.
-LATER_COLUMNS = {('source_access', 'credential_ref'): None, ('source_access', 'auth_header'): None}
+LATER_COLUMNS = {('source_access', 'credential_ref'): None, ('source_access', 'auth_header'): None,
+                 ('source_access', 'export_allowed'): True}
+# Core tables added after DC1; a database without them has none of their rows.
+LATER_TABLES = {'market_instrument', 'market_build', 'market_observation'}
 STATUSES = ('operating', 'closed', 'suspended', 'planned', 'construction')
 # A column default the tool can compare with: a quoted string (optionally cast) or a plain number.
 LITERAL_DEFAULT = re.compile(r"^'((?:[^']|'')*)'(?:::[\w ]+)?$|^(-?\d+(?:\.\d+)?)$")
@@ -100,12 +105,16 @@ def read_core(connection, check_columns=True, excluded=None):
     Rows whose key is in excluded[table] are left out. Returns the rows, the defaults applied, the
     source columns that are not part of the Core and the number of rows left out per table."""
     present_tables = set(inspect(connection).get_table_names())
-    missing = [table.name for table in TABLES if table.name not in present_tables]
+    missing = [table.name for table in TABLES if table.name not in present_tables and table.name not in LATER_TABLES]
     if missing: raise ValueError('Not a MuniQuant database with the Data Core tables; missing: ' + ', '.join(missing))
     excluded = excluded or {}
     data, defaults, extra, left_out = {}, {}, {}, {}
     for table in TABLES:
         skip = excluded.get(table.name, set())
+        if table.name not in present_tables:
+            if skip: raise ValueError(f'{table.name}: rows to leave out are not in the source')
+            data[table.name], defaults[table.name] = [], 'table not in the source: no rows'
+            continue
         columns = {info['name']: info for info in inspect(connection).get_columns(table.name)}
         present = set(columns)
         absent = [name for name in table.c.keys() if name not in present]
