@@ -29,6 +29,23 @@ def client(tmp_path,monkeypatch):
         admin.dispose()
 
 @pytest.fixture
+def new_database(tmp_path):
+    """Make new, empty databases: SQLite files, or fresh PostgreSQL schemas under TEST_DATABASE_URL."""
+    schemas=[]
+    admin=create_engine(os.environ['TEST_DATABASE_URL']) if os.getenv('TEST_DATABASE_URL') else None
+    def make(name):
+        if not admin: return 'sqlite:///'+str(tmp_path/(name+'.db'))
+        schema='test_'+uuid4().hex
+        with admin.begin() as connection: connection.execute(text('CREATE SCHEMA '+schema))
+        schemas.append(schema)
+        return make_url(os.environ['TEST_DATABASE_URL']).update_query_dict({'options':'-csearch_path='+schema}).render_as_string(hide_password=False)
+    yield make
+    if admin:
+        with admin.begin() as connection:
+            for schema in schemas: connection.execute(text('DROP SCHEMA '+schema+' CASCADE'))
+        admin.dispose()
+
+@pytest.fixture
 def example(client):
     def post(path,data):
         r=client.post('/api/'+path,json=data)

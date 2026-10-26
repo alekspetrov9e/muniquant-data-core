@@ -1,14 +1,9 @@
-import hashlib
-import json
 import unicodedata
 import math
 from decimal import Decimal, InvalidOperation
-from pathlib import Path
 from sqlalchemy import select, func
 import muniquant_core
-from .models import Entity, Source, Document, Observation, Review, Run, MarketObservation, Relationship, Audit
-
-PIPELINE_VERSION = '0.1.0'
+from .models import Entity, Source, Document, Observation, Review, Run, Relationship, Audit
 
 def normalize_value(value, unit, attribute='capacity'):
     from decimal import localcontext
@@ -72,25 +67,11 @@ def acquire(session,storage,data):
     session.add(Run(status='duplicate' if duplicate else 'success',pipeline_version='1.0.0',manifest={'content_hash':obj.content_hash,'document_id':obj.id,'adapter':'text-upload-v1'}))
     return obj,duplicate
 
-def lead_only_source(session, source_id):
-    """True when the latest audited access decision limits a source to curator leads."""
-    from .models import SourceAccess
-    policy=session.scalar(select(SourceAccess).where(SourceAccess.source_id==source_id).order_by(SourceAccess.decided_at.desc(),SourceAccess.id.desc()))
-    return bool(policy and policy.usage_scope=='leads_only')
-
-def lead_only(session, document):
-    return lead_only_source(session, document.source_id)
-
-def require_citable(session, document):
-    if lead_only(session, document):
-        raise ValueError('Lead-only sources (licensed event feeds) cannot be cited as evidence; capture and cite the primary source')
-
 def add_observation(session, data):
     entity = session.get(Entity, data.entity_id)
     doc = session.get(Document, data.document_id)
     if not entity or entity.kind != 'facility': raise ValueError('Unknown facility')
     if not doc: raise ValueError('Unknown evidence document')
-    require_citable(session, doc)
     messages=[]
     normalized=None; unit=None
     if data.attribute != 'status':
@@ -110,23 +91,3 @@ def add_observation(session, data):
     session.add(ObservationDetail(observation_id=obs.id,normalized_value=exact if data.attribute!='status' else None,normalized_unit=unit,valid_from=data.valid_from,valid_to=data.valid_to))
     session.flush()
     return obs
-
-def export_package(session, storage):
-    # Lead-only documents (licensed event feeds) are curator work items, never package evidence.
-    lead_sources = {src.id for src in session.scalars(select(Source)) if lead_only_source(session,src.id)}
-    docs = {d.id:record(d) for d in session.scalars(select(Document)).all() if d.source_id not in lead_sources}
-    for doc in docs.values():
-        path=Path(storage)/doc['content_hash']
-        if not path.exists() or hashlib.sha256(path.read_bytes()).hexdigest()!=doc['content_hash']:
-            raise ValueError('Evidence snapshot missing or corrupted: '+doc['id'])
-        doc['evidence_url']='/api/documents/'+doc['id']+'/content'
-    package={'package_version':'0.1.0-draft','pipeline_version':PIPELINE_VERSION,
-             'entities': [record(e) for e in session.scalars(select(Entity).order_by(Entity.id))],
-             'sources': [record(s) for s in session.scalars(select(Source).order_by(Source.id)) if s.id not in lead_sources],
-             'documents':sorted(docs.values(),key=lambda d:d['id']),
-             'observations': [dict(record(o),resolution_status='resolved') for o in session.scalars(select(Observation).order_by(Observation.id))],
-             'relationships':[record(r) for r in session.scalars(select(Relationship).order_by(Relationship.id))],
-             'market_observations':[]}
-    logical=json.dumps(package, sort_keys=True,separators=(',',':'),allow_nan=False).encode()
-    package['build_hash']=hashlib.sha256(logical).hexdigest()
-    return package

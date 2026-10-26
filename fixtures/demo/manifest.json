@@ -1,0 +1,8 @@
+{
+  "dataset": "Fictional industrial demonstration only",
+  "synthetic": true,
+  "files": {
+    "database.sql": "977743c14b14d6a8719f8a47d1e9d95e7cfefed2cf5927137835e5ab559bb533",
+    "snapshots/77b15557eff1ff60f15f2e34cd3a1b66a7494a6cc4a61b0464aeb66aa3e26624": "77b15557eff1ff60f15f2e34cd3a1b66a7494a6cc4a61b0464aeb66aa3e26624"
+  }
+}

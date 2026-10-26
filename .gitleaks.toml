@@ -1,0 +1,8 @@
+# Secret scan for the Data Core (DC1 step A7): every default gitleaks rule, one narrow exception.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Run manifests record the access decision's ID, a UUID, not a credential"
+regexTarget = "match"
+regexes = ['''access_decision_id": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"''']

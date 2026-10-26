@@ -1,0 +1,4 @@
+facility_name,country,reported_value,reported_unit,valid_from,valid_to,attribute,evidence_reference
+East Ridge Refinery,AU,1.4,Mt/year,2025-01-01,,capacity,synthetic test fixture register row East Ridge Refinery
+Ridge Operations,AU,9.5,Mt/year,2025-01-01,,capacity,synthetic test fixture register row Ridge Operations
+Unknown Lagoon Works,NZ,300,kt/year,2025-01-01,,capacity,synthetic test fixture register row Unknown Lagoon Works

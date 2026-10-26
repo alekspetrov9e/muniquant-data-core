@@ -81,19 +81,28 @@ def test_concurrent_import_has_one_build_and_observation(client,example):
     workspace=client.get('/api/workspace').json()
     assert len(workspace['builds'])==1 and len(workspace['observations'])==1
 
-def test_legacy_data_migration_preserves_source_and_exact_reported_fact(client,example):
+def test_legacy_data_import_preserves_source_and_exact_reported_fact(client,example,new_database,monkeypatch):
+    # The Core has no legacy migration chain: existing databases enter through tools/core_import.py.
     from alembic import command
     from alembic.config import Config
+    from app.main import create_app
+    from tools.core_import import copy
     entity,_,doc,_=example
     obs=client.post('/api/observations',json={'entity_id':entity['id'],'document_id':doc['id'],'reported_value':'12345678901234567890123.123456','reported_unit':'t/year','valid_from':'2025-01-01','evidence_reference':'synthetic exact precision fixture'}).json()
-    command.downgrade(Config('alembic.ini'),'5fa787f9511c')
-    command.upgrade(Config('alembic.ini'),'head')
+    target=new_database('imported')
+    assert copy(client.app.state.engine.url.render_as_string(hide_password=False),target)['status']=='PASS'
+    monkeypatch.setenv('DATABASE_URL',target)
     command.check(Config('alembic.ini'))
-    package=client.get('/api/export').json()
-    assert package['records'][0]['record_id']==obs['id']
-    assert package['records'][0]['normalized_value']=='12345678901234567890123.123456'
-    assert package['records'][0]['content_hash']==doc['content_hash']
-    assert client.post('/api/resolve',json={'name':'TEST WORKS','country':'NO'}).json()['entity_id']==entity['id']
+    imported=create_app(target,client.app.state.storage,write_token='test-token')
+    with TestClient(imported) as other:
+        other.headers['Authorization']='Bearer test-token'
+        package=other.get('/api/export').json()
+        assert package['records'][0]['record_id']==obs['id']
+        assert package['records'][0]['normalized_value']=='12345678901234567890123.123456'
+        assert package['records'][0]['content_hash']==doc['content_hash']
+        assert package==client.get('/api/export').json()
+        assert other.post('/api/resolve',json={'name':'TEST WORKS','country':'NO'}).json()['entity_id']==entity['id']
+    imported.state.engine.dispose()
 
 def test_separate_read_only_authorization(client):
     client.app.state.require_read_auth=True
@@ -126,22 +135,27 @@ def test_status_csv_frozen_replay_and_bad_status_rejection(client,example,tmp_pa
     doc=client.post('/api/documents',json={**payload,'media_type':'text/csv','content':csv.replace('closed,status','invented,status')}).json()
     assert client.post('/api/import/csv',json={'document_id':doc['id']}).status_code==422
 
-def test_unsafe_legacy_migration_fails_before_ddl(client,example):
-    from alembic import command
-    from alembic.config import Config
-    from sqlalchemy import inspect
+def test_unsafe_legacy_data_fails_before_an_import_target_exists(client,example,new_database):
+    from sqlalchemy import create_engine,inspect
+    from sqlalchemy.engine import make_url
     import pytest
+    from tools.core_import import copy
     entity,_,doc,_=example
     obs=client.post('/api/observations',json={'entity_id':entity['id'],'document_id':doc['id'],'reported_value':'400','reported_unit':'kt/year','valid_from':'2025-01-01','evidence_reference':'synthetic migration fixture'}).json()
-    command.downgrade(Config('alembic.ini'),'5fa787f9511c')
+    source=client.app.state.engine.url.render_as_string(hide_password=False)
     with client.app.state.engine.begin() as connection:
         connection.execute(text("UPDATE observations SET reported_value='NaN' WHERE id=:id"),{'id':obs['id']})
-    with pytest.raises(ValueError,match='legacy exact numeric'):
-        command.upgrade(Config('alembic.ini'),'head')
-    assert 'commodity' not in inspect(client.app.state.engine).get_table_names()
+    target=new_database('rejected')
+    with pytest.raises(ValueError,match='unsafe exact numeric'):
+        copy(source,target)
+    if target.startswith('sqlite'): assert not Path(make_url(target).database).exists()
+    else:
+        engine=create_engine(target)
+        assert not inspect(engine).get_table_names()
+        engine.dispose()
     with client.app.state.engine.begin() as connection:
         connection.execute(text("UPDATE observations SET reported_value='400' WHERE id=:id"),{'id':obs['id']})
-    command.upgrade(Config('alembic.ini'),'head')
+    assert copy(source,target)['status']=='PASS'
     assert client.get('/api/export').status_code==200
 
 def test_contract_rejects_inconsistent_identity_metadata(client,example):
