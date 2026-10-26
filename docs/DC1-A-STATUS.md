@@ -47,7 +47,7 @@ Each follows the specification as closely as possible.
 
 - Hand a private copy of the pilot baseline and the Core's frozen pilot export to the team.
 - Review and agree the dates note (A8), then sign off and merge pull request #1.
-- DC1-B, after DC1-A has passed:
+- DC1-B started on 2026-10-21 at Aleks's request, before A8's review; its status is in the Workspace repository (`docs/DC1-B-STATUS.md`). B4 passes ([A6-PILOT-COMPARISON.md](A6-PILOT-COMPARISON.md#b4-the-same-comparison-after-the-split)). The plan it followed:
   - **B1**: the Workspace's database links to Core tables become reference fields: `lead.source_id`, `lead.primary_document_id`, `lead.observation_id`, `lead_revision.document_id`, `lead_headline.document_id`, `investigation_entry.document_id`, `asset_location.entity_id`/`document_id`, `asset_dependency.from_entity_id`/`to_entity_id`/`document_id`, and the old `market_observations.document_id`.
   - Replace a connection the specification does not list: on PostgreSQL the platform migration `d8317b920a11` puts a trigger (`search_entity_changed`) on the Core table `entities` that refreshes the Workspace's lead search when a plant is renamed.
   - **B2**: API client; proposals of candidate facts may need a Core endpoint, to be agreed.

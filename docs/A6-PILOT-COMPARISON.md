@@ -52,3 +52,18 @@ python -m tools.compare_pilot --output data/a6-pilot-comparison-NEW
 ```
 
 The defaults are the baseline: the tool checks the manifest's own fingerprint, every file against the manifest, then all 15 checks. It reports BLOCKED if a file is missing or differs, and DIFFERENT if the Core's result differs. B4 runs the same command on the Core database the split tool produces.
+
+## B4: the same comparison after the split
+
+**PASS on 2026-10-21.** The Workspace's split tool (DC1 step B3) split the baseline's `real-pilot.db` into a new Core
+database and a new Workspace database: every Core row went to the Core unchanged (the pilot holds no lead-feed
+material), and the pilot database's SHA-256 was the same before and after. The comparison then ran on that Core
+database without copying anything:
+
+```sh
+python -m tools.compare_pilot --core-database SPLIT_CORE_DB --output data/b4-pilot-comparison-NEW
+```
+
+All 15 checks above pass on it, plus a 16th, "Core database unchanged by the comparison": the export is byte-identical
+(`abfc10ff…bd32`), with build hash `87894401…695e`, recipe hash `568cc60a…80305`, the same 7 saved pages, matching
+decisions and quality (WARN, 11). The saved pages the split copied for the Core are byte-identical to the baseline's.

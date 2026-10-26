@@ -13,3 +13,24 @@ Entities include companies even when no capacity fact exists. Identity evidence 
 Build manifests identify input document/hash, parser/pipeline versions and logical output hash. Frozen replay re-extracts parser-produced records and verifies values/dates/identity decisions; it explicitly counts manually entered records whose normalization alone is verified. Build/package hash uses canonical ordering and logical content, while recorded provenance timestamps remain included. Online reretrieval is allowed to produce a different document version; use frozen bytes for equivalence.
 
 BLOCK/ERROR prohibit export. WARN facts remain included and visibly marked; no automatic conflict winner is inferred. The closed schema and recursive validator reject impact_score, surprise_score, market_state, analogue_score, supply_pressure, price_prediction, procurement_signal, trading_signal, factor_weight and alpha anywhere. No private analytical outputs, recommendations, securities or trading records are exported.
+
+## Reading Core records through the API
+
+The export is the contract for downstream consumers. Programs that work alongside the Core and keep references to its
+records, such as the MuniQuant Workspace, use the record API instead and never the database. Core IDs are stable; a
+document ID names one exact document version.
+
+- `GET /api/records/{type}?offset=0&limit=1000` lists records in primary-key order with a `total`. Types: `entities`,
+  `supersessions` (replaced entity → replacing entity), `sources`, `source_access`, `documents`, `observations`,
+  `relationships`, `reviews`, `candidates`, `builds`, `runs`, `retrieval_attempts`, `audit`.
+- Any other query parameter is an equality filter on a text or integer column, for example
+  `/api/records/observations?document_id=...` or `/api/records/audit?record_id=...`. Unknown columns, JSON columns and
+  malformed numbers are refused with 422, never ignored.
+- `GET /api/records/{type}/{id}` returns one record, or 404.
+- `GET /api/documents/{id}/content` returns the exact saved bytes after checking their SHA-256.
+
+New facts from such programs are candidate facts, sent like any curator's: `POST /api/documents/{id}/extract` with
+the extraction settings. The Core runs its own source check, matching (unclear names go to human review) and quality
+checks; the response lists each candidate's status and, once accepted, its observation ID. Reads follow
+`REQUIRE_READ_AUTH`; writes need a credential, best a separate entry in `WRITE_IDENTITIES_JSON` so the history names
+the program.

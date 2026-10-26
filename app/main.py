@@ -111,14 +111,33 @@ def create_app(database_url=None, storage=None, write_token=None):
         result['workspace_limit']=1000
         return result
 
-    @app.get('/api/records/{record_type}')
-    def records(record_type:str,offset:int=Query(0,ge=0),limit:int=Query(100,ge=1,le=1000),s:Session=Depends(session)):
-        from sqlalchemy import func
-        from .models import Candidate,EvidenceBuild,RetrievalAttempt,SourceAccess
-        models={'entities':Entity,'sources':Source,'documents':Document,'observations':Observation,'relationships':Relationship,'reviews':Review,'runs':Run,'audit':Audit,'candidates':Candidate,'builds':EvidenceBuild,'retrieval_attempts':RetrievalAttempt,'source_access':SourceAccess}
+    def record_model(record_type):
+        from .models import Candidate,EvidenceBuild,RetrievalAttempt,SourceAccess,EntitySupersession
+        models={'entities':Entity,'sources':Source,'documents':Document,'observations':Observation,'relationships':Relationship,'reviews':Review,'runs':Run,'audit':Audit,'candidates':Candidate,'builds':EvidenceBuild,'retrieval_attempts':RetrievalAttempt,'source_access':SourceAccess,'supersessions':EntitySupersession}
         model=models.get(record_type)
         if model is None: raise HTTPException(404,'Unknown record type')
-        return {'records':[record(o) for o in s.scalars(select(model).order_by(model.id).offset(offset).limit(limit))],'total':s.scalar(select(func.count()).select_from(model)),'offset':offset,'limit':limit}
+        return model
+
+    @app.get('/api/records/{record_type}')
+    def records(record_type:str,request:Request,offset:int=Query(0,ge=0),limit:int=Query(100,ge=1,le=1000),s:Session=Depends(session)):
+        from sqlalchemy import func
+        model=record_model(record_type)
+        # Other query parameters are equality filters on text or integer columns, e.g. ?document_id=...
+        filters=[]
+        for name,value in request.query_params.multi_items():
+            if name in ('offset','limit'): continue
+            column=model.__table__.columns.get(name)
+            try: kind=column.type.python_type if column is not None else None
+            except NotImplementedError: kind=None
+            if kind is str: filters.append(column==value)
+            elif kind is int and value.lstrip('-').isdigit(): filters.append(column==int(value))
+            else: raise HTTPException(422,'Unsupported filter: '+name)
+        order=list(model.__table__.primary_key.columns)
+        return {'records':[record(o) for o in s.scalars(select(model).where(*filters).order_by(*order).offset(offset).limit(limit))],'total':s.scalar(select(func.count()).select_from(model).where(*filters)),'offset':offset,'limit':limit}
+
+    @app.get('/api/records/{record_type}/{identifier}')
+    def record_detail(record_type:str,identifier:str,s:Session=Depends(session)):
+        return record(get(s,record_model(record_type),identifier))
 
     @app.post('/api/entities',status_code=201)
     def entity(data:EntityIn, s:Session=Depends(session), actor=Depends(writer)):
