@@ -22,7 +22,8 @@ document ID names one exact document version.
 
 - `GET /api/records/{type}?offset=0&limit=1000` lists records in primary-key order with a `total`. Types: `entities`,
   `supersessions` (replaced entity → replacing entity), `sources`, `source_access`, `documents`, `observations`,
-  `relationships`, `reviews`, `candidates`, `builds`, `runs`, `retrieval_attempts`, `audit`.
+  `relationships`, `reviews`, `candidates`, `builds`, `runs`, `retrieval_attempts`, `audit`, and for market data
+  `instruments`, `instrument_observations` and `market_builds`.
 - Any other query parameter is an equality filter on a text or integer column, for example
   `/api/records/observations?document_id=...` or `/api/records/audit?record_id=...`. Unknown columns, JSON columns and
   malformed numbers are refused with 422, never ignored.
@@ -34,3 +35,15 @@ the extraction settings. The Core runs its own source check, matching (unclear n
 checks; the response lists each candidate's status and, once accepted, its observation ID. Reads follow
 `REQUIRE_READ_AUTH`; writes need a credential, best a separate entry in `WRITE_IDENTITIES_JSON` so the history names
 the program.
+
+## MarketDataPackage 1.0.0
+
+Market data has its own export, separate from this package: `GET /api/market/export` and the closed schema
+`GET /api/market/export/schema` (app/market-v1.schema.json). Each observation is self-contained: instrument identity
+(code, exchange, market, commodity, grade, region, tenor or contract), price type, the separate values (bid, ask,
+open, high, low, close, settlement, volume, open interest) as exact decimal strings, currency and unit as the source
+quotes them, trading date and exact instant, publication and retrieval timestamps, data status, source and vendor series,
+document ID and SHA-256, row locator, build ID and quality codes. Observations from sources whose access decision keeps
+them internal are left out and counted under `withheld`. The validator refuses the ten fields above and derived market
+fields (cash_3m_signal, lme_shfe_signal, premium_spread_signal, curve_score, tightness_score, expected_move,
+all_in_price) anywhere. Details: [MARKET_DATA.md](MARKET_DATA.md).

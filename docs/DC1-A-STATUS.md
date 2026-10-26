@@ -1,19 +1,21 @@
 # DC1-A status: separate the Data Core
 
+**Signed off.** DC1 was signed off (A and B, including the dates note A8) on 2026-10-26; pull requests #1 and #2 are merged. The report below is the state at review time. Work after DC1 (the market data area, more plants) is tracked in [RELEASE_NOTES.md](RELEASE_NOTES.md).
+
 Status on 2026-10-21, in the team's report form: Done, Evidence, Blockers, Decisions, Next. Work is on branch `feature/dc1-a-separate-core`, pull request [#1](https://github.com/alekspetrov9e/muniquant-data-core/pull/1). `main` holds only the unchanged import of today's Core files from the platform (commit `1f02c0b`), so the pull request shows exactly what the separation changed.
 
 ## Done
 
-| Step | State | Done when (specification) |
-|---|---|---|
-| A1 New home | **Done** | Own repository `muniquant-data-core` with its own tests and CI. CI's container job shows the image holds the runtime only, with no tools and no Workspace code, and runs migrations, health, seed, freeze, replay, export and recovery. |
-| A2 Fresh database | **Done** | One migration creates exactly the 26 tables and 3 views: no market table, no joined branches. Setup and the drift check pass in CI on SQLite, PostgreSQL 16 and 17; `tests/test_schema.py` confirms the exact list of tables. |
-| A3 One way only | **Done** | `tests/test_boundary.py` fails if any Core file uses a Workspace module or class, names a Workspace table, route or script, if runtime code names a Workspace feature, or if the runtime loads tools. |
-| A4 Same export | **Done** | `app/evidence-v1.schema.json` is byte for byte the released file (SHA-256 `7808149a…4151f`); all ten forbidden-field checks stay (`tests/test_contract_schema.py`, `test_prohibited_contract_fields`). |
-| A5 Core tests | **Done** | Evidence, hardening and platform tests moved; Core CI is green on all three databases. |
-| A6 Same results | **Done** | Exported and replayed inside the Core, the real-source pilot baseline of 2026-10-21 gives byte-identical results: all 15 checks pass ([A6-PILOT-COMPARISON.md](A6-PILOT-COMPARISON.md)). The lost 10 October result is not compared. |
-| A7 Clean repository | **Done** | The gitleaks secret scan passes in CI over all history and files. |
-| A8 Dates note | Written, **awaiting review and agreement** | [DATES.md](DATES.md) |
+| Step                | State                                                             | Done when (specification)                                                                                                                                                                                                               |
+| ------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A1 New home         | **Done**                                                          | Own repository `muniquant-data-core` with its own tests and CI. CI's container job shows the image holds the runtime only, with no tools and no Workspace code, and runs migrations, health, seed, freeze, replay, export and recovery. |
+| A2 Fresh database   | **Done**                                                          | One migration creates exactly the 26 tables and 3 views: no market table, no joined branches. Setup and the drift check pass in CI on SQLite, PostgreSQL 16 and 17; `tests/test_schema.py` confirms the exact list of tables.           |
+| A3 One way only     | **Done**                                                          | `tests/test_boundary.py` fails if any Core file uses a Workspace module or class, names a Workspace table, route or script, if runtime code names a Workspace feature, or if the runtime loads tools.                                   |
+| A4 Same export      | **Done**                                                          | `app/evidence-v1.schema.json` is byte for byte the released file (SHA-256 `7808149a…4151f`); all ten forbidden-field checks stay (`tests/test_contract_schema.py`, `test_prohibited_contract_fields`).                                  |
+| A5 Core tests       | **Done**                                                          | Evidence, hardening and platform tests moved; Core CI is green on all three databases.                                                                                                                                                  |
+| A6 Same results     | **Done**                                                          | Exported and replayed inside the Core, the real-source pilot baseline of 2026-10-21 gives byte-identical results: all 15 checks pass ([A6-PILOT-COMPARISON.md](A6-PILOT-COMPARISON.md)). The lost 10 October result is not compared.    |
+| A7 Clean repository | **Done**                                                          | The gitleaks secret scan passes in CI over all history and files.                                                                                                                                                                       |
+| A8 Dates note       | **Done**: reviewed and agreed with the DC1 sign-off on 2026-10-26 | [DATES.md](DATES.md)                                                                                                                                                                                                                    |
 
 ## Evidence
 

@@ -1,6 +1,6 @@
 # Data diagram
 
-The 26 Core tables (`app/models.py`, created by the baseline migration) and how they relate. Three views sit on top:
+The 26 Core tables of the DC1 baseline and the 3 market data tables added after it (`app/models.py`), and how they relate. Three views sit on top:
 `capacity_observation` and `status_observation` over observations, `facility_alias` over entity_alias. `audit` records
 who changed what and when; it refers to records by ID only.
 
@@ -41,12 +41,29 @@ erDiagram
   ENTITIES ||--o{ REVIEWS : selects
 ```
 
+## Market data
+
+Added after DC1 ([MARKET_DATA.md](MARKET_DATA.md)). A market file is an ordinary document version; a build reads it,
+and each observation cites both. `source_access.export_allowed` decides whether a source's data may leave the Core.
+
+```mermaid
+erDiagram
+  COMMODITY ||--o{ MARKET_INSTRUMENT : "traded as"
+  DOCUMENTS ||--o{ MARKET_BUILD : "read by"
+  MARKET_BUILD ||--o{ MARKET_OBSERVATION : produces
+  MARKET_INSTRUMENT ||--o{ MARKET_OBSERVATION : "values of"
+  DOCUMENTS ||--o{ MARKET_OBSERVATION : supports
+  SOURCES ||--o{ SOURCE_ACCESS : "export allowed?"
+```
+
 ## Around the Core
 
 ```mermaid
 flowchart LR
   O[Official sources] -- explicit approved URLs --> C[Data Core]
   C --> E[/CommodityEvidencePackage 1.0.0/]
+  V[Licensed market data files] -- unchanged files --> C
+  C --> M[/MarketDataPackage 1.0.0/]
   X[Other programs, e.g. the Workspace] -- "record API reads;<br>candidate facts" --> C
 ```
 
