@@ -6,3 +6,8 @@ useDefault = true
 description = "Run manifests record the access decision's ID, a UUID, not a credential"
 regexTarget = "match"
 regexes = ['''access_decision_id": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"''']
+
+[[allowlists]]
+description = "A curation document key (tools/curated/dc2-2026-10.json), not a credential"
+regexTarget = "match"
+regexes = ['''key": "sec_century_10k_2024"''']
