@@ -83,7 +83,9 @@ The same package is served at `GET /api/export` and its schema at `GET /api/expo
 | `python -m tools.pilot --online --as-of DATE --output DIR` | The real-source pilot: explicit captures of seven official pages |
 | `python -m tools.curation FILE --online --as-of DATE --output DIR [--skip-source KEY] [--recapture]` | Grow the real dataset from a curated file of official sources: every name, link and status must appear verbatim in its captured page; capacities go through the extractor ([docs/RUNBOOK.md](docs/RUNBOOK.md#growing-the-real-dataset-dc2)) |
 | `python -m tools.core_import SOURCE TARGET --report FILE` | Copy the Core tables of an existing database into a new Core database |
-| `python -m tools.market_import FILE --source-id ID --locator URI --title TITLE --spec SETTINGS.json` | Register a market data file (CSV or XLSX) and read it into market observations ([docs/MARKET_DATA.md](docs/MARKET_DATA.md)) |
+| `python -m tools.market_import FILE --source-id ID --locator URI --title TITLE --spec SETTINGS.json` | Register a market data file (CSV, XLSX or an LSEG JSON response) and read it into market observations ([docs/MARKET_DATA.md](docs/MARKET_DATA.md)) |
+| `python -m tools.market_recipe RECIPE.json --root DELIVERY_DIR [--dry-run]` | Load a vendor delivery from a recipe in `tools/curated/` (files, columns, instruments, licence, what is left out and why) |
+| `python -m tools.lseg_import EXPORT_DIR [--dry-run]` | Load an LSEG export folder (untouched API responses) into the market data area, kept internal |
 | `python -m tools.compare_pilot --output DIR [--core-database DB]` | DC1 steps A6 and B4: export and replay the real-source pilot baseline of 2026-10-21 inside the Core and compare field by field; `--core-database` compares a Core database made elsewhere, such as the split tool's ([docs/A6-PILOT-COMPARISON.md](docs/A6-PILOT-COMPARISON.md)) |
 | `python -m tools.legacy_bundle freeze\|verify\|restore PATH` | Demo and migration utility for the old 0.1.0-draft package. **Not** the evidence contract |
 | `python scripts/export_v1_schema.py` | Regenerate the v1 schema (must stay byte for byte the same) |
