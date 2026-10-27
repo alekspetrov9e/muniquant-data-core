@@ -2,6 +2,7 @@
 
 The export below is synthetic and shaped like the lseg-data downloads (manifest plus untouched responses)."""
 import json
+from decimal import Decimal
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app.models import Instrument, InstrumentObservation, SourceAccess
@@ -43,10 +44,11 @@ def test_export_folder_loads_as_internal_market_data(client, tmp_path):
         assert (shfe.contract_code, shfe.contract_month, shfe.unit, shfe.quantity_unit) == ('al1501', '2015-01', 'CNY/t', 'contracts')
         rows = {(codes[o.instrument_id].code, o.effective_date.isoformat()): o for o in s.scalars(select(InstrumentObservation))}
         first = rows[('SHFE_AL_1501', '2015-01-06')]
-        assert (str(first.close), str(first.high), str(first.settlement), str(first.volume)) == ('13900', '13950', '13910', '120')
+        # Compared as decimals: PostgreSQL reads them back with six places, SQLite as written
+        assert (first.close, first.high, first.settlement, first.volume) == (Decimal('13900'), Decimal('13950'), Decimal('13910'), Decimal('120'))
         assert first.source_series['settlement'] == 'SAFF5^1 SETTLE' and first.price_type == 'daily'
         aup = rows[('CME_AUP_FRONT', '2015-07-17')]
-        assert aup.high is None and aup.low is None and str(aup.settlement) == '0.05512'  # high/low of AUPc1 are left out
+        assert aup.high is None and aup.low is None and aup.settlement == Decimal('0.05512')  # high/low of AUPc1 are left out
         assert rows[('CME_AUP_FRONT', '2015-07-16')].contract_month == '2015-07'
         assert rows[('SMM_ALUMINA_FOB_AUSTRALIA', '2015-01-05')].price_type == 'assessment'
     assert client.get('/api/market/export').json()['withheld'][0]['observations'] == 5
