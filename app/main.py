@@ -6,6 +6,7 @@ import os
 import secrets
 import hashlib
 import time
+from datetime import date
 from pathlib import Path
 from fastapi import FastAPI, Request, Depends, HTTPException, Query
 from fastapi.responses import FileResponse, JSONResponse, Response
@@ -112,8 +113,9 @@ def create_app(database_url=None, storage=None, write_token=None):
         return result
 
     def record_model(record_type):
-        from .models import Candidate,EvidenceBuild,RetrievalAttempt,SourceAccess,EntitySupersession
-        models={'entities':Entity,'sources':Source,'documents':Document,'observations':Observation,'relationships':Relationship,'reviews':Review,'runs':Run,'audit':Audit,'candidates':Candidate,'builds':EvidenceBuild,'retrieval_attempts':RetrievalAttempt,'source_access':SourceAccess,'supersessions':EntitySupersession}
+        from .models import Candidate,EvidenceBuild,RetrievalAttempt,SourceAccess,EntitySupersession,Instrument,InstrumentObservation,MarketBuild
+        models={'entities':Entity,'sources':Source,'documents':Document,'observations':Observation,'relationships':Relationship,'reviews':Review,'runs':Run,'audit':Audit,'candidates':Candidate,'builds':EvidenceBuild,'retrieval_attempts':RetrievalAttempt,'source_access':SourceAccess,'supersessions':EntitySupersession,
+                'instruments':Instrument,'instrument_observations':InstrumentObservation,'market_builds':MarketBuild}
         model=models.get(record_type)
         if model is None: raise HTTPException(404,'Unknown record type')
         return model
@@ -268,6 +270,8 @@ def create_app(database_url=None, storage=None, write_token=None):
         # A re-review that omits the credential fields keeps them; dropping them needs an explicit value.
         if previous and 'credential_ref' not in data.model_fields_set and 'auth_header' not in data.model_fields_set:
             values['credential_ref'],values['auth_header']=previous.credential_ref,previous.auth_header
+        # Likewise a re-review never silently allows export of data kept internal.
+        if previous and 'export_allowed' not in data.model_fields_set: values['export_allowed']=previous.export_allowed
         from .acquisition import check_credential_binding
         check_credential_binding(values['credential_ref'],values['allowed_hosts'])
         obj=SourceAccess(source_id=identifier,**values,reviewer=actor);s.add(obj);source.access_status=data.status
@@ -303,6 +307,45 @@ def create_app(database_url=None, storage=None, write_token=None):
     @app.get('/api/export/schema')
     def contract_schema():
         return FileResponse(Path(__file__).parent/'evidence-v1.schema.json',media_type='application/schema+json')
+
+    from .schemas import InstrumentIn,MarketImportIn
+    @app.post('/api/market/instruments',status_code=201)
+    def instrument(data:InstrumentIn,s:Session=Depends(session),actor=Depends(writer)):
+        from .market import register_instrument
+        obj=register_instrument(s,data);audit(s,actor,'create',obj);s.commit();return record(obj)
+
+    @app.post('/api/documents/{identifier}/market-import',status_code=201)
+    def market_import(identifier:str,data:MarketImportIn,s:Session=Depends(session),actor=Depends(writer)):
+        from .market import import_table
+        from .models import InstrumentObservation
+        from sqlalchemy import func
+        build,duplicate=import_table(s,app.state.storage,identifier,data,actor);s.commit()
+        count=s.scalar(select(func.count()).select_from(InstrumentObservation).where(InstrumentObservation.build_id==build.id))
+        return {'build':{k:v for k,v in record(build).items() if k!='logical_output'},'duplicate':duplicate,'observations':count}
+
+    @app.post('/api/market/builds/{identifier}/replay')
+    def market_replay(identifier:str,s:Session=Depends(session),actor=Depends(writer)):
+        from .market import replay
+        return replay(s,app.state.storage,identifier)
+
+    @app.get('/api/market/quality')
+    def market_quality(s:Session=Depends(session)):
+        from .market import inspect_market_quality
+        return inspect_market_quality(s,app.state.storage)
+
+    @app.get('/api/market/summary')
+    def market_overview(s:Session=Depends(session)):
+        from .market import market_summary
+        return market_summary(s)
+
+    @app.get('/api/market/export')
+    def market_export(instrument:list[str]=Query(default=[]),start:date|None=Query(default=None,alias='from'),end:date|None=Query(default=None,alias='to'),s:Session=Depends(session)):
+        from .market import export_market_v1
+        return JSONResponse(export_market_v1(s,app.state.storage,instrument or None,start,end),headers={'Content-Disposition':'attachment; filename="market-data-package-v1.json"'})
+
+    @app.get('/api/market/export/schema')
+    def market_schema():
+        return FileResponse(Path(__file__).parent/'market-v1.schema.json',media_type='application/schema+json')
 
     app.mount('/static',StaticFiles(directory=STATIC),name='static')
     @app.get('/',include_in_schema=False)

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from uuid import uuid4
-from sqlalchemy import Column, String, Integer, Float, Text, ForeignKey, JSON, CheckConstraint, UniqueConstraint
+from sqlalchemy import Column, String, Integer, Float, Text, ForeignKey, JSON, CheckConstraint, UniqueConstraint, Boolean, true
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -174,6 +174,8 @@ class SourceAccess(Base):
     # Name of the server environment variable holding an API credential; never the secret itself.
     credential_ref = Column(String(64))
     auth_header = Column(String(64))
+    # Whether data from this source may leave the Core in an export; licensed data can be internal only.
+    export_allowed = Column(Boolean, nullable=False, default=True, server_default=true())
     __table_args__ = (CheckConstraint("status IN ('permitted','review_required','restricted')", name='ck_source_access_status'),
                       CheckConstraint('(credential_ref IS NULL) = (auth_header IS NULL)', name='ck_source_access_credential'))
 
@@ -286,3 +288,89 @@ class EntityEvidence(Base):
     reviewer = Column(String, nullable=False)
     reason = Column(Text, nullable=False)
     created_at = Column(String, nullable=False, default=now)
+
+# Market data area (added after DC1, approved 2026-10-26): instruments and their observations.
+# Each observation comes from one registered document version through one replayable build.
+PRICE_UNITS = {'USD/t': 'USD', 'USc/lb': 'USD', 'USD/lb': 'USD', 'CNY/t': 'CNY', 'EUR/t': 'EUR', 'JPY/t': 'JPY'}
+PRICE_TYPES = ('official', 'closing', 'settlement', 'daily', 'assessment', 'intraday')
+PRICE_FIELDS = ('bid', 'ask', 'open', 'high', 'low', 'close', 'settlement')
+QUANTITY_FIELDS = ('volume', 'open_interest')
+DATA_STATUSES = ('reported', 'provisional', 'final', 'carried_forward', 'corrected')
+
+class Instrument(Base):
+    __tablename__ = 'market_instrument'
+    id = Column(String, primary_key=True, default=uid)
+    code = Column(String(64), nullable=False, unique=True)
+    name = Column(String(256), nullable=False)
+    exchange = Column(String(16))
+    market = Column(String(16), nullable=False)
+    commodity = Column(String, ForeignKey('commodity.code'), nullable=False)
+    grade = Column(String(256))
+    region = Column(String(128))
+    # A rolling point (cash, 3M, front, active...) or one dated contract, never both.
+    tenor = Column(String(32))
+    contract_code = Column(String(32))
+    contract_month = Column(String(7))
+    currency = Column(String(3), nullable=False)
+    unit = Column(String(16), nullable=False)
+    quantity_unit = Column(String(16))
+    description = Column(Text, nullable=False, default='')
+    created_at = Column(String, nullable=False, default=now)
+    __table_args__ = (CheckConstraint("market IN ('forward','futures','physical')", name='ck_instrument_market'),
+                      CheckConstraint("market = 'physical' OR exchange IS NOT NULL", name='ck_instrument_exchange'),
+                      CheckConstraint("market <> 'forward' OR tenor IS NOT NULL", name='ck_instrument_forward_tenor'),
+                      CheckConstraint('tenor IS NULL OR contract_month IS NULL', name='ck_instrument_point_or_contract'),
+                      CheckConstraint('(contract_code IS NULL) = (contract_month IS NULL)', name='ck_instrument_contract'),
+                      CheckConstraint("unit IN ('USD/t','USc/lb','USD/lb','CNY/t','EUR/t','JPY/t')", name='ck_instrument_unit'),
+                      CheckConstraint("quantity_unit IS NULL OR quantity_unit IN ('lots','contracts','t')", name='ck_instrument_quantity_unit'))
+
+class MarketBuild(Base):
+    __tablename__ = 'market_build'
+    id = Column(String(64), primary_key=True)
+    document_id = Column(String, ForeignKey('documents.id'), nullable=False, index=True)
+    content_hash = Column(String(64), nullable=False)
+    parser_version = Column(String, nullable=False)
+    pipeline_version = Column(String, nullable=False)
+    specification = Column(JSON, nullable=False)
+    logical_output = Column(JSON, nullable=False)
+    output_hash = Column(String(64), nullable=False)
+    actor = Column(String, nullable=False)
+    created_at = Column(String, nullable=False, default=now)
+
+def _amount(name): return f'CAST({name} AS NUMERIC)'
+
+class InstrumentObservation(Base):
+    __tablename__ = 'market_observation'
+    id = Column(String, primary_key=True)
+    instrument_id = Column(String, ForeignKey('market_instrument.id'), nullable=False, index=True)
+    document_id = Column(String, ForeignKey('documents.id'), nullable=False, index=True)
+    build_id = Column(String(64), ForeignKey('market_build.id'), nullable=False, index=True)
+    price_type = Column(String(16), nullable=False)
+    # Trading or assessment date; effective_at is the exact UTC instant when the source gives one.
+    effective_date = Column(Date, nullable=False)
+    effective_at = Column(String(32))
+    contract_code = Column(String(32))
+    contract_month = Column(String(7))
+    prompt_date = Column(Date)
+    bid = Column(ExactDecimal())
+    ask = Column(ExactDecimal())
+    open = Column(ExactDecimal())
+    high = Column(ExactDecimal())
+    low = Column(ExactDecimal())
+    close = Column(ExactDecimal())
+    settlement = Column(ExactDecimal())
+    volume = Column(ExactDecimal())
+    open_interest = Column(ExactDecimal())
+    published_at = Column(String(32))
+    retrieved_at = Column(String(32), nullable=False)
+    data_status = Column(String(16), nullable=False)
+    source_series = Column(JSON, nullable=False, default=dict)
+    evidence_reference = Column(Text, nullable=False)
+    recorded_at = Column(String, nullable=False, default=now)
+    __table_args__ = (CheckConstraint("price_type IN ('official','closing','settlement','daily','assessment','intraday')", name='ck_market_price_type'),
+                      CheckConstraint("data_status IN ('reported','provisional','final','carried_forward','corrected')", name='ck_market_data_status'),
+                      CheckConstraint(' OR '.join(f'{name} IS NOT NULL' for name in (*PRICE_FIELDS, *QUANTITY_FIELDS)), name='ck_market_has_value'),
+                      CheckConstraint(f"high IS NULL OR low IS NULL OR {_amount('high')} >= {_amount('low')}", name='ck_market_high_low'),
+                      CheckConstraint(f"bid IS NULL OR ask IS NULL OR {_amount('bid')} <= {_amount('ask')}", name='ck_market_bid_ask'),
+                      CheckConstraint(f"volume IS NULL OR {_amount('volume')} >= 0", name='ck_market_volume'),
+                      CheckConstraint(f"open_interest IS NULL OR {_amount('open_interest')} >= 0", name='ck_market_open_interest'))

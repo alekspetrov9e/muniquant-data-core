@@ -31,7 +31,9 @@ WORKSPACE_ROUTES = ('/api/leads', '/api/permutable', '/api/research', '/api/inve
                     '/api/chat', '/market-chart', '/asset-map-view', '/api/export/draft')
 WORKSPACE_SCRIPTS = ('market.js', 'chatbot.js', 'chatbot.css', 'investigations.js', 'asset-map', 'leaflet', 'tradingview')
 # Runtime identifiers may not name Workspace features (free text such as a User-Agent is not code).
-WORKSPACE_WORDS = re.compile(r'lead|research|investigat|permutable|paper|asset_?map|chat|trading|market|influence', re.I)
+# 'market' left this list on 2026-10-26: the Core has its own market data area since then (approved
+# by the spec owner). The Workspace's market table, class, route and script names stay refused above.
+WORKSPACE_WORDS = re.compile(r'lead|research|investigat|permutable|paper|asset_?map|chat|trading|influence', re.I)
 # The frozen 0.1.0-draft package format has an always-empty market_observations field; the legacy
 # draft tool must keep it to read and verify old draft bundles. It is a format field, not a table.
 ALLOWED = {('tools/legacy_bundle.py', 'names market_observations')}

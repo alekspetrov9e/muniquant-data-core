@@ -19,6 +19,7 @@ deployment target; SQLite supports local use. Source builds need a C++17 compile
 | REQUIRE_READ_AUTH / READ_TOKEN | Protect API reads except health; optional read-only credential |
 | POSTGRES_PASSWORD | Compose database secret |
 | LICENSED_CREDENTIALS_JSON | Credential variable names and the only hosts allowed to receive them; none by default |
+| CAPTURE_CONTACT | Optional contact (e-mail) added to the capture client's User-Agent; some publishers, such as SEC EDGAR, refuse automated requests without one |
 
 Use an ignored `.env` for secrets; Compose loads it, plain Python does not. The screens keep a credential only in memory
 until reload. TLS/private ingress, rotation and identity-provider integration are deployment-owner controls.
@@ -51,6 +52,14 @@ The rows are fictional. Capacity units: t/year, kt/year, Mt/year; power: MW; own
 operating/closed/suspended/planned/construction with unit `status`. At most 1,000 rows per build; invalid rows leave no
 partial facts; unresolved rows enter review. Candidate facts from other programs (POST /api/documents/{id}/extract)
 follow exactly these steps.
+
+## Market data files
+
+Licensed market data (for example LSEG Datastream exports) arrives as files. Register the source and an access
+decision with `export_allowed: false` until onward use is confirmed, describe the file in import settings and load the
+unchanged file with `python -m tools.market_import`; then review `GET /api/market/quality`. Step by step, with the
+settings and quality codes: [MARKET_DATA.md](MARKET_DATA.md#bringing-in-a-vendor-file). Licensed files and the
+snapshot directory are private data.
 
 ## Logs, health and record reads
 
@@ -93,6 +102,21 @@ The source is only read; the target must be new; the report compares counts, IDs
 the Core and compares it field by field ([A6-PILOT-COMPARISON.md](A6-PILOT-COMPARISON.md)); add
 `--core-database CORE_DB` to compare a Core database made elsewhere, such as the split tool's (B4). The baseline files
 hold third-party page copies and stay out of git.
+
+## Growing the real dataset (DC2)
+
+`python -m tools.curation FILE --online --as-of DATE --output DIR` captures the official pages a curation file lists
+and registers its plants, companies, owner and operator links, capacities and statuses. Every name, alias, link and
+status must appear verbatim in the captured text of its document, or the run stops; capacities go through the
+versioned extractor and matching like any other. Undated facts take the document's publication date, else the capture
+date, never an inferred history. Run it on the database that holds the pilot (`tools.pilot`) to grow the same dataset:
+existing plants keep their IDs, and repeat runs add nothing. A URL already captured is reused unless `--recapture` is
+given (many pages differ in a few bytes on every request, and each capture would be a new version). `--skip-source KEY`
+leaves out a source that cannot be captured yet and everything that depends on its documents. The output directory
+receives the evidence package, a frozen bundle with its replay result and a summary; captured pages stay under `data/`.
+
+The first DC2 batch is [tools/curated/dc2-2026-10.json](../tools/curated/dc2-2026-10.json): 57 plants from seven official
+source families, with its period policy, the points a curator should confirm and what was left out and why.
 
 ## Coordinated backup and restore
 

@@ -1,4 +1,7 @@
-"""DC1 step A2: one straight migration line creating exactly the 26 Core tables and 3 views."""
+"""DC1 step A2: one straight migration line; its DC1 baseline creates exactly the 26 Core tables and 3 views.
+
+Later migrations add the market data area (approved 2026-10-26): three tables and source_access.export_allowed.
+"""
 import json
 import re
 from pathlib import Path
@@ -13,7 +16,9 @@ CORE_TABLES = {'entities', 'company', 'facility', 'country', 'region', 'facility
                'source_snapshot', 'source_document_relation', 'runs', 'retrieval_attempt', 'observations',
                'observation_detail', 'relationships', 'company_facility_relationship', 'evidence_build', 'candidate',
                'reviews', 'audit'}
+MARKET_TABLES = {'market_instrument', 'market_build', 'market_observation'}
 VIEWS = {'capacity_observation', 'status_observation', 'facility_alias'}
+BASELINE = '34e9de7241cf'
 # Today's databases (platform revision d8317b920a11, 2026-10-13), Core tables only.
 TODAY = Path(__file__).parent / 'fixtures' / 'schema'
 
@@ -33,10 +38,10 @@ def describe(engine):
     views = {view: [c['name'] for c in inspector.get_columns(view)] for view in sorted(inspector.get_view_names())}
     return {'tables': tables, 'views': views}
 
-def migrated(new_database, monkeypatch):
+def migrated(new_database, monkeypatch, target='head'):
     url = new_database('schema')
     monkeypatch.setenv('DATABASE_URL', url)
-    command.upgrade(Config('alembic.ini'), 'head')
+    command.upgrade(Config('alembic.ini'), target)
     return url
 
 def test_single_straight_migration_line():
@@ -47,7 +52,7 @@ def test_single_straight_migration_line():
     assert not any(revision.branch_labels for revision in revisions)
 
 def test_models_declare_exactly_the_core_tables():
-    assert set(Base.metadata.tables) == CORE_TABLES and len(CORE_TABLES) == 26
+    assert set(Base.metadata.tables) == CORE_TABLES | MARKET_TABLES and len(CORE_TABLES) == 26
 
 def test_exact_tables_views_reference_rows_and_drift(new_database, monkeypatch):
     url = migrated(new_database, monkeypatch)
@@ -56,20 +61,22 @@ def test_exact_tables_views_reference_rows_and_drift(new_database, monkeypatch):
     engine = create_engine(url)
     try:
         inspector = inspect(engine)
-        assert set(inspector.get_table_names()) == CORE_TABLES | {'alembic_version'}
+        assert set(inspector.get_table_names()) == CORE_TABLES | MARKET_TABLES | {'alembic_version'}
         assert set(inspector.get_view_names()) == VIEWS
         with engine.connect() as connection:
             counts = {table: connection.execute(text(f'SELECT count(*) FROM {table}')).scalar() for table in ('country', 'commodity', 'facility_type')}
-        assert counts == {'country': 28, 'commodity': 3, 'facility_type': 3}
+        assert counts == {'country': 30, 'commodity': 3, 'facility_type': 3}  # 28 in the DC1 baseline, then Austria and Japan
         command.downgrade(config, 'base')
         assert set(inspect(engine).get_table_names()) <= {'alembic_version'} and not inspect(engine).get_view_names()
-        command.upgrade(config, 'head')
+        command.upgrade(config, BASELINE)
         assert set(inspect(engine).get_table_names()) == CORE_TABLES | {'alembic_version'}
+        command.upgrade(config, 'head')
+        assert set(inspect(engine).get_table_names()) == CORE_TABLES | MARKET_TABLES | {'alembic_version'}
     finally:
         engine.dispose()
 
 def test_baseline_matches_todays_core_tables(new_database, monkeypatch):
-    url = migrated(new_database, monkeypatch)
+    url = migrated(new_database, monkeypatch, BASELINE)
     engine = create_engine(url)
     try: actual = describe(engine)
     finally: engine.dispose()
@@ -84,3 +91,20 @@ def test_baseline_matches_todays_core_tables(new_database, monkeypatch):
     expected['tables']['observations']['checks'] = [check for check in expected['tables']['observations']['checks']
                                                     if check[0] not in ('observations_check', 'observations_normalized_value_check')]
     assert actual == expected
+
+def test_later_migrations_only_add_the_market_data_area(new_database, monkeypatch):
+    """Head is the DC1 baseline plus three new tables and one new source_access column, nothing else."""
+    baseline_url = migrated(new_database, monkeypatch, BASELINE)
+    engine = create_engine(baseline_url)
+    try: baseline = describe(engine)
+    finally: engine.dispose()
+    command.upgrade(Config('alembic.ini'), 'head')
+    engine = create_engine(baseline_url)
+    try:
+        head = describe(engine)
+        assert set(inspect(engine).get_table_names()) - CORE_TABLES == MARKET_TABLES | {'alembic_version'}
+    finally: engine.dispose()
+    added = head['tables']['source_access']['columns'][len(baseline['tables']['source_access']['columns']):]
+    assert [column[0] for column in added] == ['export_allowed'] and not added[0][2]
+    head['tables']['source_access']['columns'] = head['tables']['source_access']['columns'][:-1]
+    assert head == baseline

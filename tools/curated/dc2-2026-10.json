@@ -1,0 +1,3826 @@
+{
+ "name": "DC2 official sources, first batch",
+ "curated_on": "2026-10-26",
+ "policy": "Every name, alias, link and status appears verbatim in its captured document; capacities go through the versioned extractor. Periods: USGS tables use the calendar year in the table title; IBM tables the fiscal year 2021-22 named in the yearbook; 10-K tables the fiscal year end; undated pages start at the capture date. USGS lists major equity owners of the operating company; those are recorded as owners of the plant.",
+ "to_confirm": [
+  "Arvida smelter = Aluminerie Arvida-AP60 (matched by elimination between the USGS and AAC lists of the same nine Canadian smelters)",
+  "BALCO 51/49 is the ownership of the operating company BALCO, recorded as ownership of the Korba smelter",
+  "AAC \"tons\" read as metric tonnes; EGA \"~\" values are approximate nameplate figures"
+ ],
+ "excluded": [
+  {
+   "link": "Gove Aluminium Finance Ltd. OWNS Tomago aluminium smelter",
+   "reason": "company jurisdiction not stated and not known"
+  },
+  {
+   "link": "Alcoa Corporation OWNS 100% San Ciprián alumina refinery",
+   "reason": "the 10-K gives no start date for the earlier 100% ownership"
+  },
+  {
+   "link": "South32 Minerals S.A. OWNS Alumar alumina refinery",
+   "reason": "company jurisdiction not stated (S.A. is used in several countries)"
+  },
+  {
+   "link": "South32 Minerals S.A. OWNS Alumar smelter",
+   "reason": "company jurisdiction not stated (S.A. is used in several countries)"
+  },
+  {
+   "link": "Boké Investment Company OWNS CBG Boké bauxite mine",
+   "reason": "company jurisdiction not stated"
+  },
+  {
+   "capacity": "Jharsuguda 1.75 Mt/year (IBM)",
+   "reason": "IBM states the total of Vedanta's smelters in Odisha; attributing it to Jharsuguda is an inference"
+  },
+  {
+   "capacity": "Kwinana 2,190,000 t/year (Alcoa 10-K)",
+   "reason": "stated only as the capacity \"prior to the curtailment\"; no start date for its period"
+  },
+  {
+   "alias": "Fjarðaál smelter: Fjardaal",
+   "reason": "not written this way in any captured document"
+  },
+  {
+   "alias": "Alumar smelter: São Luís (Alumar) smelter",
+   "reason": "not written this way in any captured document"
+  },
+  {
+   "alias": "CBG Boké bauxite mine: Compagnie des Bauxites de Guinée mine",
+   "reason": "not written this way in any captured document"
+  }
+ ],
+ "sources": [
+  {
+   "key": "usgs",
+   "publisher": "U.S. Geological Survey (National Minerals Information Center)",
+   "source_type": "government",
+   "url": "https://pubs.usgs.gov/myb/vol3/",
+   "hosts": [
+    "pubs.usgs.gov"
+   ]
+  },
+  {
+   "key": "nrcan",
+   "publisher": "Natural Resources Canada",
+   "source_type": "government",
+   "url": "https://natural-resources.canada.ca/minerals-mining/mining-data-statistics-analysis/minerals-metals-facts",
+   "hosts": [
+    "natural-resources.canada.ca"
+   ]
+  },
+  {
+   "key": "aac",
+   "publisher": "Aluminium Association of Canada (Association de l'aluminium du Canada)",
+   "source_type": "industry",
+   "url": "https://aluminium.ca/en/",
+   "hosts": [
+    "aluminium.ca"
+   ]
+  },
+  {
+   "key": "sec",
+   "publisher": "U.S. Securities and Exchange Commission (EDGAR filings by Alcoa Corporation and Century Aluminum Company)",
+   "source_type": "regulator",
+   "url": "https://www.sec.gov/Archives/edgar/data/",
+   "hosts": [
+    "www.sec.gov"
+   ]
+  },
+  {
+   "key": "ibm",
+   "publisher": "Indian Bureau of Mines, Ministry of Mines, Government of India",
+   "source_type": "government",
+   "url": "https://ibm.gov.in/",
+   "hosts": [
+    "ibm.gov.in"
+   ]
+  },
+  {
+   "key": "ega",
+   "publisher": "Emirates Global Aluminium PJSC",
+   "source_type": "company",
+   "url": "https://www.ega.ae/en/about-us/operations",
+   "hosts": [
+    "www.ega.ae"
+   ]
+  },
+  {
+   "key": "vedanta",
+   "publisher": "Vedanta Aluminium Metal Limited",
+   "source_type": "company",
+   "url": "https://vedantaaluminium.com/",
+   "hosts": [
+    "vedantaaluminium.com"
+   ]
+  }
+ ],
+ "documents": [
+  {
+   "key": "usgs_canada_2020_21",
+   "source": "usgs",
+   "url": "https://pubs.usgs.gov/myb/vol3/2020-21/myb3-2020-21-canada.pdf",
+   "title": "The Mineral Industry of Canada, 2020–2021 (USGS Minerals Yearbook vol. III, advance release)",
+   "published_at": null,
+   "published_evidence": "CANADA [ADVANCE RELEASE] April 2025"
+  },
+  {
+   "key": "usgs_australia_2023",
+   "source": "usgs",
+   "url": "https://pubs.usgs.gov/myb/vol3/2023/myb3-2023-australia.pdf",
+   "title": "The Mineral Industry of Australia, 2023 (USGS Minerals Yearbook vol. III, advance release)",
+   "published_at": null,
+   "published_evidence": "AUSTRALIA [ADVANCE RELEASE] February 2026"
+  },
+  {
+   "key": "usgs_india_2022",
+   "source": "usgs",
+   "url": "https://pubs.usgs.gov/myb/vol3/2022/myb3-2022-india.pdf",
+   "title": "The Mineral Industry of India, 2022 (USGS Minerals Yearbook vol. III, advance release)",
+   "published_at": null,
+   "published_evidence": "INDIA [ADVANCE RELEASE] March 2025"
+  },
+  {
+   "key": "ibm_aluminium_2022",
+   "source": "ibm",
+   "url": "https://ibm.gov.in/writereaddata/files/170989607765eaf18dc09eaAluminium_Alumina_2022.pdf",
+   "title": "Indian Minerals Yearbook 2022 (Part-II: Metals and Alloys), Aluminium and Alumina (advance release)",
+   "published_at": null,
+   "published_evidence": "Website: www.ibm.gov.in February, 2024"
+  },
+  {
+   "key": "nrcan_aluminum_facts",
+   "source": "nrcan",
+   "url": "https://natural-resources.canada.ca/minerals-mining/mining-data-statistics-analysis/minerals-metals-facts/aluminum-facts",
+   "title": "Aluminum facts - Natural Resources Canada",
+   "published_at": "2026-01-05",
+   "published_evidence": "Date modified: 2026-01-05"
+  },
+  {
+   "key": "aac_industry",
+   "source": "aac",
+   "url": "https://aluminium.ca/en/the-industry/",
+   "title": "The Industry - aluminium.ca",
+   "published_at": null
+  },
+  {
+   "key": "aac_alouette",
+   "source": "aac",
+   "url": "https://aluminium.ca/en/the-industry/alouette/",
+   "title": "Alouette - aluminium.ca",
+   "published_at": null
+  },
+  {
+   "key": "sec_alcoa_10k_2025",
+   "source": "sec",
+   "url": "https://www.sec.gov/Archives/edgar/data/1675149/000119312526077167/aa-20251231.htm",
+   "title": "Alcoa Corporation Form 10-K for the fiscal year ended December 31, 2025",
+   "published_at": "2026-02-26",
+   "published_evidence": "Executive Vice President and Chief Financial Officer February 26, 2026"
+  },
+  {
+   "key": "sec_century_10k_2024",
+   "source": "sec",
+   "url": "https://www.sec.gov/Archives/edgar/data/949157/000094915725000024/cenx-20241231.htm",
+   "title": "Century Aluminum Company Form 10-K for the fiscal year ended December 31, 2024",
+   "published_at": "2025-03-03",
+   "published_evidence": "(Principal Executive Officer) Dated: March 3, 2025"
+  },
+  {
+   "key": "ega_jebel_ali",
+   "source": "ega",
+   "url": "https://www.ega.ae/en/about-us/operations/jebel-ali",
+   "title": "Jebel Ali | EGA",
+   "published_at": null
+  },
+  {
+   "key": "ega_al_taweelah",
+   "source": "ega",
+   "url": "https://www.ega.ae/en/about-us/operations/al-taweelah",
+   "title": "Al Taweelah | EGA",
+   "published_at": null
+  },
+  {
+   "key": "ega_taweelah_refinery",
+   "source": "ega",
+   "url": "https://www.ega.ae/en/about-us/operations/al-taweelah-alumina-refinery",
+   "title": "Al Taweelah alumina refinery | EGA",
+   "published_at": null
+  },
+  {
+   "key": "ega_operations",
+   "source": "ega",
+   "url": "https://www.ega.ae/en/about-us/operations",
+   "title": "Operations | EGA",
+   "published_at": null
+  },
+  {
+   "key": "vedanta_lanjigarh_pr",
+   "source": "vedanta",
+   "url": "https://vedantaaluminium.com/media/press-releases/list/vedanta-aluminium-expands-alumina-refining-capacity-to-3-5-million-tonnes-per-annum-mtpa/",
+   "title": "Vedanta Aluminium Expands Alumina Refining Capacity To 3.5 million tonnes per annum (MTPA)",
+   "published_at": "2024-04-04",
+   "published_evidence": "New Delhi, 04 April 2024"
+  },
+  {
+   "key": "vedanta_operations",
+   "source": "vedanta",
+   "url": "https://vedantaaluminium.com/about-us/our-operations/",
+   "title": "Aluminium Operations | Aluminium Processing in Vedanta Aluminium Metal Limited",
+   "published_at": null
+  }
+ ],
+ "facilities": [
+  {
+   "name": "Alma smelter",
+   "aliases": [
+    {
+     "name": "Rio Tinto Alma Smelter",
+     "document": "aac_industry"
+    }
+   ],
+   "country": "CA",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_canada_2020_21",
+   "identity_snippet": "Rio Tinto Alcan Inc. Alma smelter in Alma, Quebec"
+  },
+  {
+   "name": "Arvida smelter",
+   "aliases": [
+    {
+     "name": "Aluminerie Arvida-AP60",
+     "document": "aac_industry"
+    }
+   ],
+   "country": "CA",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_canada_2020_21",
+   "identity_snippet": "Arvida smelter in Arvida, Jonquiere, Quebec"
+  },
+  {
+   "name": "Grande-Baie smelter",
+   "aliases": [
+    {
+     "name": "Grande Baie Smelter",
+     "document": "aac_industry"
+    }
+   ],
+   "country": "CA",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_canada_2020_21",
+   "identity_snippet": "Grande-Baie smelter in Grande-Baie, Quebec"
+  },
+  {
+   "name": "Laterrière smelter",
+   "aliases": [
+    {
+     "name": "Laterriere smelter",
+     "document": "usgs_canada_2020_21"
+    }
+   ],
+   "country": "CA",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "aac_industry",
+   "identity_snippet": "Rio Tinto Laterrière Smelter Anual production capacity"
+  },
+  {
+   "name": "Kitimat smelter",
+   "aliases": [
+    {
+     "name": "Rio Tinto Kitimat Smelter",
+     "document": "aac_industry"
+    }
+   ],
+   "country": "CA",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_canada_2020_21",
+   "identity_snippet": "Kitimat smelter in Kitimat, British Columbia"
+  },
+  {
+   "name": "Aluminerie Alouette",
+   "aliases": [
+    {
+     "name": "Alouette smelter",
+     "document": "usgs_canada_2020_21"
+    },
+    {
+     "name": "Alouette facility",
+     "document": "nrcan_aluminum_facts"
+    }
+   ],
+   "country": "CA",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "aac_alouette",
+   "identity_snippet": "Inaugurated in 1992, Aluminerie Alouette is an independent aluminium production company"
+  },
+  {
+   "name": "Baie-Comeau smelter",
+   "aliases": [
+    {
+     "name": "Alcoa Baie-Comeau Smelter",
+     "document": "aac_industry"
+    }
+   ],
+   "country": "CA",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_canada_2020_21",
+   "identity_snippet": "Alcoa Corp. Baie-Comeau smelter in Baie-Comeau, Quebec"
+  },
+  {
+   "name": "Deschambault smelter",
+   "aliases": [
+    {
+     "name": "Aluminerie de Deschambault",
+     "document": "sec_alcoa_10k_2025"
+    }
+   ],
+   "country": "CA",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_canada_2020_21",
+   "identity_snippet": "Deschambault smelter in Deschambault, Quebec"
+  },
+  {
+   "name": "Aluminerie de Bécancour (ABI)",
+   "aliases": [
+    {
+     "name": "ABI",
+     "document": "sec_alcoa_10k_2025"
+    },
+    {
+     "name": "Becancour smelter",
+     "document": "usgs_canada_2020_21"
+    },
+    {
+     "name": "Alcoa Bécancour Smelter",
+     "document": "aac_industry"
+    },
+    {
+     "name": "Bécancour (ABI) smelter",
+     "document": "sec_alcoa_10k_2025"
+    }
+   ],
+   "country": "CA",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "The Aluminerie de Bécancour Inc. (ABI) smelter is a joint venture between Alcoa and Rio Tinto located in Bécancour, Québec."
+  },
+  {
+   "name": "Vaudreuil alumina refinery",
+   "aliases": [
+    {
+     "name": "Vaudreuil refinery",
+     "document": "usgs_canada_2020_21"
+    }
+   ],
+   "country": "CA",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_canada_2020_21",
+   "identity_snippet": "Rio Tinto Alcan Inc. Vaudreuil refinery, Jonquiere, Quebec"
+  },
+  {
+   "name": "Huntly bauxite mine",
+   "aliases": [
+    {
+     "name": "Huntly mining center",
+     "document": "sec_alcoa_10k_2025"
+    }
+   ],
+   "country": "AU",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "usgs_australia_2023",
+   "identity_snippet": "Huntly open pit bauxite mine [Alcoa of Australia Ltd."
+  },
+  {
+   "name": "Willowdale bauxite mine",
+   "aliases": [
+    {
+     "name": "Willowdale mining center",
+     "document": "sec_alcoa_10k_2025"
+    }
+   ],
+   "country": "AU",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "usgs_australia_2023",
+   "identity_snippet": "Willowdale open pit bauxite mine [Alcoa of Australia Ltd."
+  },
+  {
+   "name": "Boddington-Worsley bauxite mine",
+   "aliases": [],
+   "country": "AU",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "usgs_australia_2023",
+   "identity_snippet": "Boddington-Worsley open pit bauxite mine {Worsley Alumina Pty."
+  },
+  {
+   "name": "Gove bauxite mine",
+   "aliases": [],
+   "country": "AU",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "usgs_australia_2023",
+   "identity_snippet": "Gove open pit bauxite mine [Pacific Aluminium Pty. Ltd."
+  },
+  {
+   "name": "Kwinana alumina refinery",
+   "aliases": [],
+   "country": "AU",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_australia_2023",
+   "identity_snippet": "Kwinana alumina refinery [Alcoa of Australia Ltd."
+  },
+  {
+   "name": "Pinjarra alumina refinery",
+   "aliases": [],
+   "country": "AU",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_australia_2023",
+   "identity_snippet": "Pinjarra alumina refinery [Alcoa of Australia Ltd."
+  },
+  {
+   "name": "Wagerup alumina refinery",
+   "aliases": [],
+   "country": "AU",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_australia_2023",
+   "identity_snippet": "Wagerup alumina refinery [Alcoa of Australia Ltd."
+  },
+  {
+   "name": "Worsley alumina refinery",
+   "aliases": [],
+   "country": "AU",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_australia_2023",
+   "identity_snippet": "Worsley alumina refinery {Worsley Alumina Pty. Ltd., manager"
+  },
+  {
+   "name": "Tomago aluminium smelter",
+   "aliases": [
+    {
+     "name": "Tomago aluminum smelter",
+     "document": "usgs_australia_2023"
+    }
+   ],
+   "country": "AU",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_australia_2023",
+   "identity_snippet": "Tomago aluminum smelter {Tomago Aluminium Co. Pty. Ltd."
+  },
+  {
+   "name": "Angul smelter",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_india_2022",
+   "identity_snippet": "National Aluminium Co. Ltd. (Government, 51.28%) Angul smelter, Odisha"
+  },
+  {
+   "name": "Damanjodi alumina refinery",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_india_2022",
+   "identity_snippet": "National Aluminium Co. Ltd. (Government, 51.28%) Damanjodi refinery, Odisha"
+  },
+  {
+   "name": "Panchpatmali bauxite mines",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "usgs_india_2022",
+   "identity_snippet": "National Aluminium Co. Ltd. (Government, 51.28%) Mines in Panchpatmali Hills, Damanjodi,"
+  },
+  {
+   "name": "BALCO Korba smelter",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "vedanta_operations",
+   "identity_snippet": "BALCO operates a 0.58 MTPA aluminium smelter in Korba, Chhattisgarh."
+  },
+  {
+   "name": "BALCO Korba alumina refinery",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_india_2022",
+   "identity_snippet": "Alumina Bharat Aluminium Co. Ltd. (Vedanta Ltd., 51%, and Government, Korba I and II refineries, Chhattisgarh"
+  },
+  {
+   "name": "Aditya smelter",
+   "aliases": [
+    {
+     "name": "Aditya Aluminium",
+     "document": "ibm_aluminium_2022"
+    }
+   ],
+   "country": "IN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_india_2022",
+   "identity_snippet": "Aditya smelter, Sambalpur, Odisha"
+  },
+  {
+   "name": "Hirakud smelter",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_india_2022",
+   "identity_snippet": "Hirakud smelter, Odisha"
+  },
+  {
+   "name": "Mahan smelter",
+   "aliases": [
+    {
+     "name": "Mahan Aluminium",
+     "document": "ibm_aluminium_2022"
+    }
+   ],
+   "country": "IN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_india_2022",
+   "identity_snippet": "Mahan smelter, Bargawan, Madhya Pradesh"
+  },
+  {
+   "name": "Renukoot smelter",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_india_2022",
+   "identity_snippet": "Renukoot smelter, Uttar Pradesh"
+  },
+  {
+   "name": "Renukoot alumina refinery",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_india_2022",
+   "identity_snippet": "Renukoot refinery, Uttar Pradesh"
+  },
+  {
+   "name": "Belagavi alumina refinery",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_india_2022",
+   "identity_snippet": "Belagavi refinery, Karnataka"
+  },
+  {
+   "name": "Muri alumina refinery",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_india_2022",
+   "identity_snippet": "Muri refinery, Jharkhand"
+  },
+  {
+   "name": "Utkal alumina refinery",
+   "aliases": [
+    {
+     "name": "Koraput refinery",
+     "document": "usgs_india_2022"
+    },
+    {
+     "name": "Utkal Alumina",
+     "document": "usgs_india_2022"
+    }
+   ],
+   "country": "IN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_india_2022",
+   "identity_snippet": "Hindalco’s Koraput refinery in Odisha (operated through its wholly owned subsidiary Utkal alumina international Ltd.)"
+  },
+  {
+   "name": "Baphlimali bauxite mine",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "usgs_india_2022",
+   "identity_snippet": "Baphlimali Mine, Rayagada District,"
+  },
+  {
+   "name": "Lanjigarh alumina refinery",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "vedanta_operations",
+   "identity_snippet": "Alumina Refinery, Lanjigarh (Odisha) We operate a 5 MTPA (million tonnes per annum) capacity alumina refinery in Lanjigarh"
+  },
+  {
+   "name": "Jharsuguda smelter",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "vedanta_operations",
+   "identity_snippet": "Aluminium Smelter, Jharsuguda (Odisha) We operate the world’s largest aluminium plant at Jharsuguda, Odisha."
+  },
+  {
+   "name": "Mettur smelter",
+   "aliases": [
+    {
+     "name": "MALCO",
+     "document": "ibm_aluminium_2022"
+    }
+   ],
+   "country": "IN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_india_2022",
+   "identity_snippet": "Madras Aluminium Co. Ltd. (Vedanta Ltd., 100%) Mettur smelter, Tamil Nadu"
+  },
+  {
+   "name": "Alupuram smelter",
+   "aliases": [],
+   "country": "IN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "ibm_aluminium_2022",
+   "identity_snippet": "The Alupuram (Kerala) smelter is closed"
+  },
+  {
+   "name": "Hawesville smelter",
+   "aliases": [],
+   "country": "US",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "sec_century_10k_2024",
+   "identity_snippet": "Hawesville, located adjacent to the Ohio River near Hawesville, Kentucky, is a primary aluminum smelter"
+  },
+  {
+   "name": "Sebree smelter",
+   "aliases": [],
+   "country": "US",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "sec_century_10k_2024",
+   "identity_snippet": "Sebree, located adjacent to the Green River near Robards, Kentucky, is a primary aluminum smelter"
+  },
+  {
+   "name": "Mt. Holly smelter",
+   "aliases": [],
+   "country": "US",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "sec_century_10k_2024",
+   "identity_snippet": "Mt. Holly, located in Goose Creek, South Carolina, is a primary aluminum smelter"
+  },
+  {
+   "name": "Grundartangi smelter",
+   "aliases": [],
+   "country": "IS",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "sec_century_10k_2024",
+   "identity_snippet": "The Grundartangi facility, located in Grundartangi, Iceland, is a primary aluminum smelter"
+  },
+  {
+   "name": "Jamalco",
+   "aliases": [],
+   "country": "JM",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "sec_century_10k_2024",
+   "identity_snippet": "Jamalco is engaged in bauxite mining and alumina refining in Jamaica."
+  },
+  {
+   "name": "Massena West smelter",
+   "aliases": [],
+   "country": "US",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "Massena, New York (Massena West) The Massena West smelter in New York"
+  },
+  {
+   "name": "Warrick smelter",
+   "aliases": [
+    {
+     "name": "Evansville, IN (Warrick)",
+     "document": "sec_alcoa_10k_2025"
+    }
+   ],
+   "country": "US",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "its Warrick smelter in Indiana"
+  },
+  {
+   "name": "Fjarðaál smelter",
+   "aliases": [],
+   "country": "IS",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "employees at the Fjarðaál, Iceland smelter"
+  },
+  {
+   "name": "Lista smelter",
+   "aliases": [],
+   "country": "NO",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "the Lista smelter in Norway"
+  },
+  {
+   "name": "Mosjøen smelter",
+   "aliases": [],
+   "country": "NO",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "the Mosjøen (Norway) smelter achieved its eighth consecutive year of record performance"
+  },
+  {
+   "name": "San Ciprián smelter",
+   "aliases": [],
+   "country": "ES",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "the San Ciprián operations, which include an alumina refinery with a capacity of 1.6 million mtpy and an aluminum smelter with a capacity of 228,000 mtpy"
+  },
+  {
+   "name": "San Ciprián alumina refinery",
+   "aliases": [],
+   "country": "ES",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "the San Ciprián operations, which include an alumina refinery with a capacity of 1.6 million mtpy"
+  },
+  {
+   "name": "Alumar smelter",
+   "aliases": [],
+   "country": "BR",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "Alumar is an unincorporated joint venture for the operation of a refinery, smelter, and casthouse in Brazil."
+  },
+  {
+   "name": "Alumar alumina refinery",
+   "aliases": [
+    {
+     "name": "São Luís refinery",
+     "document": "sec_alcoa_10k_2025"
+    }
+   ],
+   "country": "BR",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "Alumar is an unincorporated joint venture for the operation of a refinery, smelter, and casthouse in Brazil."
+  },
+  {
+   "name": "Poços de Caldas alumina refinery",
+   "aliases": [],
+   "country": "BR",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "Alcoa’s alumina refining facilities and its worldwide alumina capacity stated in metric tons per year (mtpy) as of December 31, 2025 are shown in the following table: Country Facility Nameplate Capacity (1) (000 mtpy) Alcoa Corporation Consolidated Capacity (1) (000 mtpy) Australia Pinjarra 4,700 4,700 Wagerup 2,879 2,879 Brazil Poços de Caldas 390 390"
+  },
+  {
+   "name": "Juruti bauxite mine",
+   "aliases": [],
+   "country": "BR",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "The Juruti bauxite mine is located in the west of Pará State in northern Brazil."
+  },
+  {
+   "name": "CBG Boké bauxite mine",
+   "aliases": [
+    {
+     "name": "Boké (Sangaredi)",
+     "document": "sec_alcoa_10k_2025"
+    }
+   ],
+   "country": "GN",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "sec_alcoa_10k_2025",
+   "identity_snippet": "CBG is a joint venture between Boké Investment Company (51%) and the Government of Guinea (49%) for the operation of a bauxite mine in the Boké region of Guinea."
+  },
+  {
+   "name": "Jebel Ali smelter",
+   "aliases": [],
+   "country": "AE",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "ega_jebel_ali",
+   "identity_snippet": "Emirates Global Aluminium's smelter at Jebel Ali was the first to be built in the United Arab Emirates"
+  },
+  {
+   "name": "Al Taweelah smelter",
+   "aliases": [],
+   "country": "AE",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "ega_al_taweelah",
+   "identity_snippet": "Our smelter at Al Taweelah was built in two phases."
+  },
+  {
+   "name": "Al Taweelah alumina refinery",
+   "aliases": [],
+   "country": "AE",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "ega_taweelah_refinery",
+   "identity_snippet": "Al Taweelah alumina refinery was the first in the United Arab Emirates and only the second in the Middle East."
+  }
+ ],
+ "companies": [
+  {
+   "name": "Alcoa Corporation",
+   "country": "US",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "became wholly-owned by Alcoa Corporation"
+  },
+  {
+   "name": "Alcoa of Australia",
+   "country": "AU",
+   "document": "usgs_australia_2023",
+   "snippet": "Huntly open pit bauxite mine [Alcoa of Australia Ltd.",
+   "country_basis": "same entity as the DC1 pilot (Alcoa of Australia); USGS writes \"Alcoa of Australia Ltd.\""
+  },
+  {
+   "name": "Alumina Ltd.",
+   "country": "AU",
+   "document": "usgs_australia_2023",
+   "snippet": "and Alumina Ltd., 40%"
+  },
+  {
+   "name": "Rio Tinto Alcan Inc.",
+   "country": "CA",
+   "document": "usgs_canada_2020_21",
+   "snippet": "Rio Tinto Alcan Inc. Alma smelter"
+  },
+  {
+   "name": "Rio Tinto",
+   "country": "GB",
+   "document": "aac_alouette",
+   "snippet": "Rio Tinto (Canada, 40%)",
+   "country_basis": "same entity as the DC1 pilot (Rio Tinto, GB)"
+  },
+  {
+   "name": "Aluminerie Alouette",
+   "country": "CA",
+   "document": "aac_alouette",
+   "snippet": "Aluminerie Alouette is an independent aluminium production company with five partners"
+  },
+  {
+   "name": "AMAG Austria Metall AG",
+   "country": "AT",
+   "document": "aac_alouette",
+   "snippet": "AMAG Austria Metall AG (Austria, 20%)",
+   "country_basis": "source text: (Austria, 20%)"
+  },
+  {
+   "name": "Hydro Aluminium",
+   "country": "NO",
+   "document": "aac_alouette",
+   "snippet": "Hydro Aluminum (Norway, 20%)"
+  },
+  {
+   "name": "Investissement Québec",
+   "country": "CA",
+   "document": "aac_alouette",
+   "snippet": "Investissement Québec (Canada, 6.67%)"
+  },
+  {
+   "name": "Marubeni Metals & Minerals",
+   "country": "JP",
+   "document": "aac_alouette",
+   "snippet": "Marubeni Metals & Minerals (Japan, 13.33%)",
+   "country_basis": "source text: (Japan, 13.33%)"
+  },
+  {
+   "name": "Aluminium Austria Metall Québec",
+   "country": "CA",
+   "document": "usgs_canada_2020_21",
+   "snippet": "Metall Québec, 20%",
+   "country_basis": "name: Québec company"
+  },
+  {
+   "name": "Marubeni Québec Inc.",
+   "country": "CA",
+   "document": "usgs_canada_2020_21",
+   "snippet": "Marubeni Québec Inc., 13.33%",
+   "country_basis": "name: Québec company"
+  },
+  {
+   "name": "Société générale de financement du Québec",
+   "country": "CA",
+   "document": "usgs_canada_2020_21",
+   "snippet": "Société générale de financement du Québec, 6.67%",
+   "country_basis": "name: Québec government corporation"
+  },
+  {
+   "name": "South32 Ltd.",
+   "country": "AU",
+   "document": "usgs_australia_2023",
+   "snippet": "[South32 Ltd., 86%; Japan Alumina Associates (Australia)",
+   "country_basis": "curated: South32 Limited is incorporated in Australia; verify before legal use"
+  },
+  {
+   "name": "Japan Alumina Associates (Australia) Pty. Ltd.",
+   "country": "AU",
+   "document": "usgs_australia_2023",
+   "snippet": "Japan Alumina Associates (Australia) Pty. Ltd., 10%"
+  },
+  {
+   "name": "Sojitz Alumina Pty. Ltd.",
+   "country": "AU",
+   "document": "usgs_australia_2023",
+   "snippet": "Sojitz Alumina Pty. Ltd., 4%",
+   "country_basis": "legal form Pty. Ltd. (Australia)"
+  },
+  {
+   "name": "Worsley Alumina Pty. Ltd.",
+   "country": "AU",
+   "document": "usgs_australia_2023",
+   "snippet": "Worsley alumina refinery {Worsley Alumina Pty. Ltd., manager",
+   "country_basis": "legal form Pty. Ltd. (Australia)"
+  },
+  {
+   "name": "Pacific Aluminium Pty. Ltd.",
+   "country": "AU",
+   "document": "usgs_australia_2023",
+   "snippet": "Gove open pit bauxite mine [Pacific Aluminium Pty. Ltd.",
+   "country_basis": "legal form Pty. Ltd. (Australia)"
+  },
+  {
+   "name": "Tomago Aluminium Co. Pty. Ltd.",
+   "country": "AU",
+   "document": "usgs_australia_2023",
+   "snippet": "{Tomago Aluminium Co. Pty. Ltd.",
+   "country_basis": "legal form Pty. Ltd. (Australia)"
+  },
+  {
+   "name": "Trento Equity Holdings, S.L.U. (Trento EQT)",
+   "country": "ES",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Trento Equity Holdings, S.L.U. (Trento EQT), formerly known as IGNIS Equity Holdings, SL",
+   "country_basis": "legal form S.L.U. (Spain)"
+  },
+  {
+   "name": "Alcoa Alumínio",
+   "country": "BR",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Alcoa Alumínio (14.04%)"
+  },
+  {
+   "name": "AWAB",
+   "country": "BR",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "The refinery is owned by AWAB (39.96%)"
+  },
+  {
+   "name": "Compagnie des Bauxites de Guinée (CBG)",
+   "country": "GN",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Compagnie des Bauxites de Guinée (CBG)"
+  },
+  {
+   "name": "Government of Guinea",
+   "country": "GN",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "the Government of Guinea (49%)"
+  },
+  {
+   "name": "Century Aluminum Company",
+   "country": "US",
+   "document": "sec_century_10k_2024",
+   "snippet": "Century Aluminum Company is a global producer of primary aluminum"
+  },
+  {
+   "name": "Nordural Grundartangi ehf",
+   "country": "IS",
+   "document": "sec_century_10k_2024",
+   "snippet": "our wholly-owned subsidiary, Nordural Grundartangi ehf"
+  },
+  {
+   "name": "Century Kentucky, Inc.",
+   "country": "US",
+   "document": "sec_century_10k_2024",
+   "snippet": "our wholly-owned subsidiary, Century Kentucky, Inc."
+  },
+  {
+   "name": "Century Aluminum Sebree LLC",
+   "country": "US",
+   "document": "sec_century_10k_2024",
+   "snippet": "our wholly-owned subsidiary, Century Aluminum Sebree LLC"
+  },
+  {
+   "name": "Century Aluminum of South Carolina, Inc.",
+   "country": "US",
+   "document": "sec_century_10k_2024",
+   "snippet": "our wholly-owned subsidiary, Century Aluminum of South Carolina, Inc."
+  },
+  {
+   "name": "General Alumina Jamaica Limited",
+   "country": "JM",
+   "document": "sec_century_10k_2024",
+   "snippet": "General Alumina Jamaica Limited, is the managing partner of the Jamalco joint venture"
+  },
+  {
+   "name": "Clarendon Alumina Production Limited",
+   "country": "JM",
+   "document": "sec_century_10k_2024",
+   "snippet": "its controlled entity Clarendon Alumina Production Limited"
+  },
+  {
+   "name": "Government of Jamaica",
+   "country": "JM",
+   "document": "sec_century_10k_2024",
+   "snippet": "The remaining 45% interest in Jamalco is indirectly owned by the Government of Jamaica."
+  },
+  {
+   "name": "National Aluminium Co. Ltd.",
+   "country": "IN",
+   "document": "usgs_india_2022",
+   "snippet": "National Aluminium Co. Ltd. (Government, 51.28%)"
+  },
+  {
+   "name": "Hindalco Industries Ltd.",
+   "country": "IN",
+   "document": "usgs_india_2022",
+   "snippet": "Hindalco Industries Ltd. (Aditya Birla Group, 35%;"
+  },
+  {
+   "name": "Utkal Alumina International Ltd.",
+   "country": "IN",
+   "document": "usgs_india_2022",
+   "snippet": "Utkal Alumina International Ltd. (Hindalco Industries Ltd.,"
+  },
+  {
+   "name": "Vedanta Ltd.",
+   "country": "IN",
+   "document": "usgs_india_2022",
+   "snippet": "Vedanta Aluminium Ltd. (Vedanta Ltd., 100%)"
+  },
+  {
+   "name": "Vedanta Aluminium Metal Limited",
+   "country": "IN",
+   "document": "vedanta_operations",
+   "snippet": "51% by Vedanta Aluminium Metal Limited"
+  },
+  {
+   "name": "Bharat Aluminium Company Limited (BALCO)",
+   "country": "IN",
+   "document": "vedanta_operations",
+   "snippet": "Bharat Aluminium Company Limited (BALCO) is India’s iconic aluminium producer"
+  },
+  {
+   "name": "Government of India",
+   "country": "IN",
+   "document": "vedanta_operations",
+   "snippet": "It is owned 49% by the Government of India"
+  },
+  {
+   "name": "Madras Aluminium Co. Ltd. (MALCO)",
+   "country": "IN",
+   "document": "usgs_india_2022",
+   "snippet": "Madras Aluminium Co. Ltd. (Vedanta Ltd., 100%) Mettur smelter"
+  },
+  {
+   "name": "Emirates Global Aluminium PJSC",
+   "country": "AE",
+   "document": "ega_operations",
+   "snippet": "Emirates Global Aluminium PJSC"
+  }
+ ],
+ "relationships": [
+  {
+   "company": "Rio Tinto Alcan Inc.",
+   "facility": "Aluminerie Alouette",
+   "role": "OWNS",
+   "percentage": 40,
+   "document": "usgs_canada_2020_21",
+   "snippet": "Rio Tinto Alcan Inc., 40%; Aluminium Austria",
+   "valid_from": "2021-01-01",
+   "valid_to": "2021-12-31",
+   "as_of_text": "CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021"
+  },
+  {
+   "company": "Aluminium Austria Metall Québec",
+   "facility": "Aluminerie Alouette",
+   "role": "OWNS",
+   "percentage": 20,
+   "document": "usgs_canada_2020_21",
+   "snippet": "Metall Québec, 20%",
+   "valid_from": "2021-01-01",
+   "valid_to": "2021-12-31",
+   "as_of_text": "CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021"
+  },
+  {
+   "company": "Hydro Aluminium",
+   "facility": "Aluminerie Alouette",
+   "role": "OWNS",
+   "percentage": 20,
+   "document": "usgs_canada_2020_21",
+   "snippet": "Hydro Aluminum, 20%",
+   "valid_from": "2021-01-01",
+   "valid_to": "2021-12-31",
+   "as_of_text": "CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021"
+  },
+  {
+   "company": "Marubeni Québec Inc.",
+   "facility": "Aluminerie Alouette",
+   "role": "OWNS",
+   "percentage": 13.33,
+   "document": "usgs_canada_2020_21",
+   "snippet": "Marubeni Québec Inc., 13.33%",
+   "valid_from": "2021-01-01",
+   "valid_to": "2021-12-31",
+   "as_of_text": "CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021"
+  },
+  {
+   "company": "Société générale de financement du Québec",
+   "facility": "Aluminerie Alouette",
+   "role": "OWNS",
+   "percentage": 6.67,
+   "document": "usgs_canada_2020_21",
+   "snippet": "Société générale de financement du Québec, 6.67%",
+   "valid_from": "2021-01-01",
+   "valid_to": "2021-12-31",
+   "as_of_text": "CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021"
+  },
+  {
+   "company": "AMAG Austria Metall AG",
+   "facility": "Aluminerie Alouette",
+   "role": "OWNS",
+   "percentage": 20,
+   "document": "aac_alouette",
+   "snippet": "AMAG Austria Metall AG (Austria, 20%)",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Hydro Aluminium",
+   "facility": "Aluminerie Alouette",
+   "role": "OWNS",
+   "percentage": 20,
+   "document": "aac_alouette",
+   "snippet": "Hydro Aluminum (Norway, 20%)",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Investissement Québec",
+   "facility": "Aluminerie Alouette",
+   "role": "OWNS",
+   "percentage": 6.67,
+   "document": "aac_alouette",
+   "snippet": "Investissement Québec (Canada, 6.67%)",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Marubeni Metals & Minerals",
+   "facility": "Aluminerie Alouette",
+   "role": "OWNS",
+   "percentage": 13.33,
+   "document": "aac_alouette",
+   "snippet": "Marubeni Metals & Minerals (Japan, 13.33%)",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Rio Tinto",
+   "facility": "Aluminerie Alouette",
+   "role": "OWNS",
+   "percentage": 40,
+   "document": "aac_alouette",
+   "snippet": "Rio Tinto (Canada, 40%)",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Aluminerie Alouette",
+   "facility": "Aluminerie Alouette",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "aac_industry",
+   "snippet": "Alcoa, Aluminerie Alouette and Rio Tinto operate 9 plants in Canada",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Aluminerie de Bécancour (ABI)",
+   "role": "OWNS",
+   "percentage": 74.95,
+   "document": "usgs_canada_2020_21",
+   "snippet": "Alcoa Corp., 74.95%, and Rio Tinto",
+   "valid_from": "2021-01-01",
+   "valid_to": "2021-12-31",
+   "as_of_text": "CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021"
+  },
+  {
+   "company": "Rio Tinto Alcan Inc.",
+   "facility": "Aluminerie de Bécancour (ABI)",
+   "role": "OWNS",
+   "percentage": 25.05,
+   "document": "usgs_canada_2020_21",
+   "snippet": "Alcan Inc., 25.05%",
+   "valid_from": "2021-01-01",
+   "valid_to": "2021-12-31",
+   "as_of_text": "CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Aluminerie de Bécancour (ABI)",
+   "role": "OWNS",
+   "percentage": 74.95,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Alcoa owns 74.95% of the joint venture",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025"
+  },
+  {
+   "company": "Rio Tinto",
+   "facility": "Aluminerie de Bécancour (ABI)",
+   "role": "OWNS",
+   "percentage": 25.05,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Rio Tinto owns the remaining 25.05% interest in the joint venture",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Baie-Comeau smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_canada_2020_21",
+   "snippet": "Alcoa Corp. Baie-Comeau smelter in Baie-Comeau, Quebec",
+   "valid_from": "2021-01-01",
+   "valid_to": "2021-12-31",
+   "as_of_text": "CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021"
+  },
+  {
+   "company": "Rio Tinto Alcan Inc.",
+   "facility": "Alma smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_canada_2020_21",
+   "snippet": "Rio Tinto Alcan Inc. Alma smelter in Alma, Quebec",
+   "valid_from": "2021-01-01",
+   "valid_to": "2021-12-31",
+   "as_of_text": "CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021"
+  },
+  {
+   "company": "Rio Tinto Alcan Inc.",
+   "facility": "Vaudreuil alumina refinery",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_canada_2020_21",
+   "snippet": "Rio Tinto Alcan Inc. Vaudreuil refinery, Jonquiere, Quebec",
+   "valid_from": "2021-01-01",
+   "valid_to": "2021-12-31",
+   "as_of_text": "CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021"
+  },
+  {
+   "company": "Alcoa of Australia",
+   "facility": "Huntly bauxite mine",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_australia_2023",
+   "snippet": "Huntly open pit bauxite mine [Alcoa of Australia Ltd.",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alcoa of Australia",
+   "facility": "Willowdale bauxite mine",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_australia_2023",
+   "snippet": "Willowdale open pit bauxite mine [Alcoa of Australia Ltd.",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alcoa of Australia",
+   "facility": "Kwinana alumina refinery",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_australia_2023",
+   "snippet": "Kwinana alumina refinery [Alcoa of Australia Ltd.",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alcoa of Australia",
+   "facility": "Pinjarra alumina refinery",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_australia_2023",
+   "snippet": "Pinjarra alumina refinery [Alcoa of Australia Ltd.",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alcoa of Australia",
+   "facility": "Wagerup alumina refinery",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_australia_2023",
+   "snippet": "Wagerup alumina refinery [Alcoa of Australia Ltd.",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Kwinana alumina refinery",
+   "role": "OWNS",
+   "percentage": 60,
+   "document": "usgs_australia_2023",
+   "snippet": "(Alcoa Kwinana, WA 2,200 Corp., 60%, and Alumina Ltd., 40%)",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alumina Ltd.",
+   "facility": "Kwinana alumina refinery",
+   "role": "OWNS",
+   "percentage": 40,
+   "document": "usgs_australia_2023",
+   "snippet": "(Alcoa Kwinana, WA 2,200 Corp., 60%, and Alumina Ltd., 40%)",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Pinjarra alumina refinery",
+   "role": "OWNS",
+   "percentage": 60,
+   "document": "usgs_australia_2023",
+   "snippet": "(Alcoa Pinjarra, WA 4,200 Corp., 60%, and Alumina Ltd., 40%)",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alumina Ltd.",
+   "facility": "Pinjarra alumina refinery",
+   "role": "OWNS",
+   "percentage": 40,
+   "document": "usgs_australia_2023",
+   "snippet": "(Alcoa Pinjarra, WA 4,200 Corp., 60%, and Alumina Ltd., 40%)",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Wagerup alumina refinery",
+   "role": "OWNS",
+   "percentage": 60,
+   "document": "usgs_australia_2023",
+   "snippet": "(Alcoa Wagerup, WA 2,850 Corp., 60%, and Alumina Ltd., 40%)",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alumina Ltd.",
+   "facility": "Wagerup alumina refinery",
+   "role": "OWNS",
+   "percentage": 40,
+   "document": "usgs_australia_2023",
+   "snippet": "(Alcoa Wagerup, WA 2,850 Corp., 60%, and Alumina Ltd., 40%)",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Huntly bauxite mine",
+   "role": "OWNS",
+   "percentage": 60,
+   "document": "usgs_australia_2023",
+   "snippet": "80 km south of Perth, WA 26,000 (Alcoa Corp., 60%, and Alumina Ltd., 40%)",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alumina Ltd.",
+   "facility": "Huntly bauxite mine",
+   "role": "OWNS",
+   "percentage": 40,
+   "document": "usgs_australia_2023",
+   "snippet": "80 km south of Perth, WA 26,000 (Alcoa Corp., 60%, and Alumina Ltd., 40%)",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Willowdale bauxite mine",
+   "role": "OWNS",
+   "percentage": 60,
+   "document": "usgs_australia_2023",
+   "snippet": "130 km south of Perth, WA 10,000 (Alcoa Corp., 60%, and Alumina Ltd., 40%)",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alumina Ltd.",
+   "facility": "Willowdale bauxite mine",
+   "role": "OWNS",
+   "percentage": 40,
+   "document": "usgs_australia_2023",
+   "snippet": "130 km south of Perth, WA 10,000 (Alcoa Corp., 60%, and Alumina Ltd., 40%)",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Huntly bauxite mine",
+   "role": "OWNS",
+   "percentage": 100,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Ore transported via long-distance conveyor to refineries. AofA 100%",
+   "valid_from": "2024-08-01",
+   "valid_to": null,
+   "as_of_text": "Upon completion of the acquisition on August 1, 2024, Alumina Limited and, as a result, the operations held by the AWAC joint venture, became wholly-owned by Alcoa Corporation. (Owners’ Mining Rights column = Alcoa ownership interest)"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Huntly bauxite mine",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Darling Range is owned and operated by Alcoa through AofA.",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "Form 10-K for 2025"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Willowdale bauxite mine",
+   "role": "OWNS",
+   "percentage": 100,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Ore transported via long-distance conveyor to refineries. AofA 100%",
+   "valid_from": "2024-08-01",
+   "valid_to": null,
+   "as_of_text": "Upon completion of the acquisition on August 1, 2024, Alumina Limited and, as a result, the operations held by the AWAC joint venture, became wholly-owned by Alcoa Corporation. (Owners’ Mining Rights column = Alcoa ownership interest)"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Willowdale bauxite mine",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Darling Range is owned and operated by Alcoa through AofA.",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "Form 10-K for 2025"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Pinjarra alumina refinery",
+   "role": "OWNS",
+   "percentage": 100,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Upon completion of the acquisition on August 1, 2024, Alumina Limited and, as a result, the operations held by the AWAC joint venture, became wholly-owned by Alcoa Corporation.",
+   "valid_from": "2024-08-01",
+   "valid_to": null,
+   "as_of_text": "August 1, 2024"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Wagerup alumina refinery",
+   "role": "OWNS",
+   "percentage": 100,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Upon completion of the acquisition on August 1, 2024, Alumina Limited and, as a result, the operations held by the AWAC joint venture, became wholly-owned by Alcoa Corporation.",
+   "valid_from": "2024-08-01",
+   "valid_to": null,
+   "as_of_text": "August 1, 2024"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Kwinana alumina refinery",
+   "role": "OWNS",
+   "percentage": 100,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Upon completion of the acquisition on August 1, 2024, Alumina Limited and, as a result, the operations held by the AWAC joint venture, became wholly-owned by Alcoa Corporation.",
+   "valid_from": "2024-08-01",
+   "valid_to": null,
+   "as_of_text": "August 1, 2024"
+  },
+  {
+   "company": "Worsley Alumina Pty. Ltd.",
+   "facility": "Worsley alumina refinery",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_australia_2023",
+   "snippet": "Worsley alumina refinery {Worsley Alumina Pty. Ltd., manager",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "South32 Ltd.",
+   "facility": "Worsley alumina refinery",
+   "role": "OWNS",
+   "percentage": 86,
+   "document": "usgs_australia_2023",
+   "snippet": "4,600 [South32 Ltd., 86%; Japan Alumina Associates (Australia) Collie, WA Pty. Ltd., 10%; Sojitz Alumina Pty. Ltd., 4%]}",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Japan Alumina Associates (Australia) Pty. Ltd.",
+   "facility": "Worsley alumina refinery",
+   "role": "OWNS",
+   "percentage": 10,
+   "document": "usgs_australia_2023",
+   "snippet": "4,600 [South32 Ltd., 86%; Japan Alumina Associates (Australia) Collie, WA Pty. Ltd., 10%; Sojitz Alumina Pty. Ltd., 4%]}",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Sojitz Alumina Pty. Ltd.",
+   "facility": "Worsley alumina refinery",
+   "role": "OWNS",
+   "percentage": 4,
+   "document": "usgs_australia_2023",
+   "snippet": "4,600 [South32 Ltd., 86%; Japan Alumina Associates (Australia) Collie, WA Pty. Ltd., 10%; Sojitz Alumina Pty. Ltd., 4%]}",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Worsley Alumina Pty. Ltd.",
+   "facility": "Boddington-Worsley bauxite mine",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_australia_2023",
+   "snippet": "Boddington-Worsley open pit bauxite mine {Worsley Alumina Pty. 14 km south of Boddington, WA 19,000 Ltd., manager",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "South32 Ltd.",
+   "facility": "Boddington-Worsley bauxite mine",
+   "role": "OWNS",
+   "percentage": 86,
+   "document": "usgs_australia_2023",
+   "snippet": "Ltd., manager [South32 Ltd., 86%; Japan Alumina Associates (Australia) Pty. Ltd., 10%; Sojitz Alumina Pty. Ltd., 4%]}",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Japan Alumina Associates (Australia) Pty. Ltd.",
+   "facility": "Boddington-Worsley bauxite mine",
+   "role": "OWNS",
+   "percentage": 10,
+   "document": "usgs_australia_2023",
+   "snippet": "Ltd., manager [South32 Ltd., 86%; Japan Alumina Associates (Australia) Pty. Ltd., 10%; Sojitz Alumina Pty. Ltd., 4%]}",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Sojitz Alumina Pty. Ltd.",
+   "facility": "Boddington-Worsley bauxite mine",
+   "role": "OWNS",
+   "percentage": 4,
+   "document": "usgs_australia_2023",
+   "snippet": "Ltd., manager [South32 Ltd., 86%; Japan Alumina Associates (Australia) Pty. Ltd., 10%; Sojitz Alumina Pty. Ltd., 4%]}",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Pacific Aluminium Pty. Ltd.",
+   "facility": "Gove bauxite mine",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_australia_2023",
+   "snippet": "Gove open pit bauxite mine [Pacific Aluminium Pty. Ltd.",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Tomago Aluminium Co. Pty. Ltd.",
+   "facility": "Tomago aluminium smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_australia_2023",
+   "snippet": "Tomago aluminum smelter {Tomago Aluminium Co. Pty. Ltd., Tomago, NSW 590 operator",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Pacific Aluminium Pty. Ltd.",
+   "facility": "Tomago aluminium smelter",
+   "role": "OWNS",
+   "percentage": 51.55,
+   "document": "usgs_australia_2023",
+   "snippet": "operator [Pacific Aluminium Pty. Ltd. (Rio Tinto Ltd., 100%), 51.55%; Gove Aluminium Finance Ltd., 36.05%; Hydro Aluminium, 12.40%]}",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Hydro Aluminium",
+   "facility": "Tomago aluminium smelter",
+   "role": "OWNS",
+   "percentage": 12.4,
+   "document": "usgs_australia_2023",
+   "snippet": "Hydro Aluminium, 12.40%",
+   "valid_from": "2023-01-01",
+   "valid_to": "2023-12-31",
+   "as_of_text": "STRUCTURE OF THE MINERAL INDUSTRY IN 2023"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "San Ciprián alumina refinery",
+   "role": "OWNS",
+   "percentage": 75,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "whereby Alcoa owns 75% and continues as the managing operator and Trento EQT owns 25% of the San Ciprián operations",
+   "valid_from": "2025-03-31",
+   "valid_to": null,
+   "as_of_text": "On March 31, 2025"
+  },
+  {
+   "company": "Trento Equity Holdings, S.L.U. (Trento EQT)",
+   "facility": "San Ciprián alumina refinery",
+   "role": "OWNS",
+   "percentage": 25,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "whereby Alcoa owns 75% and continues as the managing operator and Trento EQT owns 25% of the San Ciprián operations",
+   "valid_from": "2025-03-31",
+   "valid_to": null,
+   "as_of_text": "On March 31, 2025"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "San Ciprián alumina refinery",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "whereby Alcoa owns 75% and continues as the managing operator",
+   "valid_from": "2025-03-31",
+   "valid_to": null,
+   "as_of_text": "On March 31, 2025"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "San Ciprián smelter",
+   "role": "OWNS",
+   "percentage": 75,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "whereby Alcoa owns 75% and continues as the managing operator and Trento EQT owns 25% of the San Ciprián operations",
+   "valid_from": "2025-03-31",
+   "valid_to": null,
+   "as_of_text": "On March 31, 2025"
+  },
+  {
+   "company": "Trento Equity Holdings, S.L.U. (Trento EQT)",
+   "facility": "San Ciprián smelter",
+   "role": "OWNS",
+   "percentage": 25,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "whereby Alcoa owns 75% and continues as the managing operator and Trento EQT owns 25% of the San Ciprián operations",
+   "valid_from": "2025-03-31",
+   "valid_to": null,
+   "as_of_text": "On March 31, 2025"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "San Ciprián smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "whereby Alcoa owns 75% and continues as the managing operator",
+   "valid_from": "2025-03-31",
+   "valid_to": null,
+   "as_of_text": "On March 31, 2025"
+  },
+  {
+   "company": "AWAB",
+   "facility": "Alumar alumina refinery",
+   "role": "OWNS",
+   "percentage": 39.96,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "The refinery is owned by AWAB (39.96%), Rio Tinto (10%), Alcoa Alumínio (14.04%), and South32 Minerals S.A. (South32) (36%).",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025"
+  },
+  {
+   "company": "Rio Tinto",
+   "facility": "Alumar alumina refinery",
+   "role": "OWNS",
+   "percentage": 10,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "The refinery is owned by AWAB (39.96%), Rio Tinto (10%), Alcoa Alumínio (14.04%), and South32 Minerals S.A. (South32) (36%).",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025"
+  },
+  {
+   "company": "Alcoa Alumínio",
+   "facility": "Alumar alumina refinery",
+   "role": "OWNS",
+   "percentage": 14.04,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "The refinery is owned by AWAB (39.96%), Rio Tinto (10%), Alcoa Alumínio (14.04%), and South32 Minerals S.A. (South32) (36%).",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025"
+  },
+  {
+   "company": "Alcoa Alumínio",
+   "facility": "Alumar smelter",
+   "role": "OWNS",
+   "percentage": 60,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "The smelter and casthouse are owned by Alcoa Alumínio (60%) and South32 (40%).",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025"
+  },
+  {
+   "company": "AWAB",
+   "facility": "Juruti bauxite mine",
+   "role": "OWNS",
+   "percentage": 100,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Ore transported from the mine to Juruti port by company-operated rail. AWAB 100%",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "Juruti bauxite mine",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "The mine is owned and operated by Alcoa through AWAB.",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025"
+  },
+  {
+   "company": "Compagnie des Bauxites de Guinée (CBG)",
+   "facility": "CBG Boké bauxite mine",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "CBG is a joint venture between Boké Investment Company (51%) and the Government of Guinea (49%) for the operation of a bauxite mine in the Boké region of Guinea.",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025"
+  },
+  {
+   "company": "Alcoa Corporation",
+   "facility": "CBG Boké bauxite mine",
+   "role": "OWNS",
+   "percentage": 22.95,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Ore transported by company-operated rail to Kamsar port. CBG 22.95%",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025"
+  },
+  {
+   "company": "Government of Guinea",
+   "facility": "CBG Boké bauxite mine",
+   "role": "OWNS",
+   "percentage": 49,
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "CBG is a joint venture between Boké Investment Company (51%) and the Government of Guinea (49%)",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025"
+  },
+  {
+   "company": "Century Aluminum Company",
+   "facility": "Grundartangi smelter",
+   "role": "OWNS",
+   "percentage": 100,
+   "document": "sec_century_10k_2024",
+   "snippet": "Grundartangi, Iceland 100% 1998",
+   "valid_from": "2024-12-31",
+   "valid_to": null,
+   "as_of_text": "FOR THE FISCAL YEAR ENDED DECEMBER 31 , 2024"
+  },
+  {
+   "company": "Nordural Grundartangi ehf",
+   "facility": "Grundartangi smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "sec_century_10k_2024",
+   "snippet": "is a primary aluminum smelter owned and operated by our wholly-owned subsidiary, Nordural Grundartangi ehf",
+   "valid_from": "2024-12-31",
+   "valid_to": null,
+   "as_of_text": "FOR THE FISCAL YEAR ENDED DECEMBER 31 , 2024"
+  },
+  {
+   "company": "Century Aluminum Company",
+   "facility": "Hawesville smelter",
+   "role": "OWNS",
+   "percentage": 100,
+   "document": "sec_century_10k_2024",
+   "snippet": "Hawesville, Kentucky, USA 100% 1970",
+   "valid_from": "2024-12-31",
+   "valid_to": null,
+   "as_of_text": "FOR THE FISCAL YEAR ENDED DECEMBER 31 , 2024"
+  },
+  {
+   "company": "Century Aluminum Company",
+   "facility": "Sebree smelter",
+   "role": "OWNS",
+   "percentage": 100,
+   "document": "sec_century_10k_2024",
+   "snippet": "Sebree, Kentucky, USA 100% 1973",
+   "valid_from": "2024-12-31",
+   "valid_to": null,
+   "as_of_text": "FOR THE FISCAL YEAR ENDED DECEMBER 31 , 2024"
+  },
+  {
+   "company": "Century Aluminum Sebree LLC",
+   "facility": "Sebree smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "sec_century_10k_2024",
+   "snippet": "is a primary aluminum smelter owned and operated by our wholly-owned subsidiary, Century Aluminum Sebree LLC",
+   "valid_from": "2024-12-31",
+   "valid_to": null,
+   "as_of_text": "FOR THE FISCAL YEAR ENDED DECEMBER 31 , 2024"
+  },
+  {
+   "company": "Century Aluminum Company",
+   "facility": "Mt. Holly smelter",
+   "role": "OWNS",
+   "percentage": 100,
+   "document": "sec_century_10k_2024",
+   "snippet": "Mt. Holly, South Carolina, USA 100% 1980",
+   "valid_from": "2024-12-31",
+   "valid_to": null,
+   "as_of_text": "FOR THE FISCAL YEAR ENDED DECEMBER 31 , 2024"
+  },
+  {
+   "company": "Century Aluminum of South Carolina, Inc.",
+   "facility": "Mt. Holly smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "sec_century_10k_2024",
+   "snippet": "is a primary aluminum smelter owned and operated by our wholly-owned subsidiary, Century Aluminum of South Carolina, Inc.",
+   "valid_from": "2024-12-31",
+   "valid_to": null,
+   "as_of_text": "FOR THE FISCAL YEAR ENDED DECEMBER 31 , 2024"
+  },
+  {
+   "company": "Century Aluminum Company",
+   "facility": "Jamalco",
+   "role": "OWNS",
+   "percentage": 55,
+   "document": "sec_century_10k_2024",
+   "snippet": "the holder of a 55% interest in Jamalco, an unincorporated joint venture with the Government of Jamaica",
+   "valid_from": "2024-12-31",
+   "valid_to": null,
+   "as_of_text": "FOR THE FISCAL YEAR ENDED DECEMBER 31 , 2024"
+  },
+  {
+   "company": "Government of Jamaica",
+   "facility": "Jamalco",
+   "role": "OWNS",
+   "percentage": 45,
+   "document": "sec_century_10k_2024",
+   "snippet": "The remaining 45% interest in Jamalco is indirectly owned by the Government of Jamaica.",
+   "valid_from": "2024-12-31",
+   "valid_to": null,
+   "as_of_text": "FOR THE FISCAL YEAR ENDED DECEMBER 31 , 2024"
+  },
+  {
+   "company": "General Alumina Jamaica Limited",
+   "facility": "Jamalco",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "sec_century_10k_2024",
+   "snippet": "General Alumina Jamaica Limited, is the managing partner of the Jamalco joint venture",
+   "valid_from": "2024-12-31",
+   "valid_to": null,
+   "as_of_text": "FOR THE FISCAL YEAR ENDED DECEMBER 31 , 2024"
+  },
+  {
+   "company": "National Aluminium Co. Ltd.",
+   "facility": "Angul smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_india_2022",
+   "snippet": "National Aluminium Co. Ltd. (Government, 51.28%) Angul smelter, Odisha",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "National Aluminium Co. Ltd.",
+   "facility": "Damanjodi alumina refinery",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_india_2022",
+   "snippet": "National Aluminium Co. Ltd. (Government, 51.28%) Damanjodi refinery, Odisha",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "National Aluminium Co. Ltd.",
+   "facility": "Panchpatmali bauxite mines",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_india_2022",
+   "snippet": "National Aluminium Co. Ltd. (Government, 51.28%) Mines in Panchpatmali Hills",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "Hindalco Industries Ltd.",
+   "facility": "Utkal alumina refinery",
+   "role": "OWNS",
+   "percentage": 100,
+   "document": "usgs_india_2022",
+   "snippet": "Utkal Alumina International Ltd. (Hindalco Industries Ltd., Koraput refinery, Odisha 2,270 100%)",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "Utkal Alumina International Ltd.",
+   "facility": "Utkal alumina refinery",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_india_2022",
+   "snippet": "Hindalco’s Koraput refinery in Odisha (operated through its wholly owned subsidiary Utkal alumina international Ltd.)",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "Utkal Alumina International Ltd.",
+   "facility": "Baphlimali bauxite mine",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_india_2022",
+   "snippet": "Utkal Alumina International Ltd. (Hindalco Industries Ltd., Baphlimali Mine, Rayagada District,",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "Hindalco Industries Ltd.",
+   "facility": "Aditya smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_india_2022",
+   "snippet": "Hindalco Industries Ltd. (Aditya Birla Group, 35%; foreign Aditya smelter, Sambalpur, Odisha",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "Hindalco Industries Ltd.",
+   "facility": "Hirakud smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_india_2022",
+   "snippet": "others, 8%) Do. do. Hirakud smelter, Odisha",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "Hindalco Industries Ltd.",
+   "facility": "Belagavi alumina refinery",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_india_2022",
+   "snippet": "Hindalco Industries Ltd. (Aditya Birla Group, 35%; foreign Belagavi refinery, Karnataka",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "Bharat Aluminium Company Limited (BALCO)",
+   "facility": "BALCO Korba smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "vedanta_operations",
+   "snippet": "BALCO operates a 0.58 MTPA aluminium smelter in Korba, Chhattisgarh.",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Vedanta Aluminium Metal Limited",
+   "facility": "BALCO Korba smelter",
+   "role": "OWNS",
+   "percentage": 51,
+   "document": "vedanta_operations",
+   "snippet": "It is owned 49% by the Government of India and 51% by Vedanta Aluminium Metal Limited.",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Government of India",
+   "facility": "BALCO Korba smelter",
+   "role": "OWNS",
+   "percentage": 49,
+   "document": "vedanta_operations",
+   "snippet": "It is owned 49% by the Government of India and 51% by Vedanta Aluminium Metal Limited.",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Bharat Aluminium Company Limited (BALCO)",
+   "facility": "BALCO Korba alumina refinery",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_india_2022",
+   "snippet": "Alumina Bharat Aluminium Co. Ltd.",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "Vedanta Ltd.",
+   "facility": "BALCO Korba alumina refinery",
+   "role": "OWNS",
+   "percentage": 51,
+   "document": "usgs_india_2022",
+   "snippet": "Alumina Bharat Aluminium Co. Ltd. (Vedanta Ltd., 51%, and Government,",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "Vedanta Aluminium Metal Limited",
+   "facility": "Lanjigarh alumina refinery",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "vedanta_operations",
+   "snippet": "We operate a 5 MTPA (million tonnes per annum) capacity alumina refinery in Lanjigarh",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Vedanta Aluminium Metal Limited",
+   "facility": "Jharsuguda smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "vedanta_operations",
+   "snippet": "We operate the world’s largest aluminium plant at Jharsuguda, Odisha.",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Vedanta Ltd.",
+   "facility": "Lanjigarh alumina refinery",
+   "role": "OWNS",
+   "percentage": 100,
+   "document": "usgs_india_2022",
+   "snippet": "Vedanta Aluminium Ltd. (Vedanta Ltd., 100%) Lanjigarh refinery",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "Madras Aluminium Co. Ltd. (MALCO)",
+   "facility": "Mettur smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_india_2022",
+   "snippet": "Madras Aluminium Co. Ltd. (Vedanta Ltd., 100%) Mettur smelter, Tamil Nadu",
+   "valid_from": "2022-01-01",
+   "valid_to": "2022-12-31",
+   "as_of_text": "INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022"
+  },
+  {
+   "company": "Emirates Global Aluminium PJSC",
+   "facility": "Jebel Ali smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "ega_operations",
+   "snippet": "Our Jebel Ali smelter in Dubai and Al Taweelah smelter in Abu Dhabi are amongst the largest in the world.",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Emirates Global Aluminium PJSC",
+   "facility": "Al Taweelah smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "ega_operations",
+   "snippet": "Our Jebel Ali smelter in Dubai and Al Taweelah smelter in Abu Dhabi are amongst the largest in the world.",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  },
+  {
+   "company": "Emirates Global Aluminium PJSC",
+   "facility": "Al Taweelah alumina refinery",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "ega_operations",
+   "snippet": "Al Taweelah alumina refinery is located adjacent to our smelter in Abu Dhabi.",
+   "valid_from": null,
+   "valid_to": null,
+   "as_of_text": "undated page; capture date"
+  }
+ ],
+ "capacities": [
+  {
+   "facility": "Vaudreuil alumina refinery",
+   "document": "usgs_canada_2020_21",
+   "value": "1,522",
+   "period_basis": "USGS table \"CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021 (Thousand metric tons unless otherwise specified)\"; period = calendar 2021.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Vaudreuil alumina refinery",
+    "country": "CA",
+    "valid_from": "2021-01-01",
+    "valid_to": "2021-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Vaudreuil refinery, Jonquiere, Quebec",
+    "suffix": ". Aluminum Alcoa Corp.",
+    "page": 16
+   }
+  },
+  {
+   "facility": "Baie-Comeau smelter",
+   "document": "usgs_canada_2020_21",
+   "value": "306",
+   "period_basis": "USGS table \"CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021 (Thousand metric tons unless otherwise specified)\"; period = calendar 2021.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Baie-Comeau smelter",
+    "country": "CA",
+    "valid_from": "2021-01-01",
+    "valid_to": "2021-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Baie-Comeau smelter in Baie-Comeau, Quebec",
+    "suffix": ". Do. do. Deschambault",
+    "page": 16
+   }
+  },
+  {
+   "facility": "Deschambault smelter",
+   "document": "usgs_canada_2020_21",
+   "value": "278",
+   "period_basis": "USGS table \"CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021 (Thousand metric tons unless otherwise specified)\"; period = calendar 2021.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Deschambault smelter",
+    "country": "CA",
+    "valid_from": "2021-01-01",
+    "valid_to": "2021-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Deschambault smelter in Deschambault, Quebec",
+    "suffix": "Do. Alcoa Corp., 74.95%",
+    "page": 16
+   }
+  },
+  {
+   "facility": "Aluminerie de Bécancour (ABI)",
+   "document": "usgs_canada_2020_21",
+   "value": "413",
+   "period_basis": "USGS table \"CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021 (Thousand metric tons unless otherwise specified)\"; period = calendar 2021.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Aluminerie de Bécancour (ABI)",
+    "country": "CA",
+    "valid_from": "2021-01-01",
+    "valid_to": "2021-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Becancour smelter in Becancour, Quebec",
+    "suffix": ". Alcan Inc., 25.05%",
+    "page": 16
+   }
+  },
+  {
+   "facility": "Alma smelter",
+   "document": "usgs_canada_2020_21",
+   "value": "471",
+   "period_basis": "USGS table \"CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021 (Thousand metric tons unless otherwise specified)\"; period = calendar 2021.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Alma smelter",
+    "country": "CA",
+    "valid_from": "2021-01-01",
+    "valid_to": "2021-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Alma smelter in Alma, Quebec",
+    "suffix": ". Do. do. Arvida",
+    "page": 16
+   }
+  },
+  {
+   "facility": "Arvida smelter",
+   "document": "usgs_canada_2020_21",
+   "value": "236",
+   "period_basis": "USGS table \"CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021 (Thousand metric tons unless otherwise specified)\"; period = calendar 2021.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Arvida smelter",
+    "country": "CA",
+    "valid_from": "2021-01-01",
+    "valid_to": "2021-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Arvida smelter in Arvida, Jonquiere, Quebec",
+    "suffix": ". Do. do. Grande-Baie",
+    "page": 16
+   }
+  },
+  {
+   "facility": "Grande-Baie smelter",
+   "document": "usgs_canada_2020_21",
+   "value": "227",
+   "period_basis": "USGS table \"CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021 (Thousand metric tons unless otherwise specified)\"; period = calendar 2021.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Grande-Baie smelter",
+    "country": "CA",
+    "valid_from": "2021-01-01",
+    "valid_to": "2021-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Grande-Baie smelter in Grande-Baie, Quebec",
+    "suffix": ". Do. do. Kitimat",
+    "page": 16
+   }
+  },
+  {
+   "facility": "Kitimat smelter",
+   "document": "usgs_canada_2020_21",
+   "value": "420",
+   "period_basis": "USGS table \"CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021 (Thousand metric tons unless otherwise specified)\"; period = calendar 2021.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Kitimat smelter",
+    "country": "CA",
+    "valid_from": "2021-01-01",
+    "valid_to": "2021-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Kitimat smelter in Kitimat, British Columbia",
+    "suffix": ". Do. do. Laterriere",
+    "page": 16
+   }
+  },
+  {
+   "facility": "Laterrière smelter",
+   "document": "usgs_canada_2020_21",
+   "value": "247",
+   "period_basis": "USGS table \"CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021 (Thousand metric tons unless otherwise specified)\"; period = calendar 2021.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Laterrière smelter",
+    "country": "CA",
+    "valid_from": "2021-01-01",
+    "valid_to": "2021-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Laterriere smelter in Laterriere, Quebec",
+    "suffix": ". Do. Rio Tinto Alcan Inc., 40%",
+    "page": 16
+   }
+  },
+  {
+   "facility": "Aluminerie Alouette",
+   "document": "usgs_canada_2020_21",
+   "value": "602",
+   "period_basis": "USGS table \"CANADA: STRUCTURE OF THE MINERAL INDUSTRY IN 2021 (Thousand metric tons unless otherwise specified)\"; period = calendar 2021.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Aluminerie Alouette",
+    "country": "CA",
+    "valid_from": "2021-01-01",
+    "valid_to": "2021-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Alouette smelter in Sept-Iles, Quebec",
+    "suffix": ". Metall Québec, 20%",
+    "page": 16
+   }
+  },
+  {
+   "facility": "Alma smelter",
+   "document": "aac_industry",
+   "value": "473,000",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Alma smelter",
+    "country": "CA",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Alma Smelter Anual production capacity:",
+    "suffix": "tons Products: foundry alloys",
+    "page": null
+   }
+  },
+  {
+   "facility": "Baie-Comeau smelter",
+   "document": "aac_industry",
+   "value": "312,000",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Baie-Comeau smelter",
+    "country": "CA",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Baie-Comeau Smelter Anual production capacity:",
+    "suffix": "tons Products: Rolling plates",
+    "page": null
+   }
+  },
+  {
+   "facility": "Deschambault smelter",
+   "document": "aac_industry",
+   "value": "287,000",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Deschambault smelter",
+    "country": "CA",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Deschambault Smelter Anual production capacity:",
+    "suffix": "tons Products: T-shaped ingots",
+    "page": null
+   }
+  },
+  {
+   "facility": "Arvida smelter",
+   "document": "aac_industry",
+   "value": "234,000",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Arvida smelter",
+    "country": "CA",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Aluminerie Arvida-AP60 Anual production capacity:",
+    "suffix": "tons Products: billets and remelting sows",
+    "page": null
+   }
+  },
+  {
+   "facility": "Grande-Baie smelter",
+   "document": "aac_industry",
+   "value": "233,000",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Grande-Baie smelter",
+    "country": "CA",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Grande Baie Smelter Anual production capacity:",
+    "suffix": "tons Products: plates (rolling ingots) remelting ingots",
+    "page": null
+   }
+  },
+  {
+   "facility": "Laterrière smelter",
+   "document": "aac_industry",
+   "value": "257,000",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Laterrière smelter",
+    "country": "CA",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Laterrière Smelter Anual production capacity:",
+    "suffix": "tons Products: plates (rolling ingots) 8",
+    "page": null
+   }
+  },
+  {
+   "facility": "Aluminerie de Bécancour (ABI)",
+   "document": "aac_industry",
+   "value": "462,000",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Aluminerie de Bécancour (ABI)",
+    "country": "CA",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Bécancour Smelter Anual production capacity:",
+    "suffix": "tons Products: T-ingots, plates, billets",
+    "page": null
+   }
+  },
+  {
+   "facility": "Kitimat smelter",
+   "document": "aac_industry",
+   "value": "432,000",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Kitimat smelter",
+    "country": "CA",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Kitimat Smelter Anual production capacity:",
+    "suffix": "tons Products: plates (rolling ingots), foundry ingots",
+    "page": null
+   }
+  },
+  {
+   "facility": "Aluminerie Alouette",
+   "document": "nrcan_aluminum_facts",
+   "value": "632,000",
+   "period_basis": "NRCan section \"Canadian refinery and smelters estimated capacity and production, 2024\"; period = calendar 2024.",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Aluminerie Alouette",
+    "country": "CA",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "which boasts an impressive production capacity of",
+    "suffix": "tonnes per year",
+    "page": null
+   }
+  },
+  {
+   "facility": "Boddington-Worsley bauxite mine",
+   "document": "usgs_australia_2023",
+   "value": "19,000",
+   "period_basis": "USGS table \"STRUCTURE OF THE MINERAL INDUSTRY IN 2023 (Thousand metric tons unless otherwise specified)\", column \"Annual capacity e\" (estimated); period = calendar 2023.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Boddington-Worsley bauxite mine",
+    "country": "AU",
+    "valid_from": "2023-01-01",
+    "valid_to": "2023-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "14 km south of Boddington, WA",
+    "suffix": "Ltd., manager [South32",
+    "page": 13
+   }
+  },
+  {
+   "facility": "Gove bauxite mine",
+   "document": "usgs_australia_2023",
+   "value": "13,000",
+   "period_basis": "USGS table \"STRUCTURE OF THE MINERAL INDUSTRY IN 2023 (Thousand metric tons unless otherwise specified)\", column \"Annual capacity e\" (estimated); period = calendar 2023.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Gove bauxite mine",
+    "country": "AU",
+    "valid_from": "2023-01-01",
+    "valid_to": "2023-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "15 km southeast of Nhulunbuy, NT",
+    "suffix": "Ltd., 100%)]",
+    "page": 13
+   }
+  },
+  {
+   "facility": "Huntly bauxite mine",
+   "document": "usgs_australia_2023",
+   "value": "26,000",
+   "period_basis": "USGS table \"STRUCTURE OF THE MINERAL INDUSTRY IN 2023 (Thousand metric tons unless otherwise specified)\", column \"Annual capacity e\" (estimated); period = calendar 2023.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Huntly bauxite mine",
+    "country": "AU",
+    "valid_from": "2023-01-01",
+    "valid_to": "2023-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "80 km south of Perth, WA",
+    "suffix": "(Alcoa Corp., 60%",
+    "page": 13
+   }
+  },
+  {
+   "facility": "Willowdale bauxite mine",
+   "document": "usgs_australia_2023",
+   "value": "10,000",
+   "period_basis": "USGS table \"STRUCTURE OF THE MINERAL INDUSTRY IN 2023 (Thousand metric tons unless otherwise specified)\", column \"Annual capacity e\" (estimated); period = calendar 2023.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Willowdale bauxite mine",
+    "country": "AU",
+    "valid_from": "2023-01-01",
+    "valid_to": "2023-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "130 km south of Perth, WA",
+    "suffix": "(Alcoa Corp., 60%",
+    "page": 13
+   }
+  },
+  {
+   "facility": "Kwinana alumina refinery",
+   "document": "usgs_australia_2023",
+   "value": "2,200",
+   "period_basis": "USGS table \"STRUCTURE OF THE MINERAL INDUSTRY IN 2023 (Thousand metric tons unless otherwise specified)\", column \"Annual capacity e\" (estimated); period = calendar 2023.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Kwinana alumina refinery",
+    "country": "AU",
+    "valid_from": "2023-01-01",
+    "valid_to": "2023-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "(Alcoa Kwinana, WA",
+    "suffix": "Corp., 60%",
+    "page": 13
+   }
+  },
+  {
+   "facility": "Pinjarra alumina refinery",
+   "document": "usgs_australia_2023",
+   "value": "4,200",
+   "period_basis": "USGS table \"STRUCTURE OF THE MINERAL INDUSTRY IN 2023 (Thousand metric tons unless otherwise specified)\", column \"Annual capacity e\" (estimated); period = calendar 2023.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Pinjarra alumina refinery",
+    "country": "AU",
+    "valid_from": "2023-01-01",
+    "valid_to": "2023-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "(Alcoa Pinjarra, WA",
+    "suffix": "Corp., 60%",
+    "page": 13
+   }
+  },
+  {
+   "facility": "Wagerup alumina refinery",
+   "document": "usgs_australia_2023",
+   "value": "2,850",
+   "period_basis": "USGS table \"STRUCTURE OF THE MINERAL INDUSTRY IN 2023 (Thousand metric tons unless otherwise specified)\", column \"Annual capacity e\" (estimated); period = calendar 2023.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Wagerup alumina refinery",
+    "country": "AU",
+    "valid_from": "2023-01-01",
+    "valid_to": "2023-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "(Alcoa Wagerup, WA",
+    "suffix": "Corp., 60%",
+    "page": 13
+   }
+  },
+  {
+   "facility": "Worsley alumina refinery",
+   "document": "usgs_australia_2023",
+   "value": "4,600",
+   "period_basis": "USGS table \"STRUCTURE OF THE MINERAL INDUSTRY IN 2023 (Thousand metric tons unless otherwise specified)\", column \"Annual capacity e\" (estimated); period = calendar 2023.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Worsley alumina refinery",
+    "country": "AU",
+    "valid_from": "2023-01-01",
+    "valid_to": "2023-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "20 km northwest of",
+    "suffix": "[South32 Ltd., 86%",
+    "page": 13
+   }
+  },
+  {
+   "facility": "Tomago aluminium smelter",
+   "document": "usgs_australia_2023",
+   "value": "590",
+   "period_basis": "USGS table \"STRUCTURE OF THE MINERAL INDUSTRY IN 2023 (Thousand metric tons unless otherwise specified)\", column \"Annual capacity e\" (estimated); period = calendar 2023.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Tomago aluminium smelter",
+    "country": "AU",
+    "valid_from": "2023-01-01",
+    "valid_to": "2023-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Tomago, NSW",
+    "suffix": "operator [Pacific Aluminium",
+    "page": 13
+   }
+  },
+  {
+   "facility": "BALCO Korba alumina refinery",
+   "document": "usgs_india_2022",
+   "value": "200",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "BALCO Korba alumina refinery",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Korba I and II refineries, Chhattisgarh",
+    "suffix": "49%) Do. Hindalco",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Belagavi alumina refinery",
+   "document": "usgs_india_2022",
+   "value": "350",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Belagavi alumina refinery",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Belagavi refinery, Karnataka",
+    "suffix": "institutions, 30%",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Muri alumina refinery",
+   "document": "usgs_india_2022",
+   "value": "575",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Muri alumina refinery",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Muri refinery, Jharkhand",
+    "suffix": "Do. do. Renukoot refinery",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Renukoot alumina refinery",
+   "document": "usgs_india_2022",
+   "value": "900",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Renukoot alumina refinery",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Renukoot refinery, Uttar Pradesh",
+    "suffix": "Do. Madras Aluminium",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Damanjodi alumina refinery",
+   "document": "usgs_india_2022",
+   "value": "2,275",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Damanjodi alumina refinery",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Damanjodi refinery, Odisha",
+    "suffix": "Do. Utkal Alumina",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Utkal alumina refinery",
+   "document": "usgs_india_2022",
+   "value": "2,270",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Utkal alumina refinery",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Koraput refinery, Odisha",
+    "suffix": "100%) Do. Vedanta",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Lanjigarh alumina refinery",
+   "document": "usgs_india_2022",
+   "value": "2,000",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Lanjigarh alumina refinery",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Lanjigarh refinery, Kalahandi, Odisha",
+    "suffix": "Aluminum Bharat",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Aditya smelter",
+   "document": "usgs_india_2022",
+   "value": "720",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Aditya smelter",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Aditya smelter, Sambalpur, Odisha",
+    "suffix": "institutions, 30%",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Hirakud smelter",
+   "document": "usgs_india_2022",
+   "value": "360",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Hirakud smelter",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Hirakud smelter, Odisha",
+    "suffix": "Do. do. Mahan",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Mahan smelter",
+   "document": "usgs_india_2022",
+   "value": "360",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Mahan smelter",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Mahan smelter, Bargawan, Madhya Pradesh",
+    "suffix": "Do. do. Renukoot smelter",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Renukoot smelter",
+   "document": "usgs_india_2022",
+   "value": "472",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Renukoot smelter",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Renukoot smelter, Uttar Pradesh",
+    "suffix": "Do. Madras",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Mettur smelter",
+   "document": "usgs_india_2022",
+   "value": "40",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Mettur smelter",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Mettur smelter, Tamil Nadu",
+    "suffix": "Do. National Aluminium",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Angul smelter",
+   "document": "usgs_india_2022",
+   "value": "460",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Angul smelter",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Angul smelter, Odisha",
+    "suffix": "Do. Vedanta",
+    "page": 12
+   }
+  },
+  {
+   "facility": "Panchpatmali bauxite mines",
+   "document": "usgs_india_2022",
+   "value": "7,500",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Panchpatmali bauxite mines",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Mines in Panchpatmali Hills, Damanjodi,",
+    "suffix": "Koraput District, Odisha",
+    "page": 13
+   }
+  },
+  {
+   "facility": "Baphlimali bauxite mine",
+   "document": "usgs_india_2022",
+   "value": "8,500",
+   "period_basis": "USGS table \"INDIA: STRUCTURE OF THE MINERAL INDUSTRY IN 2022 (Thousand metric tons unless otherwise specified)\"; period = calendar 2022.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Baphlimali bauxite mine",
+    "country": "IN",
+    "valid_from": "2022-01-01",
+    "valid_to": "2022-12-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Baphlimali Mine, Rayagada District,",
+    "suffix": "100%) Odisha Boron",
+    "page": 13
+   }
+  },
+  {
+   "facility": "Angul smelter",
+   "document": "ibm_aluminium_2022",
+   "value": "460",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Angul smelter",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Angul (Odisha)",
+    "suffix": "Private Sector Bharat",
+    "page": 2
+   }
+  },
+  {
+   "facility": "BALCO Korba smelter",
+   "document": "ibm_aluminium_2022",
+   "value": "590",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "BALCO Korba smelter",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Korba (CG) - I Korba (CG)- II",
+    "suffix": "Hindalco Industries Ltd",
+    "page": 2
+   }
+  },
+  {
+   "facility": "Aditya smelter",
+   "document": "ibm_aluminium_2022",
+   "value": "360",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Aditya smelter",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Aditya (Odisha)-",
+    "suffix": "Hirakud (Odisha)-",
+    "page": 2
+   }
+  },
+  {
+   "facility": "Hirakud smelter",
+   "document": "ibm_aluminium_2022",
+   "value": "216",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Hirakud smelter",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Hirakud (Odisha)-",
+    "suffix": "1345 Mahan",
+    "page": 2
+   }
+  },
+  {
+   "facility": "Mahan smelter",
+   "document": "ibm_aluminium_2022",
+   "value": "359",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Mahan smelter",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Mahan (M.P) -",
+    "suffix": "Renukoot(U.P)",
+    "page": 2
+   }
+  },
+  {
+   "facility": "Renukoot smelter",
+   "document": "ibm_aluminium_2022",
+   "value": "410",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Renukoot smelter",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Renukoot(U.P) -",
+    "suffix": "Vedanta Aluminium Ltd",
+    "page": 2
+   }
+  },
+  {
+   "facility": "Damanjodi alumina refinery",
+   "document": "ibm_aluminium_2022",
+   "value": "2275",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Damanjodi alumina refinery",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Damanjodi (Odisha)",
+    "suffix": "Private Sector Bharat",
+    "page": 2
+   }
+  },
+  {
+   "facility": "BALCO Korba alumina refinery",
+   "document": "ibm_aluminium_2022",
+   "value": "200",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "BALCO Korba alumina refinery",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Korba (Chhattisgarh)",
+    "suffix": "# Hindalco",
+    "page": 2
+   }
+  },
+  {
+   "facility": "Renukoot alumina refinery",
+   "document": "ibm_aluminium_2022",
+   "value": "700",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Renukoot alumina refinery",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Renukoot -",
+    "suffix": "(Uttar Pradesh) Belagavi",
+    "page": 2
+   }
+  },
+  {
+   "facility": "Belagavi alumina refinery",
+   "document": "ibm_aluminium_2022",
+   "value": "350",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Belagavi alumina refinery",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Belagavi -",
+    "suffix": "(Karnataka)",
+    "page": 2
+   }
+  },
+  {
+   "facility": "Muri alumina refinery",
+   "document": "ibm_aluminium_2022",
+   "value": "450",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Muri alumina refinery",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Muri -",
+    "suffix": "3000 (Jharkhand)",
+    "page": 2
+   }
+  },
+  {
+   "facility": "Utkal alumina refinery",
+   "document": "ibm_aluminium_2022",
+   "value": "1500",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Utkal alumina refinery",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Utkal Alumina -",
+    "suffix": "(Odisha) Vedanta",
+    "page": 2
+   }
+  },
+  {
+   "facility": "Lanjigarh alumina refinery",
+   "document": "ibm_aluminium_2022",
+   "value": "2000",
+   "period_basis": "IBM Indian Minerals Yearbook 2022 installed-capacity tables \"(In '000 tonnes)\"; the tables carry no own date, period set to the yearbook's fiscal year 2021-22 (text: \"in 2021-22\").",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Lanjigarh alumina refinery",
+    "country": "IN",
+    "valid_from": "2021-04-01",
+    "valid_to": "2022-03-31",
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Lanjigarh (Odisha)",
+    "suffix": "Source: Information",
+    "page": 2
+   }
+  },
+  {
+   "facility": "Lanjigarh alumina refinery",
+   "document": "vedanta_lanjigarh_pr",
+   "value": "3.5",
+   "period_basis": "Vedanta press release dated 04 April 2024 (capacity after commissioning).",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Lanjigarh alumina refinery",
+    "country": "IN",
+    "valid_from": "2024-04-04",
+    "valid_to": null,
+    "unit": "Mt/year",
+    "attribute": "capacity",
+    "prefix": "production capacity has now increased to",
+    "suffix": "MTPA from the existing 2 MTPA",
+    "page": null
+   }
+  },
+  {
+   "facility": "Lanjigarh alumina refinery",
+   "document": "vedanta_operations",
+   "value": "5",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Lanjigarh alumina refinery",
+    "country": "IN",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "Mt/year",
+    "attribute": "capacity",
+    "prefix": "We operate a",
+    "suffix": "MTPA (million tonnes per annum) capacity alumina refinery in Lanjigarh",
+    "page": null
+   }
+  },
+  {
+   "facility": "Jharsuguda smelter",
+   "document": "vedanta_operations",
+   "value": "1.85",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Jharsuguda smelter",
+    "country": "IN",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "Mt/year",
+    "attribute": "capacity",
+    "prefix": "The plant has an aluminium smelting capacity of",
+    "suffix": "MTPA and an associated 3615 MW",
+    "page": null
+   }
+  },
+  {
+   "facility": "BALCO Korba smelter",
+   "document": "vedanta_operations",
+   "value": "0.58",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "BALCO Korba smelter",
+    "country": "IN",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "Mt/year",
+    "attribute": "capacity",
+    "prefix": "BALCO operates a",
+    "suffix": "MTPA aluminium smelter in Korba",
+    "page": null
+   }
+  },
+  {
+   "facility": "Pinjarra alumina refinery",
+   "document": "sec_alcoa_10k_2025",
+   "value": "4,700",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Pinjarra alumina refinery",
+    "country": "AU",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Australia Pinjarra",
+    "suffix": "4,700 Wagerup",
+    "page": null
+   }
+  },
+  {
+   "facility": "Wagerup alumina refinery",
+   "document": "sec_alcoa_10k_2025",
+   "value": "2,879",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Wagerup alumina refinery",
+    "country": "AU",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Wagerup",
+    "suffix": "2,879 Brazil",
+    "page": null
+   }
+  },
+  {
+   "facility": "Poços de Caldas alumina refinery",
+   "document": "sec_alcoa_10k_2025",
+   "value": "390",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Poços de Caldas alumina refinery",
+    "country": "BR",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Brazil Poços de Caldas",
+    "suffix": "390 São Luís",
+    "page": null
+   }
+  },
+  {
+   "facility": "Alumar alumina refinery",
+   "document": "sec_alcoa_10k_2025",
+   "value": "3,860",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Alumar alumina refinery",
+    "country": "BR",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "São Luís (Alumar)",
+    "suffix": "2,084 Spain",
+    "page": null
+   }
+  },
+  {
+   "facility": "San Ciprián alumina refinery",
+   "document": "sec_alcoa_10k_2025",
+   "value": "1,600",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "San Ciprián alumina refinery",
+    "country": "ES",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Spain San Ciprián",
+    "suffix": "1,600 TOTAL",
+    "page": null
+   }
+  },
+  {
+   "facility": "Alumar smelter",
+   "document": "sec_alcoa_10k_2025",
+   "value": "447",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Alumar smelter",
+    "country": "BR",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "São Luís (Alumar)",
+    "suffix": "268 Canada",
+    "page": null
+   }
+  },
+  {
+   "facility": "Baie-Comeau smelter",
+   "document": "sec_alcoa_10k_2025",
+   "value": "324",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Baie-Comeau smelter",
+    "country": "CA",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Baie-Comeau, Québec",
+    "suffix": "324 Bécancour",
+    "page": null
+   }
+  },
+  {
+   "facility": "Aluminerie de Bécancour (ABI)",
+   "document": "sec_alcoa_10k_2025",
+   "value": "467",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Aluminerie de Bécancour (ABI)",
+    "country": "CA",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Bécancour, Québec",
+    "suffix": "350 Deschambault",
+    "page": null
+   }
+  },
+  {
+   "facility": "Deschambault smelter",
+   "document": "sec_alcoa_10k_2025",
+   "value": "287",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Deschambault smelter",
+    "country": "CA",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Deschambault, Québec",
+    "suffix": "287 Iceland",
+    "page": null
+   }
+  },
+  {
+   "facility": "Fjarðaál smelter",
+   "document": "sec_alcoa_10k_2025",
+   "value": "351",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Fjarðaál smelter",
+    "country": "IS",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Iceland Fjarðaál",
+    "suffix": "351 Norway",
+    "page": null
+   }
+  },
+  {
+   "facility": "Lista smelter",
+   "document": "sec_alcoa_10k_2025",
+   "value": "95",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Lista smelter",
+    "country": "NO",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Norway Lista",
+    "suffix": "95 Mosjøen",
+    "page": null
+   }
+  },
+  {
+   "facility": "Mosjøen smelter",
+   "document": "sec_alcoa_10k_2025",
+   "value": "200",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Mosjøen smelter",
+    "country": "NO",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Mosjøen",
+    "suffix": "200 Spain",
+    "page": null
+   }
+  },
+  {
+   "facility": "San Ciprián smelter",
+   "document": "sec_alcoa_10k_2025",
+   "value": "228",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "San Ciprián smelter",
+    "country": "ES",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Spain San Ciprián",
+    "suffix": "228 United States",
+    "page": null
+   }
+  },
+  {
+   "facility": "Massena West smelter",
+   "document": "sec_alcoa_10k_2025",
+   "value": "130",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Massena West smelter",
+    "country": "US",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Massena West, NY",
+    "suffix": "130 Evansville",
+    "page": null
+   }
+  },
+  {
+   "facility": "Warrick smelter",
+   "document": "sec_alcoa_10k_2025",
+   "value": "215",
+   "period_basis": "Alcoa 10-K nameplate capacity \"(000 mtpy)\" \"as of December 31, 2025\".",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Warrick smelter",
+    "country": "US",
+    "valid_from": "2025-12-31",
+    "valid_to": null,
+    "unit": "kt/year",
+    "attribute": "capacity",
+    "prefix": "Evansville, IN (Warrick)",
+    "suffix": "215 TOTAL",
+    "page": null
+   }
+  },
+  {
+   "facility": "Grundartangi smelter",
+   "document": "sec_century_10k_2024",
+   "value": "320,000",
+   "period_basis": "Century 10-K FY2024 (\"approximately\"; capacity as reported at fiscal year end 2024).",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Grundartangi smelter",
+    "country": "IS",
+    "valid_from": "2024-12-31",
+    "valid_to": null,
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Grundartangi is our most modern facility with a current production capacity of approximately",
+    "suffix": "tonnes. Grundartangi produces",
+    "page": null
+   }
+  },
+  {
+   "facility": "Hawesville smelter",
+   "document": "sec_century_10k_2024",
+   "value": "250,000",
+   "period_basis": "Century 10-K FY2024 (\"approximately\"; capacity as reported at fiscal year end 2024).",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Hawesville smelter",
+    "country": "US",
+    "valid_from": "2024-12-31",
+    "valid_to": null,
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Hawesville has an annual production capacity of approximately",
+    "suffix": "tonnes of primary aluminum. In August 2022",
+    "page": null
+   }
+  },
+  {
+   "facility": "Sebree smelter",
+   "document": "sec_century_10k_2024",
+   "value": "220,000",
+   "period_basis": "Century 10-K FY2024 (\"approximately\"; capacity as reported at fiscal year end 2024).",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Sebree smelter",
+    "country": "US",
+    "valid_from": "2024-12-31",
+    "valid_to": null,
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Sebree has an annual production capacity of approximately",
+    "suffix": "tonnes of primary aluminum. Sebree produces",
+    "page": null
+   }
+  },
+  {
+   "facility": "Mt. Holly smelter",
+   "document": "sec_century_10k_2024",
+   "value": "230,000",
+   "period_basis": "Century 10-K FY2024 (\"approximately\"; capacity as reported at fiscal year end 2024).",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Mt. Holly smelter",
+    "country": "US",
+    "valid_from": "2024-12-31",
+    "valid_to": null,
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Mt. Holly has an annual production capacity of approximately",
+    "suffix": "tonnes of primary aluminum. In December 2020",
+    "page": null
+   }
+  },
+  {
+   "facility": "Jamalco",
+   "document": "sec_century_10k_2024",
+   "value": "1.4",
+   "period_basis": "Century 10-K FY2024 (\"approximately\"; capacity as reported at fiscal year end 2024).",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Jamalco",
+    "country": "JM",
+    "valid_from": "2024-12-31",
+    "valid_to": null,
+    "unit": "Mt/year",
+    "attribute": "capacity",
+    "prefix": "Jamalco has alumina production capacity of approximately",
+    "suffix": "million tonnes, and produced approximately 1.1 million tonnes of alumina in 2024 and approximately 1.0 million tonnes of alumina in 2023. Refer to Note 2. Acquisition of Jamalco for further information. 3 Pricing",
+    "page": null
+   }
+  },
+  {
+   "facility": "Jebel Ali smelter",
+   "document": "ega_jebel_ali",
+   "value": "1",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Jebel Ali smelter",
+    "country": "AE",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "Mt/year",
+    "attribute": "capacity",
+    "prefix": "covers an area five times bigger than Dubai Mall. ~",
+    "suffix": "m tonnes per year nameplate capacity",
+    "page": null
+   }
+  },
+  {
+   "facility": "Jebel Ali smelter",
+   "document": "ega_jebel_ali",
+   "value": "135,000",
+   "period_basis": "Undated EGA page; \"~\" marks an approximate nameplate value. 1979 value bounded to the start-up year stated in the text.",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Jebel Ali smelter",
+    "country": "AE",
+    "valid_from": "1979-01-01",
+    "valid_to": "1979-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "with three small potlines and nameplate production capacity of",
+    "suffix": "tonnes per year. Since then",
+    "page": null
+   }
+  },
+  {
+   "facility": "Al Taweelah smelter",
+   "document": "ega_al_taweelah",
+   "value": "1.5",
+   "period_basis": "Undated page: the period starts at the capture date",
+   "spec": {
+    "adapter": "html-v1",
+    "facility_name": "Al Taweelah smelter",
+    "country": "AE",
+    "valid_from": null,
+    "valid_to": null,
+    "unit": "Mt/year",
+    "attribute": "capacity",
+    "prefix": "at six square kilometres. ~",
+    "suffix": "m tonnes per year nameplate capacity",
+    "page": null
+   }
+  }
+ ],
+ "statuses": [
+  {
+   "facility": "Kwinana alumina refinery",
+   "status": "suspended",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "which had been fully curtailed since June 2024",
+   "valid_from": "2024-06-01",
+   "valid_to": "2025-08-31",
+   "as_of_text": "since June 2024",
+   "note": "curtailed until the permanent closure announced in September 2025"
+  },
+  {
+   "facility": "Kwinana alumina refinery",
+   "status": "closed",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "In September 2025, Alcoa announced the permanent closure of the Kwinana alumina refinery in Australia",
+   "valid_from": "2025-09-01",
+   "valid_to": null,
+   "as_of_text": "September 2025 (closure announced; demolition and remediation expected 2026-2031)"
+  },
+  {
+   "facility": "Hawesville smelter",
+   "status": "suspended",
+   "document": "sec_century_10k_2024",
+   "snippet": "In August 2022, we fully curtailed production at the Hawesville facility.",
+   "valid_from": "2022-08-01",
+   "valid_to": null,
+   "as_of_text": "August 2022"
+  },
+  {
+   "facility": "Mt. Holly smelter",
+   "status": "operating",
+   "document": "sec_century_10k_2024",
+   "snippet": "The initial phase was completed in 2022 and returned annual active production capacity to approximately 172,000 MT per annum (75% of capacity).",
+   "valid_from": "2022-12-31",
+   "valid_to": null,
+   "as_of_text": "2022 (partial restart, 75% of capacity active)",
+   "note": "\"completed in 2022\": asserted from the end of 2022, not its start"
+  },
+  {
+   "facility": "Lista smelter",
+   "status": "operating",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "The site was operating at approximately 92 percent of the site’s total annual capacity of 95,000 mtpy as of December 31, 2025.",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025 (one potline restarted Q2 2025 after August 2022 curtailment)"
+  },
+  {
+   "facility": "San Ciprián smelter",
+   "status": "operating",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "The smelter was operating at approximately 65 percent of its total annual capacity of 228,000 metric tons as of December 31, 2025",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025 (restart paused April 2025, resumed July 2025)"
+  },
+  {
+   "facility": "Alumar smelter",
+   "status": "operating",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "the restart of the Alumar smelter in Brazil, which was operating at approximately 91 percent of the site’s total annual capacity of 268,000 mtpy (Alcoa share) as of December 31, 2025",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "as of December 31, 2025 (restart in progress)"
+  },
+  {
+   "facility": "Huntly bauxite mine",
+   "status": "operating",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Darling Range (1) (WA) Production/ Operating Open-cut mines.",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "Form 10-K for 2025 (Darling Range: Huntly and Willowdale mining centers)"
+  },
+  {
+   "facility": "Willowdale bauxite mine",
+   "status": "operating",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "Darling Range (1) (WA) Production/ Operating Open-cut mines.",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "Form 10-K for 2025 (Darling Range: Huntly and Willowdale mining centers)"
+  },
+  {
+   "facility": "Juruti bauxite mine",
+   "status": "operating",
+   "document": "sec_alcoa_10k_2025",
+   "snippet": "The Juruti bauxite mine represents an established mining operation which commenced commercial production of bauxite in 2009.",
+   "valid_from": "2025-12-31",
+   "valid_to": null,
+   "as_of_text": "Form 10-K for 2025"
+  },
+  {
+   "facility": "Mettur smelter",
+   "status": "suspended",
+   "document": "ibm_aluminium_2022",
+   "snippet": "MALCO is under care and maintenance by Vedanta since May, 2017.",
+   "valid_from": "2017-05-01",
+   "valid_to": null,
+   "as_of_text": "since May, 2017"
+  },
+  {
+   "facility": "Alupuram smelter",
+   "status": "closed",
+   "document": "ibm_aluminium_2022",
+   "snippet": "The Alupuram (Kerala) smelter is closed",
+   "valid_from": "2021-04-01",
+   "valid_to": "2022-03-31",
+   "as_of_text": "Indian Minerals Yearbook 2022 (published February, 2024); closure date not stated",
+   "note": "stated for the yearbook period, fiscal 2021-22"
+  },
+  {
+   "facility": "Vaudreuil alumina refinery",
+   "status": "operating",
+   "document": "nrcan_aluminum_facts",
+   "snippet": "An alumina refinery is also in operation in Jonquière, Quebec.",
+   "valid_from": "2024-01-01",
+   "valid_to": "2024-12-31",
+   "as_of_text": "Canadian refinery and smelters estimated capacity and production, 2024"
+  }
+ ]
+}

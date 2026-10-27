@@ -88,6 +88,8 @@ class SourceAccessIn(Input):
     # Environment variable NAME holding a licensed API credential; the secret never enters the database.
     credential_ref: str | None = Field(default=None, pattern=r'^[A-Z][A-Z0-9_]{2,63}$')
     auth_header: Literal['x-api-key', 'authorization'] | None = None
+    # False keeps the source's data inside the Core: exports leave it out (licensed market data).
+    export_allowed: bool = True
     @field_validator('allowed_hosts')
     @classmethod
     def hosts(cls, value):
@@ -141,3 +143,76 @@ class EntityEvidenceIn(Input):
 class ReviewCandidateIn(Input):
     entity_id: str
     reason: str = Field(min_length=10,max_length=2000)
+
+class InstrumentIn(Input):
+    code: str = Field(pattern=r'^[A-Z][A-Z0-9_]{1,63}$')
+    name: str = Field(min_length=1, max_length=256)
+    exchange: str | None = Field(default=None, pattern=r'^[A-Z]{2,16}$')
+    market: Literal['forward', 'futures', 'physical']
+    commodity: str = 'aluminium'
+    grade: str | None = Field(default=None, max_length=256)
+    region: str | None = Field(default=None, max_length=128)
+    tenor: str | None = Field(default=None, pattern=r'^[A-Za-z0-9]{1,32}$')
+    contract_code: str | None = Field(default=None, pattern=r'^[A-Za-z0-9.]{1,32}$')
+    contract_month: str | None = Field(default=None, pattern=r'^\d{4}-(0[1-9]|1[0-2])$')
+    currency: str = Field(pattern=r'^[A-Z]{3}$')
+    unit: Literal['USD/t', 'USc/lb', 'USD/lb', 'CNY/t', 'EUR/t', 'JPY/t']
+    quantity_unit: Literal['lots', 'contracts', 't'] | None = None
+    description: str = Field(default='', max_length=4000)
+    @model_validator(mode='after')
+    def identity(self):
+        from .models import PRICE_UNITS
+        if PRICE_UNITS[self.unit] != self.currency: raise ValueError('Unit ' + self.unit + ' is quoted in ' + PRICE_UNITS[self.unit])
+        if self.market != 'physical' and not self.exchange: raise ValueError('Exchange instruments need their exchange')
+        if self.market == 'forward' and not self.tenor: raise ValueError('A forward point needs its tenor, e.g. cash or 3M')
+        if (self.contract_code is None) != (self.contract_month is None): raise ValueError('A dated contract needs both its code and its month')
+        if self.tenor and self.contract_month: raise ValueError('An instrument is either a rolling point (tenor) or one dated contract')
+        return self
+
+class MarketColumnIn(Input):
+    column: str = Field(min_length=1, max_length=256)
+    instrument: str | None = Field(default=None, pattern=r'^[A-Z][A-Z0-9_]{1,63}$')
+    price_type: Literal['official', 'closing', 'settlement', 'daily', 'assessment', 'intraday']
+    field: Literal['bid', 'ask', 'open', 'high', 'low', 'close', 'settlement', 'volume', 'open_interest']
+    source_series: str | None = Field(default=None, max_length=128)
+
+class MarketImportIn(Input):
+    """How to read one market data table; the file itself is a registered document."""
+    adapter: Literal['market-csv-v1', 'market-xlsx-v1']
+    sheet: str | None = Field(default=None, min_length=1, max_length=64)
+    header_row: int = Field(default=1, ge=1, le=100)
+    date_column: str = Field(min_length=1, max_length=256)
+    date_format: str = Field(min_length=2, max_length=32)
+    time_column: str | None = Field(default=None, max_length=256)
+    time_format: str | None = Field(default=None, max_length=32)
+    timezone: str = Field(default='UTC', max_length=64)
+    columns: list[MarketColumnIn] = Field(min_length=1, max_length=200)
+    # Long tables: one row per contract or instrument, named in a column.
+    instrument_column: str | None = Field(default=None, max_length=256)
+    instrument_map: dict[str, str] = Field(default_factory=dict, max_length=500)
+    contract_code_column: str | None = Field(default=None, max_length=256)
+    contract_month_column: str | None = Field(default=None, max_length=256)
+    prompt_date_column: str | None = Field(default=None, max_length=256)
+    missing_values: list[str] = Field(default_factory=lambda: ['', 'NA', 'N/A', '#N/A', 'NaN', 'NULL', '-'], max_length=20)
+    # When the vendor delivered the data (the export time) and, if the vendor states it, when it was published.
+    retrieved_at: datetime
+    published_at: datetime | None = None
+    data_status: Literal['reported', 'provisional', 'final', 'carried_forward', 'corrected'] = 'reported'
+    @model_validator(mode='after')
+    def complete(self):
+        if '%' not in self.date_format: raise ValueError('date_format is a strptime pattern such as %Y-%m-%d')
+        if (self.adapter == 'market-xlsx-v1') != (self.sheet is not None): raise ValueError('An XLSX table needs its sheet name; a CSV table has none')
+        if (self.time_column is None) != (self.time_format is None): raise ValueError('Give time_column and time_format together')
+        if self.retrieved_at.tzinfo is None or (self.published_at and self.published_at.tzinfo is None): raise ValueError('Timestamps need a timezone')
+        if self.instrument_column:
+            if not self.instrument_map: raise ValueError('instrument_column needs instrument_map from cell value to instrument code')
+            if any(column.instrument for column in self.columns): raise ValueError('With instrument_column, columns name no instrument')
+        elif any(not column.instrument for column in self.columns): raise ValueError('Each column needs its instrument')
+        import re
+        if any(not re.fullmatch(r'[A-Z][A-Z0-9_]{1,63}', code) for code in self.instrument_map.values()): raise ValueError('Invalid instrument code in instrument_map')
+        keys = [(column.instrument, column.price_type, column.field) for column in self.columns]
+        if len(set(keys)) != len(keys): raise ValueError('Two columns fill the same instrument, price type and field')
+        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+        try: ZoneInfo(self.timezone)
+        except (ZoneInfoNotFoundError, ValueError) as exc: raise ValueError('Unknown timezone') from exc
+        return self
