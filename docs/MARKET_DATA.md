@@ -86,21 +86,42 @@ Register each instrument with the unit and currency from the vendor's own series
 
 Licensed files are private data: keep them and the snapshot directory out of git and shared folders.
 
+### Vendor deliveries as recipes
+
+`python -m tools.market_recipe RECIPE.json --root DELIVERY_DIR [--dry-run]` loads a delivery from a recipe in
+`tools/curated/`: the source and its licence, the instruments, which file and column fills which instrument and price
+type, untouched companion files stored as evidence without being read, and the series left out with the reason. The
+recipes hold no values. The LME deliveries of 2026-10-27 are `lseg-lme-price-types-2026-10-27.json` and
+`lseg-lme-decembers-2026-10-27.json`.
+
+### LSEG export folders
+
+`python -m tools.lseg_import EXPORT_DIR [--dry-run]` loads a folder of lseg-data downloads (manifest.json plus, per
+series, the untouched `*.raw.json` response and a CSV dump). The untouched response is the evidence. On first use it
+registers the LSEG source with `export_allowed: false` (academic use by the project group only). The mapping in the tool
+covers SHFE aluminium contracts and continuations, COMEX aluminium contracts, CME premium futures (US Midwest, Europe
+duty-paid and duty-unpaid, Japan), SHFE alumina and the SMM Australian alumina FOB assessment, each with its unit and the
+exchange rule or publisher quote it comes from. Volume and open interest are numbers of contracts. LSEG's change,
+limit, VWAP, mid and all-months total fields are not loaded. Physical-asset lists are not market data and are skipped.
+A column a file cannot keep is named in `LEAVE_OUT` (AUPc1's high and low: one row has the high below the low).
+
 ### Import settings
 
 | Setting | Meaning |
 |---|---|
-| `adapter` | `market-csv-v1` (UTF-8 CSV) or `market-xlsx-v1` (Excel workbook, cached cell values; give `sheet`) |
+| `adapter` | `market-csv-v1` (UTF-8 CSV, or tab-separated for a `.tsv` document such as a table copied from a vendor screen), `market-xlsx-v1` (Excel workbook, cached cell values; give `sheet`) or `market-lseg-json-v1` (an untouched LSEG historical-pricing response: its request parts, headers in row 1, numbers read exactly as written) |
 | `header_row` | 1-based row holding the column names; rows above it (vendor descriptions) are kept in the file, not read |
 | `date_column`, `date_format` | The date column and its exact strptime pattern, e.g. `%d/%m/%Y`. Excel dates read as `%Y-%m-%d`. No guessing: a row that does not match stops the import |
 | `time_column`, `time_format`, `timezone` | Optional intraday time and the IANA timezone of date and time; stored as UTC |
-| `columns` | One entry per value column: `column` (header), `instrument` (code), `price_type`, `field` (bid … settlement, volume, open_interest), `source_series` (vendor code, default the header) |
+| `columns` | One entry per value column: `column` (header, or `#N` for the N-th column when a vendor copy repeats one name), `instrument` (code), `price_type`, `field` (bid … settlement, volume, open_interest), `source_series` (vendor code, default the header) |
 | `instrument_column`, `instrument_map` | Long tables: a column naming the contract or series, mapped to instrument codes; unmapped values stop the import |
 | `contract_code_column`, `contract_month_column`, `prompt_date_column` | Optional per-row contract details |
 | `missing_values` | Cells meaning "no value" (default empty, NA, N/A, #N/A, NaN, NULL, -) |
 | `retrieved_at` | When the vendor delivered the data, with timezone (the export time) |
 | `published_at` | When the vendor says the values were published, if it does |
 | `data_status` | Status of the whole file, default `reported` |
+| `leave_out` | Dates not to load, each with its reason (for example a crossed quote the Core cannot store); kept in the build and reported as `ROWS_LEFT_OUT` |
+| `status_by_date` | Dates whose status differs from the file's, for example the vendor's incomplete last day as `provisional` |
 
 Numbers are exact decimals with `.` for decimals and optional `,` thousands grouping; exponents, more than six
 decimals and negative volumes are refused. A file with any invalid row is refused whole and the failure is logged as
@@ -129,7 +150,7 @@ record it in `price_type` and the instrument description, not by assumption.
 | `INVALID_UNIT`, `MISSING_QUANTITY_UNIT`, `PROVENANCE_MISMATCH` | BLOCK | Inconsistent instrument unit, volume without a unit, observation and build citing different files |
 | `MISSING_ACCESS_AUDIT` | WARN | No audited access decision; the data is not exported |
 | `WEEKEND_DATE` | WARN | Values dated on a Saturday or Sunday (padded days) |
-| `POSSIBLE_CARRY_FORWARD` | WARN | Prices identical to the previous date in the same file (a vendor may copy the last value forward) |
+| `POSSIBLE_CARRY_FORWARD` | WARN | Every value identical to the previous date in the same file, volume and open interest included (a vendor may copy the last value forward); flat assessments and untraded months also show here |
 | `SERIES_GAP` | WARN | More than seven weekdays without a value in one file |
 | `SUSPICIOUS_VALUE_CHANGE` | WARN | An exchange price moved more than 20% from the previous date in one file |
 | `CONFLICTING_OBSERVATIONS` | WARN | Two files give different values for the same date; both are kept |
@@ -162,8 +183,13 @@ same for one stored build.
 
 ## Known limits
 
-- The first vendor, LSEG Datastream through a member's university licence, gives daily values only: no intraday LME
-  data and no physical premium assessments (premiums come as CME futures, stored as futures).
+- The first vendor, LSEG through a member's university licence, gives daily values only: no intraday LME data and no
+  physical premium assessments (premiums come as CME futures, stored as futures).
+- LME from Datastream: closing prices for cash, 3M, 15M and 27M (datatype P, matched to the LME evening evaluation
+  for 3M), official bid for cash and bid and ask for 3M, and the December contracts Dec 2026 to Dec 2036 with
+  settlement, volume and open interest. Datastream has no official cash seller series, so the LME cash settlement
+  price is missing. Left out: Datastream's official mid, the unofficial prices (stale since February 2024), high, low
+  and opening prices of an unstated session. LME holidays repeat the previous day (`POSSIBLE_CARRY_FORWARD`).
 - Publication times are rarely in vendor exports and stay null unless stated.
 - No currency conversion, no derived values, no curve construction: downstream work.
 - Data from LSEG stays internal (`export_allowed: false`) until its onward use is confirmed.

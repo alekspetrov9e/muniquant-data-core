@@ -1,0 +1,226 @@
+{
+ "name": "LME aluminium price types and 15M/27M forwards, LSEG Datastream, delivered 2026-10-27",
+ "source": {
+  "name": "LSEG Datastream (Workspace Chart Studio copies)",
+  "publisher": "LSEG",
+  "source_type": "commercial",
+  "url": "https://www.lseg.com/en/data-analytics",
+  "notes": "LME data from LSEG Datastream, copied from Workspace Chart Studio by a project member (TUM chair licence) and handed over unchanged with per-series CSVs.",
+  "access": {
+   "export_allowed": false,
+   "basis": "LSEG Workspace via TUM chair: academic use only, project group only; do not publish or pass on the raw data (licence note in the delivery README)",
+   "retention": "Private storage only; never in git; no export until onward use is confirmed in writing"
+  }
+ },
+ "instruments": [
+  {
+   "code": "LME_AL_CASH",
+   "name": "LME aluminium cash",
+   "exchange": "LME",
+   "market": "forward",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "tenor": "cash",
+   "currency": "USD",
+   "unit": "USD/t",
+   "description": "Datastream LAHCASH (RIC MAL0), USD/t. closing = Datastream datatype P \"Price - Trade\"; for LAH3MTH it equals the LME evening evaluation on 21-22 Oct 2026 (licence holder's check), the same datatype is read as closing here. official bid = LAHCASH(OB). Datastream has no official seller series for cash, so the LME cash settlement price (official seller) is not in this delivery."
+  },
+  {
+   "code": "LME_AL_3M",
+   "name": "LME aluminium 3-month",
+   "exchange": "LME",
+   "market": "forward",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "tenor": "3M",
+   "currency": "USD",
+   "unit": "USD/t",
+   "description": "Datastream LAH3MTH (RIC MAL3), USD/t. closing = Datastream datatype P \"Price - Trade\"; for LAH3MTH it equals the LME evening evaluation on 21-22 Oct 2026 (licence holder's check), the same datatype is read as closing here. official bid and ask = LAH3MTH(OB) and LAH3MTH(OO)."
+  },
+  {
+   "code": "LME_AL_15M",
+   "name": "LME aluminium 15-month",
+   "exchange": "LME",
+   "market": "forward",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "tenor": "15M",
+   "currency": "USD",
+   "unit": "USD/t",
+   "description": "Datastream LAH15MT, USD/t. closing = Datastream datatype P \"Price - Trade\"; for LAH3MTH it equals the LME evening evaluation on 21-22 Oct 2026 (licence holder's check), the same datatype is read as closing here."
+  },
+  {
+   "code": "LME_AL_27M",
+   "name": "LME aluminium 27-month",
+   "exchange": "LME",
+   "market": "forward",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "tenor": "27M",
+   "currency": "USD",
+   "unit": "USD/t",
+   "description": "Datastream LAH27MT, USD/t. closing = Datastream datatype P \"Price - Trade\"; for LAH3MTH it equals the LME evening evaluation on 21-22 Oct 2026 (licence holder's check), the same datatype is read as closing here."
+  }
+ ],
+ "note": "The three raw tables repeat one truncated column name; positions were matched, value for value on every date, to the per-series CSVs of the delivery (2026-10-27). Times are the archive's file times, read as CET like the delivery's other files.",
+ "imports": [
+  {
+   "file": "raw/chartstudio_A1.tsv",
+   "locator": "datastream:LAH3MTH,LAHCASH",
+   "title": "LSEG Datastream LME aluminium 3M and cash, closing (datatype P), Chart Studio table A1",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "header_row": 3,
+    "date_column": "Date",
+    "date_format": "%d/%m/%Y",
+    "retrieved_at": "2026-10-27T13:09:12+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "columns": [
+     {
+      "column": "#2",
+      "instrument": "LME_AL_3M",
+      "price_type": "closing",
+      "field": "close",
+      "source_series": "LAH3MTH"
+     },
+     {
+      "column": "#3",
+      "instrument": "LME_AL_CASH",
+      "price_type": "closing",
+      "field": "close",
+      "source_series": "LAHCASH"
+     }
+    ]
+   }
+  },
+  {
+   "file": "raw/chartstudio_A1.tsv",
+   "locator": "datastream:LAH3MTH,LAHCASH",
+   "title": "LSEG Datastream LME aluminium 3M and cash, closing (datatype P), Chart Studio table A1",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "header_row": 3,
+    "date_column": "Date",
+    "date_format": "%d/%m/%Y",
+    "retrieved_at": "2026-10-27T13:09:12+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "columns": [
+     {
+      "column": "#5",
+      "instrument": "LME_AL_3M",
+      "price_type": "official",
+      "field": "bid",
+      "source_series": "LAH3MTH(OB)"
+     },
+     {
+      "column": "#6",
+      "instrument": "LME_AL_3M",
+      "price_type": "official",
+      "field": "ask",
+      "source_series": "LAH3MTH(OO)"
+     }
+    ],
+    "leave_out": {
+     "2010-07-02": "official buyer above official seller as delivered (a crossed quote); the Core does not store one"
+    }
+   }
+  },
+  {
+   "file": "raw/chartstudio_A1.tsv",
+   "locator": "datastream:LAH3MTH,LAHCASH",
+   "title": "LSEG Datastream LME aluminium 3M and cash, closing (datatype P), Chart Studio table A1",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "header_row": 3,
+    "date_column": "Date",
+    "date_format": "%d/%m/%Y",
+    "retrieved_at": "2026-10-27T13:09:12+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "columns": [
+     {
+      "column": "#14",
+      "instrument": "LME_AL_CASH",
+      "price_type": "official",
+      "field": "bid",
+      "source_series": "LAHCASH(OB)"
+     }
+    ]
+   }
+  },
+  {
+   "file": "raw/chartstudio_A3.tsv",
+   "locator": "datastream:LAH15MT,LAH27MT",
+   "title": "LSEG Datastream LME aluminium 15M and 27M, closing (datatype P), Chart Studio table A3",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "header_row": 3,
+    "date_column": "Date",
+    "date_format": "%d/%m/%Y",
+    "retrieved_at": "2026-10-27T13:13:21+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "columns": [
+     {
+      "column": "#4",
+      "instrument": "LME_AL_15M",
+      "price_type": "closing",
+      "field": "close",
+      "source_series": "LAH15MT"
+     },
+     {
+      "column": "#5",
+      "instrument": "LME_AL_27M",
+      "price_type": "closing",
+      "field": "close",
+      "source_series": "LAH27MT"
+     }
+    ]
+   }
+  }
+ ],
+ "companions": [
+  {
+   "file": "raw/chartstudio_A2.tsv",
+   "locator": "datastream:LAHCASH(PH),LAHCASH(PL)",
+   "title": "LSEG Datastream Chart Studio table A2 (stored, not read)",
+   "published_at": "2026-10-27"
+  }
+ ],
+ "left_out": [
+  {
+   "series": "LAH3MTH(OF), LAHCASH(OF)",
+   "reason": "Datastream's official mid: equals the mean of official buyer and seller on 4,894 of 4,910 days for 3M; a calculated value, and the Core has no mid field"
+  },
+  {
+   "series": "LAH3MTH(UF), (UB), (UO), LAHCASH(UF)",
+   "reason": "unofficial prices; stale since 2024-02-05 per the delivery README, and no unofficial price type yet"
+  },
+  {
+   "series": "LAH3MTH(PH), (PL), LAHCASH(PH), (PL)",
+   "reason": "high and low of an unstated session; often equal to the official seller and buyer"
+  },
+  {
+   "series": "LAH3MTH(PO)",
+   "reason": "opening price of an unstated session; series ends 2014-10-22"
+  },
+  {
+   "series": "LAH3MTH and LAHCASH of the 2026-10-26 delivery",
+   "reason": "the same values to 2026-10-23; table A1 runs to 2026-10-26"
+  }
+ ]
+}

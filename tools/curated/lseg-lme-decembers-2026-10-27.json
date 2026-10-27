@@ -1,0 +1,680 @@
+{
+ "name": "LME aluminium December contracts Dec 2026 - Dec 2036, LSEG Datastream, delivered 2026-10-27",
+ "source": {
+  "name": "LSEG Datastream (Workspace Chart Studio copies)",
+  "publisher": "LSEG",
+  "source_type": "commercial",
+  "url": "https://www.lseg.com/en/data-analytics",
+  "notes": "LME data from LSEG Datastream, copied from Workspace Chart Studio by a project member (TUM chair licence) and handed over unchanged with per-series CSVs.",
+  "access": {
+   "export_allowed": false,
+   "basis": "LSEG Workspace via TUM chair: academic use only, project group only; do not publish or pass on the raw data (licence note in the delivery README)",
+   "retention": "Private storage only; never in git; no export until onward use is confirmed in writing"
+  }
+ },
+ "instruments": [
+  {
+   "code": "LME_AL_DEC26",
+   "name": "LME aluminium December 2026",
+   "exchange": "LME",
+   "market": "futures",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "contract_code": "MALZ26",
+   "contract_month": "2026-12",
+   "currency": "USD",
+   "unit": "USD/t",
+   "quantity_unit": "contracts",
+   "description": "Datastream LAH1226 (contract_code = LSEG RIC MALZ26): settlement PS (USD/t), volume VM and open interest OI in contracts of 25 t."
+  },
+  {
+   "code": "LME_AL_DEC27",
+   "name": "LME aluminium December 2027",
+   "exchange": "LME",
+   "market": "futures",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "contract_code": "MALZ27",
+   "contract_month": "2027-12",
+   "currency": "USD",
+   "unit": "USD/t",
+   "quantity_unit": "contracts",
+   "description": "Datastream LAH1227 (contract_code = LSEG RIC MALZ27): settlement PS (USD/t), volume VM and open interest OI in contracts of 25 t."
+  },
+  {
+   "code": "LME_AL_DEC28",
+   "name": "LME aluminium December 2028",
+   "exchange": "LME",
+   "market": "futures",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "contract_code": "MALZ28",
+   "contract_month": "2028-12",
+   "currency": "USD",
+   "unit": "USD/t",
+   "quantity_unit": "contracts",
+   "description": "Datastream LAH1228 (contract_code = LSEG RIC MALZ28): settlement PS (USD/t), volume VM and open interest OI in contracts of 25 t."
+  },
+  {
+   "code": "LME_AL_DEC29",
+   "name": "LME aluminium December 2029",
+   "exchange": "LME",
+   "market": "futures",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "contract_code": "MALZ29",
+   "contract_month": "2029-12",
+   "currency": "USD",
+   "unit": "USD/t",
+   "quantity_unit": "contracts",
+   "description": "Datastream LAH1229 (contract_code = LSEG RIC MALZ29): settlement PS (USD/t), volume VM and open interest OI in contracts of 25 t."
+  },
+  {
+   "code": "LME_AL_DEC30",
+   "name": "LME aluminium December 2030",
+   "exchange": "LME",
+   "market": "futures",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "contract_code": "MALZ30",
+   "contract_month": "2030-12",
+   "currency": "USD",
+   "unit": "USD/t",
+   "quantity_unit": "contracts",
+   "description": "Datastream LAH1230 (contract_code = LSEG RIC MALZ30): settlement PS (USD/t), volume VM and open interest OI in contracts of 25 t. Hardly traded: settlements are exchange-assessed."
+  },
+  {
+   "code": "LME_AL_DEC31",
+   "name": "LME aluminium December 2031",
+   "exchange": "LME",
+   "market": "futures",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "contract_code": "MALZ31",
+   "contract_month": "2031-12",
+   "currency": "USD",
+   "unit": "USD/t",
+   "quantity_unit": "contracts",
+   "description": "Datastream LAH1231 (contract_code = LSEG RIC MALZ31): settlement PS (USD/t), volume VM and open interest OI in contracts of 25 t. Hardly traded: settlements are exchange-assessed."
+  },
+  {
+   "code": "LME_AL_DEC32",
+   "name": "LME aluminium December 2032",
+   "exchange": "LME",
+   "market": "futures",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "contract_code": "MALZ32",
+   "contract_month": "2032-12",
+   "currency": "USD",
+   "unit": "USD/t",
+   "quantity_unit": "contracts",
+   "description": "Datastream LAH1232 (contract_code = LSEG RIC MALZ32): settlement PS (USD/t), volume VM and open interest OI in contracts of 25 t. Hardly traded: settlements are exchange-assessed."
+  },
+  {
+   "code": "LME_AL_DEC33",
+   "name": "LME aluminium December 2033",
+   "exchange": "LME",
+   "market": "futures",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "contract_code": "MALZ33",
+   "contract_month": "2033-12",
+   "currency": "USD",
+   "unit": "USD/t",
+   "quantity_unit": "contracts",
+   "description": "Datastream LAH1233 (contract_code = LSEG RIC MALZ33): settlement PS (USD/t), volume VM and open interest OI in contracts of 25 t. Hardly traded: settlements are exchange-assessed."
+  },
+  {
+   "code": "LME_AL_DEC34",
+   "name": "LME aluminium December 2034",
+   "exchange": "LME",
+   "market": "futures",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "contract_code": "MALZ34",
+   "contract_month": "2034-12",
+   "currency": "USD",
+   "unit": "USD/t",
+   "quantity_unit": "contracts",
+   "description": "Datastream LAH1234 (contract_code = LSEG RIC MALZ34): settlement PS (USD/t), volume VM and open interest OI in contracts of 25 t. Hardly traded: settlements are exchange-assessed."
+  },
+  {
+   "code": "LME_AL_DEC35",
+   "name": "LME aluminium December 2035",
+   "exchange": "LME",
+   "market": "futures",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "contract_code": "MALZ35",
+   "contract_month": "2035-12",
+   "currency": "USD",
+   "unit": "USD/t",
+   "quantity_unit": "contracts",
+   "description": "Datastream LAH1235 (contract_code = LSEG RIC MALZ35): settlement PS (USD/t), volume VM and open interest OI in contracts of 25 t. Hardly traded: settlements are exchange-assessed."
+  },
+  {
+   "code": "LME_AL_DEC36",
+   "name": "LME aluminium December 2036",
+   "exchange": "LME",
+   "market": "futures",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "contract_code": "MALZ36",
+   "contract_month": "2036-12",
+   "currency": "USD",
+   "unit": "USD/t",
+   "quantity_unit": "contracts",
+   "description": "Datastream LAH1236 (contract_code = LSEG RIC MALZ36): settlement PS (USD/t), volume VM and open interest OI in contracts of 25 t. Hardly traded: settlements are exchange-assessed."
+  }
+ ],
+ "note": "Each CSV of the delivery joins one contract's settlement, volume and open interest by date (rows with a settlement only); every column was matched, value for value, to the untouched raw tables, which are stored alongside. The raw tables split contracts across tables, so the CSVs are read. 2026-10-26 is incomplete in Datastream (volume 0, open interest n/a) and is marked provisional.",
+ "imports": [
+  {
+   "file": "LAH1226_1d_EXCHDATE_2016-2026.csv",
+   "locator": "datastream:LAH1226",
+   "title": "LSEG Datastream LME aluminium Dec 2026 (LAH1226): settlement, volume, open interest",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "date_column": "exchange_date",
+    "date_format": "%Y-%m-%d",
+    "retrieved_at": "2026-10-27T13:33:26+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "status_by_date": {
+     "2026-10-26": "provisional"
+    },
+    "columns": [
+     {
+      "column": "settle_PS",
+      "instrument": "LME_AL_DEC26",
+      "price_type": "daily",
+      "field": "settlement",
+      "source_series": "LAH1226(PS)"
+     },
+     {
+      "column": "volume_VM",
+      "instrument": "LME_AL_DEC26",
+      "price_type": "daily",
+      "field": "volume",
+      "source_series": "LAH1226(VM)"
+     },
+     {
+      "column": "open_interest_OI",
+      "instrument": "LME_AL_DEC26",
+      "price_type": "daily",
+      "field": "open_interest",
+      "source_series": "LAH1226(OI)"
+     }
+    ]
+   }
+  },
+  {
+   "file": "LAH1227_1d_EXCHDATE_2017-2026.csv",
+   "locator": "datastream:LAH1227",
+   "title": "LSEG Datastream LME aluminium Dec 2027 (LAH1227): settlement, volume, open interest",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "date_column": "exchange_date",
+    "date_format": "%Y-%m-%d",
+    "retrieved_at": "2026-10-27T13:33:26+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "status_by_date": {
+     "2026-10-26": "provisional"
+    },
+    "columns": [
+     {
+      "column": "settle_PS",
+      "instrument": "LME_AL_DEC27",
+      "price_type": "daily",
+      "field": "settlement",
+      "source_series": "LAH1227(PS)"
+     },
+     {
+      "column": "volume_VM",
+      "instrument": "LME_AL_DEC27",
+      "price_type": "daily",
+      "field": "volume",
+      "source_series": "LAH1227(VM)"
+     },
+     {
+      "column": "open_interest_OI",
+      "instrument": "LME_AL_DEC27",
+      "price_type": "daily",
+      "field": "open_interest",
+      "source_series": "LAH1227(OI)"
+     }
+    ]
+   }
+  },
+  {
+   "file": "LAH1228_1d_EXCHDATE_2018-2026.csv",
+   "locator": "datastream:LAH1228",
+   "title": "LSEG Datastream LME aluminium Dec 2028 (LAH1228): settlement, volume, open interest",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "date_column": "exchange_date",
+    "date_format": "%Y-%m-%d",
+    "retrieved_at": "2026-10-27T13:33:26+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "status_by_date": {
+     "2026-10-26": "provisional"
+    },
+    "columns": [
+     {
+      "column": "settle_PS",
+      "instrument": "LME_AL_DEC28",
+      "price_type": "daily",
+      "field": "settlement",
+      "source_series": "LAH1228(PS)"
+     },
+     {
+      "column": "volume_VM",
+      "instrument": "LME_AL_DEC28",
+      "price_type": "daily",
+      "field": "volume",
+      "source_series": "LAH1228(VM)"
+     },
+     {
+      "column": "open_interest_OI",
+      "instrument": "LME_AL_DEC28",
+      "price_type": "daily",
+      "field": "open_interest",
+      "source_series": "LAH1228(OI)"
+     }
+    ]
+   }
+  },
+  {
+   "file": "LAH1229_1d_EXCHDATE_2019-2026.csv",
+   "locator": "datastream:LAH1229",
+   "title": "LSEG Datastream LME aluminium Dec 2029 (LAH1229): settlement, volume, open interest",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "date_column": "exchange_date",
+    "date_format": "%Y-%m-%d",
+    "retrieved_at": "2026-10-27T13:33:26+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "status_by_date": {
+     "2026-10-26": "provisional"
+    },
+    "columns": [
+     {
+      "column": "settle_PS",
+      "instrument": "LME_AL_DEC29",
+      "price_type": "daily",
+      "field": "settlement",
+      "source_series": "LAH1229(PS)"
+     },
+     {
+      "column": "volume_VM",
+      "instrument": "LME_AL_DEC29",
+      "price_type": "daily",
+      "field": "volume",
+      "source_series": "LAH1229(VM)"
+     },
+     {
+      "column": "open_interest_OI",
+      "instrument": "LME_AL_DEC29",
+      "price_type": "daily",
+      "field": "open_interest",
+      "source_series": "LAH1229(OI)"
+     }
+    ]
+   }
+  },
+  {
+   "file": "LAH1230_1d_EXCHDATE_2020-2026.csv",
+   "locator": "datastream:LAH1230",
+   "title": "LSEG Datastream LME aluminium Dec 2030 (LAH1230): settlement, volume, open interest",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "date_column": "exchange_date",
+    "date_format": "%Y-%m-%d",
+    "retrieved_at": "2026-10-27T13:33:26+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "status_by_date": {
+     "2026-10-26": "provisional"
+    },
+    "columns": [
+     {
+      "column": "settle_PS",
+      "instrument": "LME_AL_DEC30",
+      "price_type": "daily",
+      "field": "settlement",
+      "source_series": "LAH1230(PS)"
+     },
+     {
+      "column": "volume_VM",
+      "instrument": "LME_AL_DEC30",
+      "price_type": "daily",
+      "field": "volume",
+      "source_series": "LAH1230(VM)"
+     },
+     {
+      "column": "open_interest_OI",
+      "instrument": "LME_AL_DEC30",
+      "price_type": "daily",
+      "field": "open_interest",
+      "source_series": "LAH1230(OI)"
+     }
+    ]
+   }
+  },
+  {
+   "file": "LAH1231_1d_EXCHDATE_2021-2026.csv",
+   "locator": "datastream:LAH1231",
+   "title": "LSEG Datastream LME aluminium Dec 2031 (LAH1231): settlement, volume, open interest",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "date_column": "exchange_date",
+    "date_format": "%Y-%m-%d",
+    "retrieved_at": "2026-10-27T13:33:26+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "status_by_date": {
+     "2026-10-26": "provisional"
+    },
+    "columns": [
+     {
+      "column": "settle_PS",
+      "instrument": "LME_AL_DEC31",
+      "price_type": "daily",
+      "field": "settlement",
+      "source_series": "LAH1231(PS)"
+     },
+     {
+      "column": "volume_VM",
+      "instrument": "LME_AL_DEC31",
+      "price_type": "daily",
+      "field": "volume",
+      "source_series": "LAH1231(VM)"
+     },
+     {
+      "column": "open_interest_OI",
+      "instrument": "LME_AL_DEC31",
+      "price_type": "daily",
+      "field": "open_interest",
+      "source_series": "LAH1231(OI)"
+     }
+    ]
+   }
+  },
+  {
+   "file": "LAH1232_1d_EXCHDATE_2022-2026.csv",
+   "locator": "datastream:LAH1232",
+   "title": "LSEG Datastream LME aluminium Dec 2032 (LAH1232): settlement, volume, open interest",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "date_column": "exchange_date",
+    "date_format": "%Y-%m-%d",
+    "retrieved_at": "2026-10-27T13:33:26+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "status_by_date": {
+     "2026-10-26": "provisional"
+    },
+    "columns": [
+     {
+      "column": "settle_PS",
+      "instrument": "LME_AL_DEC32",
+      "price_type": "daily",
+      "field": "settlement",
+      "source_series": "LAH1232(PS)"
+     },
+     {
+      "column": "volume_VM",
+      "instrument": "LME_AL_DEC32",
+      "price_type": "daily",
+      "field": "volume",
+      "source_series": "LAH1232(VM)"
+     },
+     {
+      "column": "open_interest_OI",
+      "instrument": "LME_AL_DEC32",
+      "price_type": "daily",
+      "field": "open_interest",
+      "source_series": "LAH1232(OI)"
+     }
+    ]
+   }
+  },
+  {
+   "file": "LAH1233_1d_EXCHDATE_2023-2026.csv",
+   "locator": "datastream:LAH1233",
+   "title": "LSEG Datastream LME aluminium Dec 2033 (LAH1233): settlement, volume, open interest",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "date_column": "exchange_date",
+    "date_format": "%Y-%m-%d",
+    "retrieved_at": "2026-10-27T13:33:26+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "status_by_date": {
+     "2026-10-26": "provisional"
+    },
+    "columns": [
+     {
+      "column": "settle_PS",
+      "instrument": "LME_AL_DEC33",
+      "price_type": "daily",
+      "field": "settlement",
+      "source_series": "LAH1233(PS)"
+     },
+     {
+      "column": "volume_VM",
+      "instrument": "LME_AL_DEC33",
+      "price_type": "daily",
+      "field": "volume",
+      "source_series": "LAH1233(VM)"
+     },
+     {
+      "column": "open_interest_OI",
+      "instrument": "LME_AL_DEC33",
+      "price_type": "daily",
+      "field": "open_interest",
+      "source_series": "LAH1233(OI)"
+     }
+    ]
+   }
+  },
+  {
+   "file": "LAH1234_1d_EXCHDATE_2024-2026.csv",
+   "locator": "datastream:LAH1234",
+   "title": "LSEG Datastream LME aluminium Dec 2034 (LAH1234): settlement, volume, open interest",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "date_column": "exchange_date",
+    "date_format": "%Y-%m-%d",
+    "retrieved_at": "2026-10-27T13:33:26+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "status_by_date": {
+     "2026-10-26": "provisional"
+    },
+    "columns": [
+     {
+      "column": "settle_PS",
+      "instrument": "LME_AL_DEC34",
+      "price_type": "daily",
+      "field": "settlement",
+      "source_series": "LAH1234(PS)"
+     },
+     {
+      "column": "volume_VM",
+      "instrument": "LME_AL_DEC34",
+      "price_type": "daily",
+      "field": "volume",
+      "source_series": "LAH1234(VM)"
+     },
+     {
+      "column": "open_interest_OI",
+      "instrument": "LME_AL_DEC34",
+      "price_type": "daily",
+      "field": "open_interest",
+      "source_series": "LAH1234(OI)"
+     }
+    ]
+   }
+  },
+  {
+   "file": "LAH1235_1d_EXCHDATE_2025-2026.csv",
+   "locator": "datastream:LAH1235",
+   "title": "LSEG Datastream LME aluminium Dec 2035 (LAH1235): settlement, volume, open interest",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "date_column": "exchange_date",
+    "date_format": "%Y-%m-%d",
+    "retrieved_at": "2026-10-27T13:33:26+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "status_by_date": {
+     "2026-10-26": "provisional"
+    },
+    "columns": [
+     {
+      "column": "settle_PS",
+      "instrument": "LME_AL_DEC35",
+      "price_type": "daily",
+      "field": "settlement",
+      "source_series": "LAH1235(PS)"
+     },
+     {
+      "column": "volume_VM",
+      "instrument": "LME_AL_DEC35",
+      "price_type": "daily",
+      "field": "volume",
+      "source_series": "LAH1235(VM)"
+     },
+     {
+      "column": "open_interest_OI",
+      "instrument": "LME_AL_DEC35",
+      "price_type": "daily",
+      "field": "open_interest",
+      "source_series": "LAH1235(OI)"
+     }
+    ]
+   }
+  },
+  {
+   "file": "LAH1236_1d_EXCHDATE_2026-2026.csv",
+   "locator": "datastream:LAH1236",
+   "title": "LSEG Datastream LME aluminium Dec 2036 (LAH1236): settlement, volume, open interest",
+   "published_at": "2026-10-27",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "date_column": "exchange_date",
+    "date_format": "%Y-%m-%d",
+    "retrieved_at": "2026-10-27T13:33:26+01:00",
+    "missing_values": [
+     "",
+     "n/a"
+    ],
+    "status_by_date": {
+     "2026-10-26": "provisional"
+    },
+    "columns": [
+     {
+      "column": "settle_PS",
+      "instrument": "LME_AL_DEC36",
+      "price_type": "daily",
+      "field": "settlement",
+      "source_series": "LAH1236(PS)"
+     },
+     {
+      "column": "volume_VM",
+      "instrument": "LME_AL_DEC36",
+      "price_type": "daily",
+      "field": "volume",
+      "source_series": "LAH1236(VM)"
+     },
+     {
+      "column": "open_interest_OI",
+      "instrument": "LME_AL_DEC36",
+      "price_type": "daily",
+      "field": "open_interest",
+      "source_series": "LAH1236(OI)"
+     }
+    ]
+   }
+  }
+ ],
+ "companions": [
+  {
+   "file": "raw/chartstudio_B1.tsv",
+   "locator": "datastream:LAH1226-LAH1236",
+   "title": "LSEG Datastream Chart Studio table B1, LME aluminium Decembers (stored, not read)",
+   "published_at": "2026-10-27"
+  },
+  {
+   "file": "raw/chartstudio_B2.tsv",
+   "locator": "datastream:LAH1226-LAH1236",
+   "title": "LSEG Datastream Chart Studio table B2, LME aluminium Decembers (stored, not read)",
+   "published_at": "2026-10-27"
+  },
+  {
+   "file": "raw/chartstudio_B3.tsv",
+   "locator": "datastream:LAH1226-LAH1236",
+   "title": "LSEG Datastream Chart Studio table B3, LME aluminium Decembers (stored, not read)",
+   "published_at": "2026-10-27"
+  },
+  {
+   "file": "raw/chartstudio_B4.tsv",
+   "locator": "datastream:LAH1226-LAH1236",
+   "title": "LSEG Datastream Chart Studio table B4, LME aluminium Decembers (stored, not read)",
+   "published_at": "2026-10-27"
+  },
+  {
+   "file": "raw/chartstudio_B5.tsv",
+   "locator": "datastream:LAH1226-LAH1236",
+   "title": "LSEG Datastream Chart Studio table B5, LME aluminium Decembers (stored, not read)",
+   "published_at": "2026-10-27"
+  },
+  {
+   "file": "raw/chartstudio_B6.tsv",
+   "locator": "datastream:LAH1226-LAH1236",
+   "title": "LSEG Datastream Chart Studio table B6, LME aluminium Decembers (stored, not read)",
+   "published_at": "2026-10-27"
+  }
+ ],
+ "left_out": [
+  {
+   "series": "Expired Decembers (before Dec 2026)",
+   "reason": "no history in the licence holder's Datastream access"
+  }
+ ]
+}

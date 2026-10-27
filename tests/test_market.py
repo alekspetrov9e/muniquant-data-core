@@ -93,6 +93,7 @@ def test_long_table_with_contracts_volume_and_open_interest(client):
     (LONG.replace(',1200,', ',-5,'), 'volume is negative'),
     (LONG.replace('20040', '20040.1234567'), '6 decimal digits'),
     (LONG.replace('20040', '2e4'), 'is not a number'),
+    (LONG.replace('20040', '1' + '0' * 30), '24 integer'),
     (LONG.replace('2025-01-02,AL2501', '02.01.2025,AL2501'), 'does not match'),
     (LONG.replace('AL2502,202502', 'AL2503,202503'), 'not in instrument_map'),
     (LONG + '2025-01-02,AL2501,202501,1,1,1,1,1,1,1\n', 'a second open')])
@@ -134,6 +135,12 @@ def test_quality_counts_series_problems_without_changing_data(client):
     assert found['SERIES_GAP']['examples'] == ['2025-02-03'] and found['SUSPICIOUS_VALUE_CHANGE']['examples'] == ['2025-02-04']
     assert found['CONFLICTING_OBSERVATIONS']['examples'] == ['2025-01-03'] and found['PUBLICATION_TIME_UNKNOWN']['severity'] == 'INFO'
     assert client.get('/api/records/instrument_observations').json()['total'] == 6
+    open_interest = 'date,contract,month,settle,oi\n2025-01-02,AL2501,202501,20040,5000\n2025-01-03,AL2501,202501,20040,5100\n2025-01-06,AL2501,202501,20040,5100\n'
+    spec = {**LONG_SPEC, 'instrument_map': {'AL2501': 'SHFE_AL_2501'}, 'columns': [c for c in LONG_SPEC['columns'] if c['column'] in ('settle', 'oi')]}
+    instruments(client, SHFE[:1])
+    post(client, f"documents/{table(client, vendor, open_interest, 'https://example.org/vendor/export-3')['id']}/market-import", spec)
+    repeated = next(f for f in client.get('/api/market/quality').json()['findings'] if f['code'] == 'POSSIBLE_CARRY_FORWARD' and f['record_id'].startswith('SHFE'))
+    assert repeated['examples'] == ['2025-01-06']  # same settlement but changed open interest on 01-03 is real trading
 
 def test_export_is_self_contained_and_leaves_internal_sources_out(client):
     instruments(client, LME + SHFE)
@@ -220,3 +227,82 @@ def test_command_line_registers_a_file_with_its_instruments(client, tmp_path):
     assert again['duplicate_document'] and again['duplicate_build'] and not again['instruments_created']
     with pytest.raises(ValueError, match='different definition'): market_import.run(path, **{**common, 'instruments': [{**LME[0], 'name': 'Renamed'}]})
     with pytest.raises(ValueError, match='locator'): market_import.run(path, **{**common, 'locator': 'not a uri'})
+
+# Shaped like an LSEG historical-pricing download: request parts with the API's headers and rows. Synthetic.
+LSEG = [{'chunk': ['2025-01-01', '2025-01-02'], 'raw': {'universe': {'ric': 'TESTc1'}, 'headers': [{'name': 'DATE'}, {'name': 'SETTLE'}, {'name': 'BID'}, {'name': 'ASK'}, {'name': 'OPINT_1'}, {'name': 'CRT_MNTH'}],
+         'data': [['2025-01-02', 0.12345, 0.11, 0.13, 4321, 202501], ['2025-01-01', 7e-05, None, None, None, None]]}},
+        {'chunk': ['2025-01-03', '2025-01-03'], 'raw': {'universe': {'ric': 'TESTc1'}, 'headers': [{'name': 'DATE'}, {'name': 'SETTLE'}, {'name': 'BID'}, {'name': 'ASK'}, {'name': 'OPINT_1'}, {'name': 'CRT_MNTH'}],
+         'data': [['2025-01-03', 1.23456, None, None, 3333, 202502]]}}]
+LSEG_SPEC = {'adapter': 'market-lseg-json-v1', 'date_column': 'DATE', 'date_format': '%Y-%m-%d', 'retrieved_at': '2026-10-26T21:48:47Z', 'contract_month_column': 'CRT_MNTH',
+             'columns': [{'column': c, 'instrument': 'CME_AUP_FRONT', 'price_type': 'daily', 'field': f, 'source_series': 'TESTc1 ' + c}
+                         for c, f in (('SETTLE', 'settlement'), ('BID', 'bid'), ('ASK', 'ask'), ('OPINT_1', 'open_interest'))]}
+AUP = {'code': 'CME_AUP_FRONT', 'name': 'US Midwest premium futures, front month', 'exchange': 'CME', 'market': 'futures', 'tenor': 'front', 'region': 'US Midwest',
+       'currency': 'USD', 'unit': 'USD/lb', 'quantity_unit': 'contracts'}
+
+def lseg_document(client, parts=LSEG):
+    with Session(client.app.state.engine) as s:
+        doc, _ = register_bytes(s, client.app.state.storage, {'source_id': source(client)['id'], 'title': 'Synthetic LSEG response', 'original_url': 'lseg:TESTc1',
+                                                              'published_at': None, 'media_type': 'application/json'}, json.dumps(parts).encode())
+        s.commit()
+        return doc.id
+
+def test_lseg_responses_are_read_exactly_across_their_parts(client):
+    instruments(client, [AUP])
+    result = post(client, f'documents/{lseg_document(client)}/market-import', LSEG_SPEC)
+    assert result['observations'] == 3
+    rows = {r['effective_date']: r for r in client.get('/api/records/instrument_observations').json()['records']}
+    assert (rows['2025-01-02']['settlement'], rows['2025-01-02']['bid'], rows['2025-01-02']['open_interest'], rows['2025-01-02']['contract_month']) == ('0.12345', '0.11', '4321', '2025-01')
+    assert rows['2025-01-01']['settlement'] == '0.00007' and rows['2025-01-01']['bid'] is None and rows['2025-01-01']['contract_month'] is None
+    assert rows['2025-01-03']['evidence_reference'] == 'Response part 2 row 1; columns SETTLE, OPINT_1'
+    assert rows['2025-01-02']['source_series'] == {'settlement': 'TESTc1 SETTLE', 'bid': 'TESTc1 BID', 'ask': 'TESTc1 ASK', 'open_interest': 'TESTc1 OPINT_1'}
+    assert client.post(f"/api/market/builds/{result['build']['id']}/replay").json()['equivalent']
+
+@pytest.mark.parametrize('parts,message', [
+    ({'not': 'a list'}, 'list of LSEG response parts'),
+    ([{'raw': {'headers': [{'name': 'DATE'}]}}], 'no headers and data'),
+    ([LSEG[0], {'raw': {**LSEG[1]['raw'], 'headers': LSEG[1]['raw']['headers'][:-1]}}], 'other columns than part 1'),
+    ([{'raw': {**LSEG[0]['raw'], 'data': [['2025-01-02', 1]]}}], 'does not match the headers'),
+    ([{'raw': {**LSEG[0]['raw'], 'data': [['2025-01-02', 1e30, None, None, None, None]]}}], '24 integer')])
+def test_malformed_lseg_responses_are_refused(client, parts, message):
+    instruments(client, [AUP])
+    response = client.post(f'/api/documents/{lseg_document(client, parts)}/market-import', json=LSEG_SPEC)
+    assert response.status_code == 422 and message in response.json()['detail']
+    assert client.post(f'/api/documents/{lseg_document(client)}/market-import', json={**LSEG_SPEC, 'header_row': 2}).status_code == 422
+
+# Shaped like a table copied from a vendor screen: tab-separated, a title line, repeated column names. Synthetic.
+SCREEN = ('\nPane 1\nDate\tSynthetic 99.7% \tSynthetic 99.7% \tSynthetic 99.7% \n'
+          '01/07/2010\t1500\t1501\t1503\n02/07/2010\t1510\t1512\t1508\n05/07/2010\t1520\t1519\t1522\n')
+SCREEN_SPEC = {'adapter': 'market-csv-v1', 'header_row': 3, 'date_column': 'Date', 'date_format': '%d/%m/%Y', 'retrieved_at': '2026-10-27T13:09:12+01:00',
+               'missing_values': ['', 'n/a'], 'leave_out': {'2010-07-02': 'official buyer above seller as delivered'}, 'status_by_date': {'2010-07-05': 'provisional'},
+               'columns': [{'column': '#3', 'instrument': 'LME_AL_3M', 'price_type': 'official', 'field': 'bid', 'source_series': 'LAH3MTH(OB)'},
+                           {'column': '#4', 'instrument': 'LME_AL_3M', 'price_type': 'official', 'field': 'ask', 'source_series': 'LAH3MTH(OO)'}]}
+
+def screen_document(client, content=SCREEN):
+    with Session(client.app.state.engine) as s:
+        doc, _ = register_bytes(s, client.app.state.storage, {'source_id': source(client)['id'], 'title': 'Synthetic screen copy', 'original_url': 'datastream:synthetic',
+                                                              'published_at': None, 'media_type': 'text/tab-separated-values'}, content.encode())
+        s.commit()
+        return doc.id
+
+def test_screen_copies_with_repeated_names_are_read_by_position(client):
+    instruments(client, LME)
+    result = post(client, f'documents/{screen_document(client)}/market-import', SCREEN_SPEC)
+    rows = {r['effective_date']: r for r in client.get('/api/records/instrument_observations').json()['records']}
+    assert result['observations'] == 2 and '2010-07-02' not in rows
+    assert (rows['2010-07-01']['bid'], rows['2010-07-01']['ask'], rows['2010-07-01']['data_status']) == ('1501', '1503', 'reported')
+    assert rows['2010-07-05']['data_status'] == 'provisional' and rows['2010-07-05']['evidence_reference'] == 'TSV row 6; columns #3, #4'
+    left = next(f for f in client.get('/api/market/quality').json()['findings'] if f['code'] == 'ROWS_LEFT_OUT')
+    assert left['examples'] == ['2010-07-02'] and 'buyer above seller' in left['message']
+    assert client.post(f"/api/market/builds/{result['build']['id']}/replay").json()['equivalent']
+
+@pytest.mark.parametrize('change,message', [
+    ({'leave_out': {}}, 'bid is above ask'),
+    ({'leave_out': {'2010-07-02': 'reason given', '2011-01-03': 'not in the file'}}, 'not in the table: 2011-01-03'),
+    ({'status_by_date': {'2012-01-02': 'provisional'}}, 'not in the table: 2012-01-02'),
+    ({'columns': [{**SCREEN_SPEC['columns'][0], 'column': '#9'}]}, 'beyond the 4 columns'),
+    ({'columns': [{**SCREEN_SPEC['columns'][0], 'column': 'Synthetic 99.7%'}]}, 'exactly once')])
+def test_screen_copy_rules_are_checked(client, change, message):
+    instruments(client, LME)
+    response = client.post(f'/api/documents/{screen_document(client)}/market-import', json={**SCREEN_SPEC, **change})
+    assert response.status_code == 422 and message in response.json()['detail']
+    assert client.post(f'/api/documents/{screen_document(client)}/market-import', json={**SCREEN_SPEC, 'leave_out': {'2010-07-02': ''}}).status_code == 422
