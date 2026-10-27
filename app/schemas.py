@@ -178,7 +178,7 @@ class MarketColumnIn(Input):
 
 class MarketImportIn(Input):
     """How to read one market data table; the file itself is a registered document."""
-    adapter: Literal['market-csv-v1', 'market-xlsx-v1']
+    adapter: Literal['market-csv-v1', 'market-xlsx-v1', 'market-lseg-json-v1']
     sheet: str | None = Field(default=None, min_length=1, max_length=64)
     header_row: int = Field(default=1, ge=1, le=100)
     date_column: str = Field(min_length=1, max_length=256)
@@ -198,10 +198,15 @@ class MarketImportIn(Input):
     retrieved_at: datetime
     published_at: datetime | None = None
     data_status: Literal['reported', 'provisional', 'final', 'carried_forward', 'corrected'] = 'reported'
+    # Single rows: dates not to load, each with its reason, and dates whose status differs from the file's.
+    leave_out: dict[date, str] = Field(default_factory=dict, max_length=100)
+    status_by_date: dict[date, Literal['reported', 'provisional', 'final', 'carried_forward', 'corrected']] = Field(default_factory=dict, max_length=100)
     @model_validator(mode='after')
     def complete(self):
         if '%' not in self.date_format: raise ValueError('date_format is a strptime pattern such as %Y-%m-%d')
-        if (self.adapter == 'market-xlsx-v1') != (self.sheet is not None): raise ValueError('An XLSX table needs its sheet name; a CSV table has none')
+        if any(len(reason.strip()) < 5 for reason in self.leave_out.values()): raise ValueError('Each row left out needs its reason')
+        if (self.adapter == 'market-xlsx-v1') != (self.sheet is not None): raise ValueError('An XLSX table needs its sheet name; other tables have none')
+        if self.adapter == 'market-lseg-json-v1' and self.header_row != 1: raise ValueError('An LSEG response has its headers in row 1')
         if (self.time_column is None) != (self.time_format is None): raise ValueError('Give time_column and time_format together')
         if self.retrieved_at.tzinfo is None or (self.published_at and self.published_at.tzinfo is None): raise ValueError('Timestamps need a timezone')
         if self.instrument_column:

@@ -30,6 +30,7 @@ SCHEMA = Path(__file__).parent / 'market-v1.schema.json'
 MAX_OBSERVATIONS = 50_000
 VALUE_FIELDS = (*PRICE_FIELDS, *QUANTITY_FIELDS)
 XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+TSV = 'text/tab-separated-values'
 # Downstream transformations the scope keeps out of the Core, refused anywhere in a package,
 # together with the ten fields no Core export may carry.
 SIGNALS = {'cash_3m_signal', 'lme_shfe_signal', 'premium_spread_signal', 'curve_score', 'tightness_score',
@@ -48,7 +49,8 @@ def exact(text, field, where):
         value = value.replace(',', '')
     if not re.fullmatch(r'-?[0-9]+(?:\.[0-9]+)?', value): raise ValueError(f'{where}: {field} {text!r} is not a number')
     amount = Decimal(value)
-    if amount != amount.quantize(Decimal('0.000001')) or abs(amount) >= Decimal('1e24'):
+    # Size first: quantizing a value beyond the decimal context's precision would itself fail.
+    if abs(amount) >= Decimal('1e24') or amount != amount.quantize(Decimal('0.000001')):
         raise ValueError(f'{where}: {field} exceeds 24 integer or 6 decimal digits')
     if field in QUANTITY_FIELDS and amount < 0: raise ValueError(f'{where}: {field} is negative')
     return decimal_text(amount)
@@ -57,10 +59,12 @@ def utc(text):
     return datetime.fromisoformat(text).astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ') if text else None
 
 def cells(raw, media, spec):
-    """The table as rows of text cells, with a locator prefix for evidence references."""
+    """The table as (locator label, number, text cells) rows, header rows included, for evidence references."""
     if spec['adapter'] == 'market-csv-v1':
-        if media != 'text/csv': raise ValueError('The market CSV adapter requires a text/csv document')
-        return 'CSV row', [[cell.strip() for cell in row] for row in csv.reader(io.StringIO(raw.decode('utf-8-sig')))]
+        # Comma-separated, or tab-separated as table copies from vendor screens are.
+        if media not in (TSV, 'text/csv'): raise ValueError('The market CSV adapter requires a text/csv or tab-separated document')
+        label, delimiter = ('TSV row', '\t') if media == TSV else ('CSV row', ',')
+        return [(label, number, [cell.strip() for cell in row]) for number, row in enumerate(csv.reader(io.StringIO(raw.decode('utf-8-sig')), delimiter=delimiter), 1)]
     if spec['adapter'] == 'market-xlsx-v1':
         if media != XLSX or not raw.startswith(b'PK'): raise ValueError('The market XLSX adapter requires an .xlsx document')
         from openpyxl import load_workbook
@@ -76,19 +80,56 @@ def cells(raw, media, spec):
                 if isinstance(value, bool): return str(value)
                 if isinstance(value, float): return decimal_text(Decimal(repr(value)))
                 return str(value).strip()
-            rows = [[text(value) for value in row] for row in book[spec['sheet']].iter_rows(values_only=True)]
+            rows = [(f"Sheet {spec['sheet']} row", number, [text(value) for value in row]) for number, row in enumerate(book[spec['sheet']].iter_rows(values_only=True), 1)]
         finally: book.close()
-        return f"Sheet {spec['sheet']} row", rows
+        return rows
+    if spec['adapter'] == 'market-lseg-json-v1':
+        return lseg_cells(raw, media)
     raise ValueError('Unknown market adapter')
+
+def lseg_cells(raw, media):
+    """An LSEG historical-pricing download as delivered: a list of request parts, each with the API's
+    own column headers and data rows. Numbers are read exactly as written in the JSON."""
+    if media != 'application/json': raise ValueError('The LSEG JSON adapter requires an application/json document')
+    try: parts = json.loads(raw.decode('utf-8'), parse_float=Decimal)
+    except ValueError as exc: raise ValueError('Malformed JSON document') from exc
+    if not isinstance(parts, list) or not parts: raise ValueError('Expected a list of LSEG response parts')
+    def text(value):
+        if value is None: return ''
+        if isinstance(value, bool) or not isinstance(value, (str, int, Decimal)): raise ValueError('Unexpected value in an LSEG response: ' + type(value).__name__)
+        return format(value, 'f') if isinstance(value, Decimal) else str(value).strip()
+    header, rows = None, []
+    for number, part in enumerate(parts, 1):
+        body = part.get('raw') if isinstance(part, dict) else None
+        if not isinstance(body, dict) or not isinstance(body.get('headers'), list) or not isinstance(body.get('data'), list):
+            raise ValueError(f'Response part {number} has no headers and data')
+        names = [item.get('name') if isinstance(item, dict) else None for item in body['headers']]
+        if not all(isinstance(name, str) for name in names): raise ValueError(f'Response part {number} has an unnamed column')
+        if header is None: header = names
+        elif names != header: raise ValueError(f'Response part {number} has other columns than part 1')
+        for index, row in enumerate(body['data'], 1):
+            if not isinstance(row, list) or len(row) != len(header): raise ValueError(f'Response part {number} row {index} does not match the headers')
+            rows.append((f'Response part {number} row', index, [text(value) for value in row]))
+    return [('Response header', 1, header), *rows]
+
+def locate(places):
+    """Evidence locator for the (label, number) places one observation was read from."""
+    labels = {}
+    for label, number in places: labels.setdefault(label, []).append(number)
+    return '; '.join(f"{label}{'s' if len(numbers) > 1 else ''} {', '.join(map(str, numbers))}" for label, numbers in labels.items())
 
 def parse(raw, media, spec):
     """Read one table into logical observation rows; pure, so a frozen file always replays the same."""
-    prefix, lines = cells(raw, media, spec)
+    lines = cells(raw, media, spec)
     header_index = spec['header_row'] - 1
     if header_index >= len(lines): raise ValueError('The header row is beyond the end of the table')
-    header = lines[header_index]
+    header = lines[header_index][2]
     def position(name):
         if name is None: return None
+        # '#N' names the N-th column, for vendor copies whose column names repeat.
+        if re.fullmatch(r'#[1-9][0-9]{0,2}', name):
+            if int(name[1:]) > len(header): raise ValueError(f"Column {name} is beyond the {len(header)} columns of header row {spec['header_row']}")
+            return int(name[1:]) - 1
         found = [index for index, cell in enumerate(header) if cell == name]
         if len(found) != 1: raise ValueError(f"Column {name!r} must appear exactly once in header row {spec['header_row']}")
         return found[0]
@@ -99,14 +140,19 @@ def parse(raw, media, spec):
     missing, zone = set(spec['missing_values']), ZoneInfo(spec['timezone'])
     published, retrieved = utc(spec.get('published_at')), utc(spec['retrieved_at'])
     groups = {}
-    for number, row in enumerate(lines[header_index + 1:], spec['header_row'] + 1):
+    leave_out, left_out = spec.get('leave_out') or {}, set()
+    statuses = spec.get('status_by_date') or {}
+    for label, number, row in lines[header_index + 1:]:
         if not any(row): continue
         cell = lambda index: row[index] if index is not None and index < len(row) else ''
-        where = f'{prefix} {number}'
+        where = f'{label} {number}'
         def day(text, what):
             try: return datetime.strptime(text, spec['date_format']).date()
             except ValueError as exc: raise ValueError(f"{where}: {what} {text!r} does not match {spec['date_format']}") from exc
         effective = day(cell(date_at), 'date')
+        # Named rows the Core cannot hold are skipped, with the reason kept in the build's settings.
+        if effective.isoformat() in leave_out:
+            left_out.add(effective.isoformat()); continue
         moment = None
         if time_at is not None and cell(time_at) not in missing:
             try: local = datetime.strptime(cell(date_at) + ' ' + cell(time_at), spec['date_format'] + ' ' + spec['time_format'])
@@ -132,21 +178,23 @@ def parse(raw, media, spec):
             group = groups.setdefault(key, {'instrument': instrument, 'price_type': column['price_type'], 'effective_date': effective.isoformat(),
                                             'effective_at': moment, 'contract_code': contract, 'contract_month': month, 'prompt_date': prompt,
                                             'values': {}, 'source_series': {}, 'published_at': published, 'retrieved_at': retrieved,
-                                            'data_status': spec['data_status'], 'rows': [], 'columns': []})
+                                            'data_status': statuses.get(effective.isoformat(), spec['data_status']), 'rows': [], 'columns': []})
             if column['field'] in group['values']: raise ValueError(f"{where}: a second {column['field']} for {instrument} {column['price_type']} on {effective}")
             if (group['contract_month'], group['prompt_date']) != (month, prompt): raise ValueError(f'{where}: contract month or prompt date differs for one observation')
             group['values'][column['field']] = value
             group['source_series'][column['field']] = column.get('source_series') or column['column']
-            if number not in group['rows']: group['rows'].append(number)
+            if (label, number) not in group['rows']: group['rows'].append((label, number))
             if column['column'] not in group['columns']: group['columns'].append(column['column'])
         if len(groups) > MAX_OBSERVATIONS: raise ValueError(f'At most {MAX_OBSERVATIONS} observations per build')
+    unknown = sorted((set(leave_out) - left_out) | (set(statuses) - {group['effective_date'] for group in groups.values()}))
+    if unknown: raise ValueError('Dates named in leave_out or status_by_date are not in the table: ' + ', '.join(unknown))
     if not groups: raise ValueError('No values found; check the header row, columns and missing-value markers')
     rows = []
     for group in groups.values():
         values = {field: Decimal(value) for field, value in group['values'].items()}
-        if 'high' in values and 'low' in values and values['high'] < values['low']: raise ValueError(f"{prefix} {group['rows'][0]}: high is below low")
-        if 'bid' in values and 'ask' in values and values['bid'] > values['ask']: raise ValueError(f"{prefix} {group['rows'][0]}: bid is above ask")
-        locator = f"{prefix}{'s' if len(group['rows']) > 1 else ''} {', '.join(map(str, group['rows']))}; columns {', '.join(group['columns'])}"
+        if 'high' in values and 'low' in values and values['high'] < values['low']: raise ValueError(f"{locate(group['rows'][:1])}: high is below low")
+        if 'bid' in values and 'ask' in values and values['bid'] > values['ask']: raise ValueError(f"{locate(group['rows'][:1])}: bid is above ask")
+        locator = f"{locate(group['rows'])}; columns {', '.join(group['columns'])}"
         rows.append({**{k: v for k, v in group.items() if k not in ('rows', 'columns')}, 'evidence_reference': locator})
     return rows
 
@@ -272,6 +320,9 @@ def inspect_market_quality(s, storage):
             add('MISSING_ACCESS_AUDIT', 'WARN', 'source', source.id, 'Source has no audited access decision; its data is not exported')
         elif policy and not policy.export_allowed:
             add('EXPORT_WITHHELD', 'INFO', 'source', source.id, 'Access decision keeps this source inside the Core; exports leave its data out')
+    for build in builds.values():
+        dropped = build.specification.get('leave_out') or {}
+        if dropped: add('ROWS_LEFT_OUT', 'INFO', 'build', build.id, 'Rows named in the import settings were not loaded: ' + '; '.join(f'{d}: {r}' for d, r in sorted(dropped.items()))[:500], len(dropped), sorted(dropped)[:5])
     unknown = Counter(obs.build_id for obs in observations if obs.published_at is None)
     for build_id, count in sorted(unknown.items()):
         add('PUBLICATION_TIME_UNKNOWN', 'INFO', 'build', build_id, 'The source does not state when these values were published', count)
@@ -309,12 +360,14 @@ def inspect_market_quality(s, storage):
         for previous, current in pairs:
             before, after = logical_row(previous, instrument)['values'], logical_row(current, instrument)['values']
             prices = [field for field in PRICE_FIELDS if field in before and field in after]
-            if prices and all(before[f] == after[f] for f in prices) and previous.effective_date != current.effective_date:
+            # A padded day copies everything: changed volume or open interest means real trading.
+            quantities_equal = all(before.get(f) == after.get(f) for f in QUANTITY_FIELDS)
+            if prices and quantities_equal and all(before[f] == after[f] for f in prices) and previous.effective_date != current.effective_date:
                 repeats.append(current.effective_date.isoformat())
             if weekdays_between(previous.effective_date, current.effective_date) > 7: gaps.append(current.effective_date.isoformat())
             if instrument.market != 'physical' and any(Decimal(before[f]) and abs(Decimal(after[f]) - Decimal(before[f])) > abs(Decimal(before[f])) / 5 for f in prices):
                 jumps.append(current.effective_date.isoformat())
-        if repeats: add('POSSIBLE_CARRY_FORWARD', 'WARN', 'series', name, 'Prices identical to the previous date; may be copied forward by the vendor', len(repeats), sorted(repeats)[:5])
+        if repeats: add('POSSIBLE_CARRY_FORWARD', 'WARN', 'series', name, 'Every value identical to the previous date; may be copied forward by the vendor', len(repeats), sorted(repeats)[:5])
         if gaps: add('SERIES_GAP', 'WARN', 'series', name, 'More than seven weekdays without a value', len(gaps), sorted(gaps)[:5])
         if jumps: add('SUSPICIOUS_VALUE_CHANGE', 'WARN', 'series', name, 'A price moved more than 20% from the previous date', len(jumps), sorted(jumps)[:5])
     severities = Counter(f['severity'] for f in findings)
