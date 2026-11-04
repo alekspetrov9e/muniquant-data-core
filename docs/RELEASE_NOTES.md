@@ -46,6 +46,13 @@
   loads it as the cash official ask, 1988-2026: 9,929 observations, kept internal. Three trading days on which
   Datastream repeated the previous official prices are declared `carried_forward`. Market quality no longer counts a
   bid from one delivery and the ask from another as a duplicate.
+- Status corrections (2026-11-04): a curator can record a market observation's data status after loading
+  (`POST /api/market/status-corrections`, `python -m tools.market_status`, new table `market_status_correction`,
+  migration `a4d9c2e7b1f3`), with reason, reviewer and audit. Deliveries and builds stay as they are; quality, summary
+  and export use the latest decision (code `STATUS_CORRECTED`), and frozen bundles carry the decisions so replay can
+  prove them. Repeats already marked `carried_forward` no longer count as `POSSIBLE_CARRY_FORWARD`.
+  [tools/curated/lseg-lme-status-2026-11-04.json](../tools/curated/lseg-lme-status-2026-11-04.json) marks the 59 LME
+  trading days that Datastream filled with the previous value (3M, 15M, 27M and the cash bid).
 - DC2, first batch: `tools/curation.py` loads curated official sources (every name, alias, link and status verbatim in
   its captured page; capacities through the extractor; whole-word aliases; reuse of captured pages; `--skip-source`).
   [tools/curated/dc2-2026-10.json](../tools/curated/dc2-2026-10.json) adds 57 plants from USGS, the Indian Bureau of Mines,
