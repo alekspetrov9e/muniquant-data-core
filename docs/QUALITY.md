@@ -15,6 +15,7 @@ unit per attribute, valid references, shares 0–100 %).
 | `INVALID_CONTENT_HASH`, `MISSING_SNAPSHOT`, `CORRUPT_SNAPSHOT`, `MISSING_VERSION_METADATA` | BLOCK | Saved bytes or their registration are missing or damaged |
 | `UNRESOLVED_ENTITY`, `MISSING_PROVENANCE`, `MISSING_EXACT_OBSERVATION`, `INVALID_ATTRIBUTE` | BLOCK | Fact without a valid plant, document and locator, exact value or valid dimension |
 | `INVALID_RELATIONSHIP` | BLOCK | Link without company, plant, dates or evidence |
+| `SUPERSESSION_CYCLE` | BLOCK | Supersession links lead back to the identity, so it has no current identity |
 | `INCOMPLETE_RESOLVED_CANDIDATE`, `UNRESOLVED_CANDIDATE` | BLOCK | An extracted name still needs a human decision |
 | `MISSING_ACCESS_AUDIT`, `MISSING_PUBLICATION_DATE`, `MISSING_ASSET_EVIDENCE` | WARN | Provenance incomplete but not wrong |
 | `DUPLICATE_OBSERVATION`, `CONFLICTING_OBSERVATIONS`, `SUSPICIOUS_VALUE_CHANGE` | WARN | Repeated fact; overlapping facts that disagree (both kept); value more than 50 % from an earlier one |

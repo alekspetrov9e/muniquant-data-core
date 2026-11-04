@@ -1,6 +1,7 @@
 import unicodedata
 import math
-from decimal import Decimal, InvalidOperation
+import re
+from decimal import Decimal
 from sqlalchemy import select, func
 import muniquant_core
 from .models import Entity, Source, Document, Observation, Review, Run, Relationship, Audit
@@ -11,15 +12,15 @@ def normalize_value(value, unit, attribute='capacity'):
                'power': {'MW':Decimal(1)}, 'ownership_percentage': {'percentage':Decimal(1)}}
     factors=allowed.get(attribute,{})
     if unit not in factors: raise ValueError('Unsupported unit for attribute dimension')
-    text=str(value)
+    text=str(value).strip()
     if ',' in text:
-        import re
         if not re.fullmatch(r'[0-9]{1,3}(?:,[0-9]{3})+(?:\.[0-9]+)?',text):
             raise ValueError('Invalid thousands grouping')
         text=text.replace(',','')
-    try: amount=Decimal(text)
-    except InvalidOperation as exc: raise ValueError('Value must be numeric') from exc
-    if not amount.is_finite() or amount<0: raise ValueError('Value must be finite and nonnegative')
+    # Plain decimals only, as the market area reads them: a sign or an exponent ("-0", "1e3",
+    # "1e-999999999") would store a value the export cannot reproduce, or none on PostgreSQL.
+    if not re.fullmatch(r'[0-9]+(?:\.[0-9]+)?',text): raise ValueError('Value must be a plain nonnegative decimal, e.g. 1250 or 1,250.5')
+    amount=Decimal(text)
     with localcontext() as context:
         context.prec=60
         result=amount*factors[unit]

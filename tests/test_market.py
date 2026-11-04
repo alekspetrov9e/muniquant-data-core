@@ -105,6 +105,11 @@ def test_bad_tables_are_refused_whole_and_logged(client, content, message):
     with Session(client.app.state.engine) as s:
         assert s.scalars(select(Run).where(Run.status == 'failed')).all()
 
+def test_a_field_over_the_csv_limit_is_refused(client):
+    instruments(client, SHFE)
+    response = client.post(f"/api/documents/{table(client, source(client), LONG + 'x' * 140_000 + chr(10))['id']}/market-import", json=LONG_SPEC)
+    assert response.status_code == 422 and 'Malformed table' in response.json()['detail']
+
 def test_unknown_instruments_and_missing_quantity_units_are_refused(client):
     doc = table(client, source(client), LONG)
     assert 'Register these instruments first: SHFE_AL_2501, SHFE_AL_2502' in client.post(f"/api/documents/{doc['id']}/market-import", json=LONG_SPEC).json()['detail']

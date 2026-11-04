@@ -35,12 +35,16 @@ def parse(raw,media,spec):
         if media!='text/csv': raise ValueError('CSV adapter requires text/csv snapshot')
         reader=csv.DictReader(io.StringIO(raw.decode('utf-8-sig')))
         required={'facility_name','country','reported_value','reported_unit','valid_from','evidence_reference'}
-        if not required.issubset(reader.fieldnames or []): raise ValueError('Missing required CSV columns: '+', '.join(sorted(required)))
-        for line,row in enumerate(reader,2):
-            if len(rows)>=1000: raise ValueError('At most 1000 candidates per build')
-            rows.append({'facility_name':row['facility_name'],'country':row['country'], 'reported_value':row['reported_value'],
-                         'unit':row['reported_unit'],'valid_from':row['valid_from'],'valid_to':row.get('valid_to') or None,
-                         'attribute':row.get('attribute') or spec['attribute'],'evidence_reference':f"CSV row {line}: {row['evidence_reference']}"})
+        try:
+            if not required.issubset(reader.fieldnames or []): raise ValueError('Missing required CSV columns: '+', '.join(sorted(required)))
+            for line,row in enumerate(reader,2):
+                if len(rows)>=1000: raise ValueError('At most 1000 candidates per build')
+                if row['country'] and not re.fullmatch(r'[A-Z]{2}',row['country']): raise ValueError(f'CSV row {line}: country must be a two-letter code such as NO')
+                rows.append({'facility_name':row['facility_name'],'country':row['country'], 'reported_value':row['reported_value'],
+                             'unit':row['reported_unit'],'valid_from':row['valid_from'],'valid_to':row.get('valid_to') or None,
+                             'attribute':row.get('attribute') or spec['attribute'],'evidence_reference':f"CSV row {line}: {row['evidence_reference']}"})
+        # e.g. a field over the csv module's 128 KiB limit
+        except csv.Error as exc: raise ValueError(f'Malformed CSV: {exc}') from exc
     else:
         pages=[]
         if adapter=='html-v1':

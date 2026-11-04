@@ -30,11 +30,11 @@ def test_controlled_schema_and_company_resolution(client):
     with Session(client.app.state.engine) as s:
         assert s.get(Entity,company['id']) and s.scalar(select(EntityAlias).where(EntityAlias.entity_id==company['id']))
 
-@pytest.mark.parametrize('value,unit,attribute,expected',[('197,000','t/year','capacity','197000'),('0.123456','Mt/year','capacity','123456'),('975','MW','power','975'),('22.5','percentage','ownership_percentage','22.5')])
+@pytest.mark.parametrize('value,unit,attribute,expected',[('197,000','t/year','capacity','197000'),('0.123456','Mt/year','capacity','123456'),('975','MW','power','975'),('22.5','percentage','ownership_percentage','22.5'),(' 400 ','kt/year','capacity','400000')])
 def test_exact_dimensions(value,unit,attribute,expected):
     assert normalize_value(value,unit,attribute)[0]==Decimal(expected)
 
-@pytest.mark.parametrize('value,unit,attribute',[('1,5','t/year','capacity'),('NaN','MW','power'),('101','percentage','ownership_percentage'),('0.0000001','MW','power'),('1e24','t/year','capacity'),('1','MW','capacity')])
+@pytest.mark.parametrize('value,unit,attribute',[('1,5','t/year','capacity'),('NaN','MW','power'),('101','percentage','ownership_percentage'),('0.0000001','MW','power'),('1e24','t/year','capacity'),('1','MW','capacity'),('-0','t/year','capacity'),('+5','MW','power'),('1e3','t/year','capacity'),('1e-999999999','MW','power'),('1_000','t/year','capacity'),('.5','MW','power')])
 def test_invalid_dimensions(value,unit,attribute):
     with pytest.raises(ValueError): normalize_value(value,unit,attribute)
 

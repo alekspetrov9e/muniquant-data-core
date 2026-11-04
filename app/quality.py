@@ -5,7 +5,7 @@ from pathlib import Path
 import hashlib
 import re
 from sqlalchemy import select
-from .models import Entity, Source, Document, Observation, ObservationDetail, Candidate, SourceAccess, DocumentVersion, SourceSnapshot, EntityEvidence, CompanyFacilityRelationship, Relationship
+from .models import Entity, Source, Document, Observation, ObservationDetail, Candidate, SourceAccess, DocumentVersion, SourceSnapshot, EntityEvidence, CompanyFacilityRelationship, Relationship, EntitySupersession
 from .services import normalize_value
 
 def snapshot_problem(storage,doc):
@@ -29,6 +29,11 @@ def inspect_quality(s,storage):
     for entity in entities.values():
         if not s.scalar(select(EntityEvidence).where(EntityEvidence.entity_id==entity.id)):
             add('MISSING_ASSET_EVIDENCE','WARN','entity',entity.id,'Curated identity has no explicit source locator')
+    links={link.old_entity_id:link.new_entity_id for link in s.scalars(select(EntitySupersession))}
+    for old in links:
+        cursor,steps=links[old],0
+        while cursor in links and cursor!=old and steps<len(links): cursor,steps=links[cursor],steps+1
+        if cursor==old: add('SUPERSESSION_CYCLE','BLOCK','entity',old,'Supersession links lead back to this identity, so it has no current identity')
     for doc in documents.values():
         source=sources.get(doc.source_id)
         if not source or not source.publisher or not source.url or not source.name:

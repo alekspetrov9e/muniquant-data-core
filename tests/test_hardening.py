@@ -1,12 +1,13 @@
 """Requirement-driven UAT, ambiguity, conflict, load and concurrent-write checks."""
 import json
+import threading
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from sqlalchemy import select,text
 from sqlalchemy.orm import Session
 from fastapi.testclient import TestClient
-from app.models import Entity
-from app.domain import sync_entity
+from app.models import Entity, EntityAlias, EntitySupersession
+from app.domain import add_alias, supersede, sync_entity
 from app.services import resolve
 
 def test_fifty_difficult_names_never_trust_ambiguity(client):
@@ -179,3 +180,97 @@ def test_rejected_build_still_exports_input_provenance_and_replays(client,exampl
     assert not package['records'] and package['documents'][0]['document_id']==doc['id']
     with Session(client.app.state.engine) as session: freeze_v1(session,client.app.state.storage,tmp_path/'rejected.zip')
     assert replay_v1(tmp_path/'rejected.zip')['replayed_candidates']==1
+
+def parallel(jobs):
+    """Start the jobs at the same moment, one thread each; the names of the exceptions they raised."""
+    barrier,errors=threading.Barrier(len(jobs)),[]
+    def run(job):
+        barrier.wait()
+        try: job()
+        except Exception as exc: errors.append(type(exc).__name__)
+    threads=[threading.Thread(target=run,args=(job,)) for job in jobs]
+    for thread in threads: thread.start()
+    for thread in threads: thread.join()
+    return errors
+
+def test_parallel_aliases_are_all_listed(client,example):
+    entity,engine=example[0],client.app.state.engine
+    def add(n):
+        def job():
+            with Session(engine) as session: add_alias(session,entity['id'],f'Parallel alias {n}','tester','parallel test');session.commit()
+        return job
+    assert parallel([add(n) for n in range(20)])==[]
+    with Session(engine) as session:
+        rows=session.scalars(select(EntityAlias.name).where(EntityAlias.entity_id==entity['id'])).all()
+        assert len(rows)==21 and sorted(session.get(Entity,entity['id']).aliases)==sorted(rows)
+
+def test_adding_a_lost_alias_again_lists_it(client,example):
+    entity,engine=example[0],client.app.state.engine
+    path=f"/api/entities/{entity['id']}/aliases"
+    assert client.post(path,json={'name':'Lost Works','reason':'test alias'}).status_code==201
+    with Session(engine) as session:
+        # As a lost parallel write leaves it: the alias row exists, the list misses it.
+        session.get(Entity,entity['id']).aliases=['Test Works'];session.commit()
+    assert client.post(path,json={'name':'LOST WORKS','reason':'listed again'}).status_code==201
+    with Session(engine) as session: assert session.get(Entity,entity['id']).aliases==['Test Works','Lost Works']
+
+def test_opposite_supersessions_never_form_a_loop(client):
+    engine=client.app.state.engine
+    for n in range(10):
+        a,b=(client.post('/api/entities',json={'name':f'Plant {side}{n}','country':'NO','facility_type':'smelter'}).json()['id'] for side in 'AB')
+        def link(old,new):
+            def job():
+                with Session(engine) as session: supersede(session,old,new,'tester','parallel test');session.commit()
+            return job
+        assert parallel([link(a,b),link(b,a)])==['ValueError']
+        with Session(engine) as session:
+            assert len(session.scalars(select(EntitySupersession).where(EntitySupersession.old_entity_id.in_([a,b]))).all())==1
+
+def test_quality_blocks_a_supersession_loop(client):
+    a,b,c=(client.post('/api/entities',json={'name':f'Loop plant {n}','country':'NO','facility_type':'smelter'}).json()['id'] for n in range(3))
+    with Session(client.app.state.engine) as session:
+        # Written directly, as only a database without the supersession lock could have it.
+        session.add_all([EntitySupersession(old_entity_id=old,new_entity_id=new,actor='tester',reason='loop fixture') for old,new in ((a,b),(b,a),(c,a))]);session.commit()
+    findings=client.get('/api/quality').json()['findings']
+    assert sorted(f['record_id'] for f in findings if f['code']=='SUPERSESSION_CYCLE')==sorted([a,b])
+
+def test_write_access_needs_a_matching_bearer_token(client,monkeypatch):
+    plant={'name':'Token test','country':'NO','facility_type':'smelter'}
+    monkeypatch.setenv('WRITE_IDENTITIES_JSON','{"": "anyone"}')
+    for header in ('','Bearer ','test-token','Token test-token','Bearer tést'.encode('latin-1')):
+        assert client.post('/api/entities',json=plant,headers={'Authorization':header}).status_code==401,header
+    assert client.post('/api/entities',json=plant,headers={'Authorization':'bearer test-token'}).status_code==201
+    client.app.state.require_read_auth=True
+    assert client.get('/api/workspace',headers={'Authorization':'Bearer tést'.encode('latin-1')}).status_code==401
+
+def test_bad_request_values_are_refused_not_server_errors(client,example):
+    entity,_,doc,payload=example
+    for offset in ('100000000000000000000','9223372036854775808'):
+        assert client.get('/api/records/entities?offset='+offset).status_code==422,offset
+    assert client.get('/api/records/documents?version=100000000000000000000').status_code==422
+    assert client.post('/api/entities',json={'name':'Nul\x00plant','country':'NO','facility_type':'smelter'}).status_code==422
+    assert client.post('/api/sources',json={'name':'Nul\x00source','publisher':'P','source_type':'company','url':'https://example.org/'}).status_code==422
+    assert client.post(f"/api/entities/{entity['id']}/aliases",json={'name':'Nul\x00alias','reason':'test case'}).status_code==422
+    assert client.post('/api/resolve',json={'name':'Nul\x00plant'}).status_code==422
+    # SQLite finds no such record; PostgreSQL cannot compare the text at all
+    assert client.get('/api/records/entities/nul%00id').status_code in (404,422)
+    assert client.get('/api/records/entities?name=a%00b').status_code==422
+    observation={'entity_id':entity['id'],'document_id':doc['id'],'reported_unit':'t/year','valid_from':'2025-01-01','evidence_reference':'table 1'}
+    for value in ('-0','1e3','1e-999999999','9e999999999','١٢٣'):
+        assert client.post('/api/observations',json={**observation,'reported_value':value}).status_code==422,value
+    company=client.post('/api/entities',json={'name':'Owner','kind':'company','country':'NO'}).json()
+    link={'company_id':company['id'],'facility_id':entity['id'],'document_id':doc['id'],'valid_from':'2025-01-01','role':'OWNS','evidence_reference':'page 1 ownership'}
+    for share in ('-0',-0.0):
+        assert client.post('/api/relationships',json={**link,'percentage':share}).status_code==422,share
+    assert client.get('/api/export').status_code==200
+    csv='facility_name,country,reported_value,reported_unit,valid_from,evidence_reference\nTest Works,NO,400,kt/year,2025-01-01,'+'x'*140_000+'\n'
+    large=client.post('/api/documents',json={**payload,'media_type':'text/csv','content':csv}).json()
+    response=client.post('/api/import/csv',json={'document_id':large['id']})
+    assert response.status_code==422 and 'Malformed CSV' in response.json()['detail']
+    csv='facility_name,country,reported_value,reported_unit,valid_from,evidence_reference\nTest Works,NOR,400,kt/year,2025-01-01,table 2\n'
+    wrong=client.post('/api/documents',json={**payload,'media_type':'text/csv','content':csv}).json()
+    response=client.post('/api/import/csv',json={'document_id':wrong['id']})
+    assert response.status_code==422 and 'two-letter' in response.json()['detail']
+    # The refusal is recorded as a failed run, like any other bad file
+    runs=client.get('/api/records/runs?status=failed').json()['records']
+    assert any(run['manifest']['document_id']==wrong['id'] for run in runs)

@@ -3,6 +3,7 @@ import io
 import json
 import logging
 import os
+import re
 import secrets
 import hashlib
 import time
@@ -23,6 +24,15 @@ logging.basicConfig(level=logging.INFO)
 logger=logging.getLogger('muniquant')
 STATIC=Path(__file__).parent/'static'
 
+def bearer(request):
+    """The token of an "Authorization: Bearer <token>" header, or '' for a missing or other header."""
+    scheme,_,token=request.headers.get('authorization','').partition(' ')
+    return token if scheme.lower()=='bearer' else ''
+
+def matches(token,credential):
+    # An empty token or configured key never matches; bytes, so a non-ASCII header is a mismatch rather than an error.
+    return bool(token and credential) and secrets.compare_digest(token.encode(),credential.encode())
+
 def create_app(database_url=None, storage=None, write_token=None):
     Path('data').mkdir(exist_ok=True)
     app=FastAPI(title='MuniQuant Evidence Platform', version='1.0.0')
@@ -39,12 +49,12 @@ def create_app(database_url=None, storage=None, write_token=None):
             yield s
 
     def writer(request:Request):
-        token=request.headers.get('authorization','').removeprefix('Bearer ')
+        token=bearer(request)
         identities=json.loads(os.getenv('WRITE_IDENTITIES_JSON') or '{}')
         for credential,identity in identities.items():
-            if secrets.compare_digest(token,credential):
+            if matches(token,credential):
                 return identity
-        if not app.state.write_token or not secrets.compare_digest(token, app.state.write_token):
+        if not matches(token,app.state.write_token):
             raise HTTPException(401,'Set WRITE_TOKEN on the server and enter it in Workspace access to edit')
         return app.state.actor
 
@@ -60,9 +70,9 @@ def create_app(database_url=None, storage=None, write_token=None):
     async def request_log(request, call_next):
         start=time.monotonic()
         if app.state.require_read_auth and request.method=='GET' and request.url.path.startswith('/api/') and request.url.path!='/api/health':
-            token=request.headers.get('authorization','').removeprefix('Bearer ')
+            token=bearer(request)
             allowed=[app.state.write_token,app.state.read_token,*json.loads(os.getenv('WRITE_IDENTITIES_JSON') or '{}')]
-            if not token or not any(credential and secrets.compare_digest(token,credential) for credential in allowed):
+            if not any(matches(token,credential) for credential in allowed):
                 return JSONResponse({'detail':'Workspace read authorization required'},status_code=401)
         # Guard both declared and streamed bodies before JSON parsing.
         if request.method in ('POST','PUT','PATCH'):
@@ -85,7 +95,12 @@ def create_app(database_url=None, storage=None, write_token=None):
     @app.exception_handler(IntegrityError)
     async def conflict(request, exc): return JSONResponse({'detail':'Conflicting record or invalid reference; refresh and retry'},status_code=409)
 
-    from sqlalchemy.exc import OperationalError
+    from sqlalchemy.exc import DataError, OperationalError
+    @app.exception_handler(DataError)
+    async def unstorable(request, exc):
+        # PostgreSQL refusing a value, e.g. a NUL character in a path or filter, or a number out of range.
+        return JSONResponse({'detail':'The database cannot store or compare a value in this request (a NUL character or a number out of range)'},status_code=422)
+
     @app.exception_handler(OperationalError)
     async def busy(request, exc):
         if 'locked' not in str(exc.orig).lower(): raise exc
@@ -121,18 +136,20 @@ def create_app(database_url=None, storage=None, write_token=None):
         return model
 
     @app.get('/api/records/{record_type}')
-    def records(record_type:str,request:Request,offset:int=Query(0,ge=0),limit:int=Query(100,ge=1,le=1000),s:Session=Depends(session)):
+    def records(record_type:str,request:Request,offset:int=Query(0,ge=0,le=1_000_000_000),limit:int=Query(100,ge=1,le=1000),s:Session=Depends(session)):
         from sqlalchemy import func
         model=record_model(record_type)
         # Other query parameters are equality filters on text or integer columns, e.g. ?document_id=...
         filters=[]
         for name,value in request.query_params.multi_items():
             if name in ('offset','limit'): continue
+            if '\x00' in value: raise HTTPException(422,'Text must not contain NUL characters')
             column=model.__table__.columns.get(name)
             try: kind=column.type.python_type if column is not None else None
             except NotImplementedError: kind=None
             if kind is str: filters.append(column==value)
-            elif kind is int and value.lstrip('-').isdigit(): filters.append(column==int(value))
+            # At most 18 digits, so the number fits a 64-bit database integer
+            elif kind is int and re.fullmatch(r'-?[0-9]{1,18}',value): filters.append(column==int(value))
             else: raise HTTPException(422,'Unsupported filter: '+name)
         order=list(model.__table__.primary_key.columns)
         return {'records':[record(o) for o in s.scalars(select(model).where(*filters).order_by(*order).offset(offset).limit(limit))],'total':s.scalar(select(func.count()).select_from(model).where(*filters)),'offset':offset,'limit':limit}
