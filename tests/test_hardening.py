@@ -1,6 +1,7 @@
 """Requirement-driven UAT, ambiguity, conflict, load and concurrent-write checks."""
 import json
 import threading
+import time
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from sqlalchemy import select,text
@@ -68,6 +69,15 @@ def test_failed_parser_manifest_and_new_identity_review(client,example):
     assert client.post(review+'/candidates',json={'entity_id':entity['id'],'reason':'Registered after checking the original facility source'}).status_code==201
     assert client.post(review+'/decision',json={'selected_entity_id':entity['id'],'reason':'Verified source country and canonical site'}).status_code==200
     assert client.get('/api/export').json()['records'][0]['external_entity_id']==entity['id']
+
+def test_extraction_stays_fast_on_long_digit_runs(client,example):
+    _,_,_,payload=example
+    doc=client.post('/api/documents',json={**payload,'content':'1'*40_000,'media_type':'text/html'}).json()
+    spec={'adapter':'html-v1','facility_name':'Test Works','country':'NO','valid_from':'2025-01-01','prefix':'1','suffix':'kt','unit':'kt/year'}
+    started=time.monotonic()
+    response=client.post('/api/documents/'+doc['id']+'/extract',json=spec)
+    # About 28 s while the number pattern was unbounded
+    assert response.status_code==422 and time.monotonic()-started<5
 
 def test_concurrent_import_has_one_build_and_observation(client,example):
     _,_,_,payload=example

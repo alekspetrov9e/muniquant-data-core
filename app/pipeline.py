@@ -67,7 +67,9 @@ def parse(raw,media,spec):
                     pages.append((f'PDF page {number}',' '.join(text.split())))
         else: raise ValueError('Unknown parser version/adapter')
         prefix=' '.join(spec['prefix'].split());suffix=' '.join(spec['suffix'].split())
-        pattern=re.compile(re.escape(prefix)+r'\s*(?P<value>[0-9][0-9,]*(?:\.[0-9]+)?)\s*'+re.escape(suffix),re.IGNORECASE)
+        # A bounded number keeps the scan linear: with an unbounded digit run, every start in a long run of digits read
+        # to its end (40,000 digits took about 28 s). 40 digits and commas and 12 decimals exceed what normalize_value accepts.
+        pattern=re.compile(re.escape(prefix)+r'\s*(?P<value>[0-9][0-9,]{0,39}(?:\.[0-9]{1,12})?)\s*'+re.escape(suffix),re.IGNORECASE)
         for locator,text in pages:
             for match in pattern.finditer(text):
                 if len(rows)>=1000: raise ValueError('At most 1000 candidates per build')
