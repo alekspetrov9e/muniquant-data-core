@@ -91,6 +91,8 @@ def inspect_quality(s,storage):
                 old_value=previous_detail.normalized_value if previous_detail and obs.attribute!='status' else previous.reported_value
                 if current_value!=old_value:
                     add('CONFLICTING_OBSERVATIONS','WARN','observation',obs.id,'Overlapping validity intervals carry conflicting facts; retain both and review source vintages')
+                    # One finding per fact: one per conflicting pair grew with the square of a plant's facts.
+                    break
         historical.setdefault((obs.entity_id,obs.attribute),[]).append((obs,detail))
         for message in obs.quality_messages:
             if '50%' in message: add('SUSPICIOUS_VALUE_CHANGE','WARN','observation',obs.id,message)

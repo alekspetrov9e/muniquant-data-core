@@ -10,6 +10,12 @@ PRODUCTS = {'aluminium':'Aluminium', 'alumina':'Alumina', 'bauxite':'Bauxite'}
 def canonical(name):
     return ' '.join(''.join(c if c.isalnum() else ' ' for c in unicodedata.normalize('NFKC', name).casefold()).split())
 
+# The C++ name_distance compares at most 256 code points. Normalisation can expand a name (U+FDFA becomes 18).
+NAME_LIMIT = 256
+
+def check_name(name):
+    if len(canonical(name)) > NAME_LIMIT: raise ValueError(f'Name is longer than {NAME_LIMIT} characters after Unicode normalisation')
+
 def seed_references(s):
     for model, values in [(Country, COUNTRIES), (FacilityType, TYPES), (Commodity, PRODUCTS)]:
         for code,name in values.items():
@@ -17,6 +23,7 @@ def seed_references(s):
     s.flush()
 
 def sync_entity(s, entity, actor='migration'):
+    check_name(entity.name)
     if not s.get(Country, entity.country): raise ValueError('Country is not in the controlled registry')
     if not s.get(Commodity, entity.commodity): raise ValueError('Unknown commodity')
     if entity.kind == 'company':
@@ -42,6 +49,7 @@ def lock_entity(s,entity_id):
 def add_alias(s,entity_id,name,actor,reason):
     key=canonical(name)
     if not key: raise ValueError('Alias must contain letters or numbers')
+    check_name(name)
     # Lock, then read the list, so parallel aliases each extend the latest one.
     lock_entity(s,entity_id)
     entity=s.get(Entity,entity_id,populate_existing=True)

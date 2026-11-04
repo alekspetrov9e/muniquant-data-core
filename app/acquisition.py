@@ -15,6 +15,13 @@ from .models import Source, SourceAccess, SourceSnapshot, DocumentVersion, Sourc
 
 MAX_BYTES = 10_000_000
 MEDIA = {'text/plain', 'text/html', 'text/csv', 'application/pdf', 'application/json'}
+NAT64 = ipaddress.ip_network('64:ff9b::/96')
+
+def is_public(address):
+    ip=ipaddress.ip_address(address)
+    # Python counts the well-known NAT64 prefix as global, but a NAT64 gateway forwards to the IPv4 address inside it.
+    if ip.version==6 and ip in NAT64: ip=ipaddress.IPv4Address(int(ip)&0xFFFFFFFF)
+    return ip.is_global
 
 def public_target(url, allowed_hosts):
     parts=urlsplit(url)
@@ -23,7 +30,7 @@ def public_target(url, allowed_hosts):
     host=parts.hostname.lower().rstrip('.')
     if host not in allowed_hosts: raise ValueError('Host not approved in source-access policy')
     addresses=sorted({info[4][0] for info in socket.getaddrinfo(host,443,type=socket.SOCK_STREAM)})
-    if not addresses or any(not ipaddress.ip_address(address).is_global for address in addresses):
+    if not addresses or any(not is_public(address) for address in addresses):
         raise ValueError('Source resolves to a non-public network address')
     return host,addresses[0],parts
 

@@ -18,7 +18,7 @@ unit per attribute, valid references, shares 0–100 %).
 | `SUPERSESSION_CYCLE` | BLOCK | Supersession links lead back to the identity, so it has no current identity |
 | `INCOMPLETE_RESOLVED_CANDIDATE`, `UNRESOLVED_CANDIDATE` | BLOCK | An extracted name still needs a human decision |
 | `MISSING_ACCESS_AUDIT`, `MISSING_PUBLICATION_DATE`, `MISSING_ASSET_EVIDENCE` | WARN | Provenance incomplete but not wrong |
-| `DUPLICATE_OBSERVATION`, `CONFLICTING_OBSERVATIONS`, `SUSPICIOUS_VALUE_CHANGE` | WARN | Repeated fact; overlapping facts that disagree (both kept); value more than 50 % from an earlier one |
+| `DUPLICATE_OBSERVATION`, `CONFLICTING_OBSERVATIONS`, `SUSPICIOUS_VALUE_CHANGE` | WARN | Repeated fact; a fact that disagrees with an earlier overlapping one (both kept, one finding per fact); value more than 50 % from an earlier one |
 | `IMPRECISE_RELATIONSHIP_LOCATOR`, `OWNERSHIP_TOTAL_EXCEEDS_100` | WARN | Legacy link locator; overlapping owner shares above 100 % |
 | `DUPLICATE_CONTENT` | INFO | Identical bytes under different provenance |
 
