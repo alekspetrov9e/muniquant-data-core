@@ -77,10 +77,14 @@ def validate_package(package):
 def export_v1(s,storage):
     quality=inspect_quality(s,storage)
     if quality['status']=='FAIL': raise ValueError('Quality BLOCK/ERROR findings prevent export; inspect /api/quality')
+    # Warning codes by record, read once: scanning every finding for every record grew with records x findings.
+    warnings={}
+    for finding in quality['findings']:
+        if finding['severity']=='WARN': warnings.setdefault(finding['record_id'],set()).add(finding['code'])
     records=[]
     for obs in s.scalars(select(Observation).order_by(Observation.id)):
         entity=s.get(Entity,obs.entity_id);doc=s.get(Document,obs.document_id);source=s.get(Source,doc.source_id);detail=s.get(ObservationDetail,obs.id)
-        codes=[finding['code'] for finding in quality['findings'] if finding['record_id'] in (obs.id,doc.id,entity.id) and finding['severity']=='WARN']
+        codes=set().union(*(warnings.get(identifier,()) for identifier in (obs.id,doc.id,entity.id)))
         records.append({'record_id':obs.id,'external_entity_id':entity.id,'entity_type':entity.kind,'canonical_name':entity.name,
                         'aliases':sorted(entity.aliases),'facility_type':entity.facility_type,'country':entity.country,'region':entity.region,
                         'commodity':entity.commodity,'attribute_type':obs.attribute,'reported_value':obs.reported_value,'reported_unit':obs.reported_unit,

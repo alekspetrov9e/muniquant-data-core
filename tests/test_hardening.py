@@ -62,7 +62,12 @@ def test_overlapping_capacity_conflicts_and_historical_status(client,example):
     assert client.post('/api/observations',json={**base,'attribute':'status','reported_value':'closed','reported_unit':'status'}).status_code==201
     assert client.post('/api/observations',json={**base,'valid_from':'2026-01-01','valid_to':None,'attribute':'status','reported_value':'operating','reported_unit':'status'}).status_code==201
     findings=client.get('/api/quality').json()['findings']
-    assert sum(f['code']=='CONFLICTING_OBSERVATIONS' for f in findings)==2
+    # One finding per fact that conflicts with an earlier one in id order (the records list keeps that order):
+    # 410,000 t against 400 kt and 0.4 Mt; 400 kt and 0.4 Mt agree
+    capacities=[r for r in client.get('/api/records/observations').json()['records'] if r['attribute']=='capacity']
+    expected=[r['id'] for i,r in enumerate(capacities) if any(p['normalized_value']!=r['normalized_value'] for p in capacities[:i])]
+    conflicts=[f['record_id'] for f in findings if f['code']=='CONFLICTING_OBSERVATIONS']
+    assert sorted(conflicts)==sorted(expected) and expected
     assert len(client.get('/api/export').json()['records'])==5
     with client.app.state.engine.begin() as connection:
         import pytest
@@ -92,6 +97,17 @@ def test_extraction_stays_fast_on_long_digit_runs(client,example):
     response=client.post('/api/documents/'+doc['id']+'/extract',json=spec)
     # About 28 s while the number pattern was unbounded
     assert response.status_code==422 and time.monotonic()-started<5
+
+def test_conflicting_facts_give_one_finding_each(client,example):
+    entity,_,doc,_=example
+    for day in range(1,31):
+        fact={'entity_id':entity['id'],'document_id':doc['id'],'reported_value':str(400+day),'reported_unit':'kt/year','valid_from':f'2025-01-{day:02}','evidence_reference':f'row {day}'}
+        assert client.post('/api/observations',json=fact).status_code==201
+    conflicts=[f for f in client.get('/api/quality').json()['findings'] if f['code']=='CONFLICTING_OBSERVATIONS']
+    # 29 facts overlap an earlier one; one finding per conflicting pair gave 435
+    assert len(conflicts)==len({f['record_id'] for f in conflicts})==29
+    records=client.get('/api/export').json()['records']
+    assert sum('CONFLICTING_OBSERVATIONS' in r['quality_codes'] for r in records)==29
 
 def test_concurrent_import_has_one_build_and_observation(client,example):
     _,_,_,payload=example
