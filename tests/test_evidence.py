@@ -130,6 +130,12 @@ def test_public_address_policy_and_dns_rebinding_pin(monkeypatch):
     assert connections==[(host,address)]
     for url in ['http://example.org/file','https://user:password@example.org/','https://example.org:8443/file','https://other.org/']:
         with pytest.raises(ValueError): public_target(url,['example.org'])
+    # IPv6 forms that carry a private IPv4 address: NAT64 (127.0.0.1, 10.0.0.1), local NAT64, IPv4-mapped, 6to4, Teredo
+    for wrapped in ('64:ff9b::7f00:1','64:ff9b::a00:1','64:ff9b:1::a00:1','::ffff:127.0.0.1','2002:7f00:1::','2001:0:4136:e378:8000:63bf:3fff:fdd2'):
+        monkeypatch.setattr(socket,'getaddrinfo',lambda *a,address=wrapped,**kw:[(None,None,None,None,(address,443,0,0))])
+        with pytest.raises(ValueError): public_target('https://example.org/file',['example.org'])
+    monkeypatch.setattr(socket,'getaddrinfo',lambda *a,**kw:[(None,None,None,None,('64:ff9b::5db8:d822',443,0,0))])
+    assert public_target('https://example.org/file',['example.org'])[1]=='64:ff9b::5db8:d822'  # 93.184.216.34
 
 
 def test_redirect_revalidation_and_size_limit(monkeypatch):
