@@ -1,6 +1,6 @@
 """Controlled master data, audited aliases and immutable supersession."""
 import unicodedata
-from sqlalchemy import select
+from sqlalchemy import select, text, update
 from .models import Country, Commodity, FacilityType, Region, Company, Facility, EntityAlias, EntitySupersession, Entity
 
 COUNTRIES = dict(AU='Australia', NO='Norway', IS='Iceland', CA='Canada', US='United States', BR='Brazil', QA='Qatar', SK='Slovakia', DE='Germany', FR='France', IN='India', CN='China', RU='Russia', AE='United Arab Emirates', BH='Bahrain', NZ='New Zealand', GB='United Kingdom', ZA='South Africa', JM='Jamaica', GN='Guinea', IE='Ireland', ES='Spain', GR='Greece', MZ='Mozambique', ID='Indonesia', MY='Malaysia', OM='Oman', SA='Saudi Arabia', AT='Austria', JP='Japan')
@@ -35,21 +35,31 @@ def sync_entity(s, entity, actor='migration'):
         add_alias(s,entity.id,name,actor,'Initial curated alias')
     s.flush()
 
+def lock_entity(s,entity_id):
+    """Hold the entity's write lock until commit (its row on PostgreSQL, the database on SQLite), so the reads after it see every earlier write."""
+    s.execute(update(Entity).where(Entity.id==entity_id).values(kind=Entity.kind).execution_options(synchronize_session=False))
+
 def add_alias(s,entity_id,name,actor,reason):
-    entity=s.get(Entity,entity_id)
-    if not entity: raise ValueError('Unknown entity')
     key=canonical(name)
     if not key: raise ValueError('Alias must contain letters or numbers')
+    # Lock, then read the list, so parallel aliases each extend the latest one.
+    lock_entity(s,entity_id)
+    entity=s.get(Entity,entity_id,populate_existing=True)
+    if not entity: raise ValueError('Unknown entity')
     existing=s.scalar(select(EntityAlias).where(EntityAlias.entity_id==entity_id,EntityAlias.normalized_name==key))
-    if existing: return existing
-    alias=EntityAlias(entity_id=entity_id,name=name,normalized_name=key,actor=actor,reason=reason)
+    alias=existing or EntityAlias(entity_id=entity_id,name=name,normalized_name=key,actor=actor,reason=reason)
     s.add(alias)
-    if name not in entity.aliases: entity.aliases=[*entity.aliases,name]
+    # Also lists again an alias recorded earlier but missing from the list.
+    if not any(canonical(listed)==key for listed in entity.aliases): entity.aliases=[*entity.aliases,alias.name]
     s.flush(); return alias
 
 def supersede(s,old,new,actor,reason):
     a,b=s.get(Entity,old),s.get(Entity,new)
     if not a or not b or a.kind!=b.kind: raise ValueError('Supersession requires existing entities of the same kind')
+    # One supersession at a time, so two in parallel cannot close a loop: lock the whole table on
+    # PostgreSQL (a loop can pass through other entities); any write locks the database on SQLite.
+    if s.get_bind().dialect.name=='postgresql': s.execute(text('LOCK TABLE entity_supersession IN SHARE ROW EXCLUSIVE MODE'))
+    else: lock_entity(s,old)
     cursor=new; visited={old}
     while cursor:
         if cursor in visited: raise ValueError('Supersession cycle')

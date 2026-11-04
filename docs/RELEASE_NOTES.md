@@ -1,5 +1,22 @@
 # Release notes
 
+## Unreleased: input, token and parallel-write fixes (2026-11-03)
+
+- Plant values are plain decimals only, as market values already were: digits with an optional decimal point and
+  `,` thousands grouping. A sign, an exponent, `.5` or `1_000` are refused; "-0" and "1e-999999999" stored a value the
+  export could not reproduce, or none on PostgreSQL. An ownership share with a sign ("-0") is refused too.
+- Tokens must come as `Authorization: Bearer <token>` (the word "Bearer" in any case). An empty key in
+  `WRITE_IDENTITIES_JSON` never matches, and a non-ASCII header is a refusal (401), not a server error.
+- Parallel writes: adding an alias locks its plant, so no parallel alias drops out of the plant's list, and adding a
+  lost alias again lists it; supersessions run one at a time, so two cannot close a loop. New quality code
+  `SUPERSESSION_CYCLE` (BLOCK) finds a loop already in a database.
+- Bad requests get 422 instead of a server error: `offset` above 1,000,000,000, integer filters over 18 digits, NUL
+  characters (bodies and record filters), CSV fields over 128 KiB (plant and market tables), and any value PostgreSQL
+  cannot store or compare. A plant CSV row whose country is not a two-letter code is refused as a failed run; SQLite
+  used to store it silently.
+- pypdf 6.20.0 → 6.21.4, which fixes 16 published advisories. The A6 pilot comparison passes unchanged (all 15 checks,
+  the same build hash and a byte-identical export).
+
 ## Unreleased: market data area (2026-10-26)
 
 - Three new tables, `market_instrument`, `market_build` and `market_observation` (migration `5b1e0c7d9a42`), and

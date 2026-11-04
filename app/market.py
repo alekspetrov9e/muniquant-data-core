@@ -64,7 +64,8 @@ def cells(raw, media, spec):
         # Comma-separated, or tab-separated as table copies from vendor screens are.
         if media not in (TSV, 'text/csv'): raise ValueError('The market CSV adapter requires a text/csv or tab-separated document')
         label, delimiter = ('TSV row', '\t') if media == TSV else ('CSV row', ',')
-        return [(label, number, [cell.strip() for cell in row]) for number, row in enumerate(csv.reader(io.StringIO(raw.decode('utf-8-sig')), delimiter=delimiter), 1)]
+        try: return [(label, number, [cell.strip() for cell in row]) for number, row in enumerate(csv.reader(io.StringIO(raw.decode('utf-8-sig')), delimiter=delimiter), 1)]
+        except csv.Error as exc: raise ValueError(f'Malformed table: {exc}') from exc
     if spec['adapter'] == 'market-xlsx-v1':
         if media != XLSX or not raw.startswith(b'PK'): raise ValueError('The market XLSX adapter requires an .xlsx document')
         from openpyxl import load_workbook

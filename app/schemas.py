@@ -3,8 +3,20 @@ from decimal import Decimal
 from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+def contains_nul(value):
+    if isinstance(value, str): return '\x00' in value
+    if isinstance(value, dict): return any(contains_nul(k) or contains_nul(v) for k, v in value.items())
+    if isinstance(value, (list, tuple)): return any(map(contains_nul, value))
+    return False
+
 class Input(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    @model_validator(mode='before')
+    @classmethod
+    def no_nul(cls, data):
+        # PostgreSQL text cannot hold NUL; refuse it on every database alike.
+        if contains_nul(data): raise ValueError('Text must not contain NUL characters')
+        return data
 
 class EntityIn(Input):
     name: str = Field(min_length=1, max_length=256)
@@ -63,6 +75,12 @@ class RelationshipIn(Input):
     valid_from: date
     valid_to: date | None = None
     document_id: str
+    @field_validator('percentage')
+    @classmethod
+    def unsigned(cls, value):
+        # "-0" passes ge=0 but is stored differently per database and then fails the export check.
+        if value is not None and value.is_signed(): raise ValueError('Percentage must not carry a sign')
+        return value
     @model_validator(mode='after')
     def dates(self):
         if self.valid_to and self.valid_to < self.valid_from: raise ValueError('Invalid validity interval')
