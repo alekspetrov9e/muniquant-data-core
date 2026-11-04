@@ -344,9 +344,12 @@ def inspect_market_quality(s, storage):
         conflicts, duplicates = [], []
         for moment, same in sorted(by_moment.items()):
             if len(same) < 2: continue
-            values = [logical_row(obs, instrument)['values'] for obs in same]
-            shared = set.intersection(*(set(v) for v in values))
-            (conflicts if any(len({v[f] for v in values}) > 1 for f in shared) else duplicates).append(moment[0].isoformat())
+            given = defaultdict(list)
+            for obs in same:
+                for field, value in logical_row(obs, instrument)['values'].items(): given[field].append(value)
+            if any(len(set(values)) > 1 for values in given.values()): conflicts.append(moment[0].isoformat())
+            # Fields given once each complete one another, e.g. the bid in one delivery and the ask in another
+            elif any(len(values) > 1 for values in given.values()): duplicates.append(moment[0].isoformat())
         if conflicts: add('CONFLICTING_OBSERVATIONS', 'WARN', 'series', name, 'Documents give different values for the same date; both are kept', len(conflicts), conflicts[:5])
         if duplicates: add('DUPLICATE_OBSERVATION', 'INFO', 'series', name, 'Several documents give the same values for a date', len(duplicates), duplicates[:5])
         weekend = sorted({obs.effective_date.isoformat() for obs in items if obs.effective_date.weekday() >= 5})

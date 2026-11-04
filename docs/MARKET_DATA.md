@@ -186,10 +186,14 @@ same for one stored build.
 - The first vendor, LSEG through a member's university licence, gives daily values only: no intraday LME data and no
   physical premium assessments (premiums come as CME futures, stored as futures).
 - LME from Datastream: closing prices for cash, 3M, 15M and 27M (datatype P, matched to the LME evening evaluation
-  for 3M), official bid for cash and bid and ask for 3M, and the December contracts Dec 2026 to Dec 2036 with
-  settlement, volume and open interest. Datastream has no official cash seller series, so the LME cash settlement
-  price is missing. Left out: Datastream's official mid, the unofficial prices (stale since February 2024), high, low
-  and opening prices of an unstated session. LME holidays repeat the previous day (`POSSIBLE_CARRY_FORWARD`).
+  for 3M), official bid and ask for cash and 3M, and the December contracts Dec 2026 to Dec 2036 with settlement,
+  volume and open interest. The cash official ask, LAHCASH(OO) "Official Seller", is the LME cash settlement price
+  (from 1988, delivered 2026-11-04). Left out: Datastream's official mid, the unofficial prices (stale since
+  February 2024), high, low and opening prices of an unstated session. LME holidays repeat the previous day
+  (`POSSIBLE_CARRY_FORWARD`). Datastream also fills some trading days with the previous value (the licence holder's
+  check, 2026-11-04): 3M on 2026-06-22, 15M and 27M from 2026-08-31 to 2026-09-30 and from 2025-03-24 to 2025-03-28,
+  and the cash official prices on 2024-10-02, 2025-05-08 and 2025-12-04 (declared `carried_forward` in the cash ask
+  build only).
 - Publication times are rarely in vendor exports and stay null unless stated.
 - No currency conversion, no derived values, no curve construction: downstream work.
 - Data from LSEG stays internal (`export_allowed: false`) until its onward use is confirmed.

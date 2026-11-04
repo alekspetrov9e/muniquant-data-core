@@ -142,6 +142,19 @@ def test_quality_counts_series_problems_without_changing_data(client):
     repeated = next(f for f in client.get('/api/market/quality').json()['findings'] if f['code'] == 'POSSIBLE_CARRY_FORWARD' and f['record_id'].startswith('SHFE'))
     assert repeated['examples'] == ['2025-01-06']  # same settlement but changed open interest on 01-03 is real trading
 
+def test_bid_and_ask_from_different_deliveries_are_not_duplicates(client):
+    instruments(client, LME)
+    vendor = source(client)
+    spec = {**WIDE_SPEC, 'header_row': 1, 'date_format': '%Y-%m-%d'}
+    for number, (field, content) in enumerate((('bid', 'Date,LAHCASH\n2025-01-03,2499.5\n2025-01-06,2509.5\n'),
+                                               ('ask', 'Date,LAHCASH\n2025-01-03,2500\n2025-01-06,2510\n'),
+                                               ('ask', 'Date,LAHCASH\n2025-01-03,2500\n')), 1):
+        doc = table(client, vendor, content, f'https://example.org/vendor/export-{number}')
+        post(client, f"documents/{doc['id']}/market-import", {**spec, 'columns': [{**WIDE_SPEC['columns'][0], 'field': field}]})
+    found = {f['code']: f for f in client.get('/api/market/quality').json()['findings']}
+    # 01-06 has one bid and one ask; only 01-03 has the same ask twice
+    assert found['DUPLICATE_OBSERVATION']['examples'] == ['2025-01-03'] and 'CONFLICTING_OBSERVATIONS' not in found
+
 def test_export_is_self_contained_and_leaves_internal_sources_out(client):
     instruments(client, LME + SHFE)
     post(client, f"documents/{table(client, source(client), LONG)['id']}/market-import", LONG_SPEC)
