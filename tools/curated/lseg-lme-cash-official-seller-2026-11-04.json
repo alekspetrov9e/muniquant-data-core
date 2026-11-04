@@ -1,0 +1,72 @@
+{
+ "name": "LME aluminium cash official seller (the LME cash settlement price), LSEG Datastream, delivered 2026-11-04",
+ "source": {
+  "name": "LSEG Datastream (Workspace Chart Studio copies)",
+  "publisher": "LSEG",
+  "source_type": "commercial",
+  "url": "https://www.lseg.com/en/data-analytics",
+  "notes": "LME data from LSEG Datastream, copied from Workspace Chart Studio by a project member (TUM chair licence) and handed over unchanged with per-series CSVs.",
+  "access": {
+   "export_allowed": false,
+   "basis": "LSEG Workspace via TUM chair: academic use only, project group only; do not publish or pass on the raw data (licence note in the delivery README)",
+   "retention": "Private storage only; never in git; no export until onward use is confirmed in writing"
+  }
+ },
+ "instruments": [
+  {
+   "code": "LME_AL_CASH",
+   "name": "LME aluminium cash",
+   "exchange": "LME",
+   "market": "forward",
+   "commodity": "aluminium",
+   "grade": "Primary aluminium, min. 99.7% Al",
+   "tenor": "cash",
+   "currency": "USD",
+   "unit": "USD/t",
+   "description": "Datastream LAHCASH (RIC MAL0), USD/t. closing = Datastream datatype P \"Price - Trade\"; for LAH3MTH it equals the LME evening evaluation on 21-22 Oct 2026 (licence holder's check), the same datatype is read as closing here. official bid = LAHCASH(OB). Datastream has no official seller series for cash, so the LME cash settlement price (official seller) is not in this delivery."
+  }
+ ],
+ "note": "LAHCASH(OO), \"Price - Official Seller\": the LME cash settlement price is the cash official offer. The 2026-10-27 delivery said Datastream had no such series; it does, and LME_AL_CASH's description still says otherwise because a registered definition cannot change here. Checked against that delivery on 4,910 common days (2008-01-01 to 2026-10-26): official seller never below official buyer, median spread 0.5, and official seller = 2 x official mid - official buyer on 4,893 days. Times are the archive's file times, read as CET like the delivery's other files. Status: carried_forward on 2024-10-02, 2025-05-08 and 2025-12-04: trading days on which the official seller and the official buyer (2026-10-27 delivery) both repeat the previous day exactly while the closing price moves by 30 to 52 USD/t; the delivery README names them as possibly stale. 2026-11-02 also repeats but is after the official buyer data ends, so it stays as delivered and the quality check flags it. Repeats on LME holidays stay as delivered, as in the other LME builds.",
+ "imports": [
+  {
+   "file": "chartstudio_table_raw.tsv",
+   "locator": "datastream:LAHCASH(OO)",
+   "title": "LSEG Datastream LME aluminium cash, official seller (datatype OO), Chart Studio table",
+   "published_at": "2026-11-04",
+   "settings": {
+    "adapter": "market-csv-v1",
+    "header_row": 3,
+    "date_column": "Date",
+    "date_format": "%d/%m/%Y",
+    "retrieved_at": "2026-11-04T13:42:00+01:00",
+    "missing_values": [
+     "n/a"
+    ],
+    "columns": [
+     {
+      "column": "#2",
+      "instrument": "LME_AL_CASH",
+      "price_type": "official",
+      "field": "ask",
+      "source_series": "LAHCASH(OO)"
+     }
+    ],
+    "status_by_date": {
+     "2024-10-02": "carried_forward",
+     "2025-05-08": "carried_forward",
+     "2025-12-04": "carried_forward"
+    }
+   }
+  }
+ ],
+ "left_out": [
+  {
+   "series": "Chart Studio table columns #3 to #7",
+   "reason": "leftover December-contract lines from the chart, not part of this delivery (delivery README)"
+  },
+  {
+   "series": "LAHCASH-OO_1d_EXCHDATE_1988-2026.csv",
+   "reason": "the delivery's cleaned copy of column #2 (n/a rows dropped, dates rewritten); equal to the table value for value on all 9,929 dates"
+  }
+ ]
+}

@@ -24,6 +24,11 @@
   futures, SHFE alumina, SMM alumina FOB), 168,924 observations, all kept internal; every build replays. LME cash and
   3-month wait for the Datastream series definition. The copy-forward check now needs every value, volume and open
   interest included, to repeat; a value beyond 24 digits is refused instead of failing the decimal check.
+- LME cash settlement price (2026-11-04): Datastream has the cash official seller after all, LAHCASH(OO), which is the
+  LME cash settlement price. [tools/curated/lseg-lme-cash-official-seller-2026-11-04.json](../tools/curated/lseg-lme-cash-official-seller-2026-11-04.json)
+  loads it as the cash official ask, 1988-2026: 9,929 observations, kept internal. Three trading days on which
+  Datastream repeated the previous official prices are declared `carried_forward`. Market quality no longer counts a
+  bid from one delivery and the ask from another as a duplicate.
 - DC2, first batch: `tools/curation.py` loads curated official sources (every name, alias, link and status verbatim in
   its captured page; capacities through the extractor; whole-word aliases; reuse of captured pages; `--skip-source`).
   [tools/curated/dc2-2026-10.json](../tools/curated/dc2-2026-10.json) adds 57 plants from USGS, the Indian Bureau of Mines,
