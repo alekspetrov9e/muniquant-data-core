@@ -24,6 +24,20 @@ def test_fifty_difficult_names_never_trust_ambiguity(client):
                 assert result['candidates'][0]['name']==case['expected_name'],case
             else: assert result['entity_id'] is None,case
 
+def test_a_name_that_grows_under_normalisation_cannot_break_resolve(client):
+    expanding='ﷺ'*20  # 20 characters, about 380 after NFKC
+    assert client.post('/api/entities',json={'name':expanding,'country':'NO','facility_type':'smelter'}).status_code==422
+    plant=client.post('/api/entities',json={'name':'Fjordvik Works','country':'NO','facility_type':'smelter'}).json()
+    reason={'reason':'test case'}
+    assert client.post(f"/api/entities/{plant['id']}/aliases",json={'name':expanding,**reason}).status_code==422
+    # One such name stored before the check must not make every fuzzy search fail
+    with Session(client.app.state.engine) as session:
+        session.add(Entity(name=expanding,kind='facility',country='NO',facility_type='smelter',commodity='aluminium',region='',aliases=[]))
+        session.commit()
+    result=client.post('/api/resolve',json={'name':'Fjordvik Work','country':'NO'}).json()
+    assert result['status']=='unresolved' and result['candidates'][0]['id']==plant['id']
+    assert client.post('/api/resolve',json={'name':expanding,'country':'NO'}).json()['status']=='resolved'
+
 def test_larger_dataset_csv_and_pagination(client,example):
     _,_,_,payload=example
     with Session(client.app.state.engine) as session:
