@@ -374,3 +374,15 @@ class InstrumentObservation(Base):
                       CheckConstraint(f"bid IS NULL OR ask IS NULL OR {_amount('bid')} <= {_amount('ask')}", name='ck_market_bid_ask'),
                       CheckConstraint(f"volume IS NULL OR {_amount('volume')} >= 0", name='ck_market_volume'),
                       CheckConstraint(f"open_interest IS NULL OR {_amount('open_interest')} >= 0", name='ck_market_open_interest'))
+
+class MarketStatusCorrection(Base):
+    """A curator's audited decision on an observation's data status. The observation and its build stay as delivered;
+    the latest decision per observation is its status in quality, summary and export."""
+    __tablename__ = 'market_status_correction'
+    id = Column(String, primary_key=True, default=uid)
+    observation_id = Column(String, ForeignKey('market_observation.id'), nullable=False, index=True)
+    data_status = Column(String(16), nullable=False)
+    reason = Column(Text, nullable=False)
+    reviewer = Column(String, nullable=False)
+    decided_at = Column(String, nullable=False, default=now)
+    __table_args__ = (CheckConstraint("data_status IN ('reported','provisional','final','carried_forward','corrected')", name='ck_market_correction_status'),)

@@ -54,5 +54,6 @@ Terms and fields of the Data Core and its two exports. Tables: [DATA_DIAGRAM.md]
 | `data_status` | reported, provisional, final, carried_forward, corrected |
 | `source_series` | The vendor's code for each field |
 | `withheld` | Observations left out of an export because their source's data is internal |
+| status correction | A curator's `data_status` for one stored observation, with reason, reviewer and time; the latest one counts (`market_status_correction`) |
 
 Never stored: forecasts, scores, signals, spreads, all-in prices or any of the fields the contracts prohibit.
