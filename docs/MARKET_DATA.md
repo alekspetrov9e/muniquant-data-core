@@ -150,14 +150,33 @@ record it in `price_type` and the instrument description, not by assumption.
 | `INVALID_UNIT`, `MISSING_QUANTITY_UNIT`, `PROVENANCE_MISMATCH` | BLOCK | Inconsistent instrument unit, volume without a unit, observation and build citing different files |
 | `MISSING_ACCESS_AUDIT` | WARN | No audited access decision; the data is not exported |
 | `WEEKEND_DATE` | WARN | Values dated on a Saturday or Sunday (padded days) |
-| `POSSIBLE_CARRY_FORWARD` | WARN | Every value identical to the previous date in the same file, volume and open interest included (a vendor may copy the last value forward); flat assessments and untraded months also show here |
+| `POSSIBLE_CARRY_FORWARD` | WARN | Every value identical to the previous date in the same file, volume and open interest included (a vendor may copy the last value forward); flat assessments and untraded months also show here. A repeat already marked `carried_forward`, by the source or a curator, is not counted |
 | `SERIES_GAP` | WARN | More than seven weekdays without a value in one file |
 | `SUSPICIOUS_VALUE_CHANGE` | WARN | An exchange price moved more than 20% from the previous date in one file |
 | `CONFLICTING_OBSERVATIONS` | WARN | Two files give different values for the same date; both are kept |
 | `DUPLICATE_OBSERVATION`, `DECLARED_CARRIED_FORWARD`, `DECLARED_PROVISIONAL`, `PUBLICATION_TIME_UNKNOWN`, `EXPORT_WITHHELD` | INFO | Recorded for the reader; no action unless the source says otherwise |
+| `STATUS_CORRECTED` | INFO | A curator changed the data status on these dates (see below); the values are as delivered |
 
 Database checks refuse what can never be right: high below low, bid above ask, negative volume or open interest, an
 observation without any value, unknown price types, statuses and units.
+
+### Status corrections
+
+A delivery is never rewritten, and loading it again with other settings would store every day twice. When a curator
+finds out after loading that some values are not what the source's status says, for example a trading day the vendor
+filled with the previous value, the decision is recorded next to the observation:
+
+- `POST /api/market/status-corrections` with the instrument code, price type, dates, the new `data_status` and the
+  reason; `source_series` narrows it to one vendor series where two deliveries give the same series (for example the
+  cash bid in one delivery and the ask in another). Every date must have an observation; a date already in that status
+  is skipped. Each decision is a row in `market_status_correction` with the reviewer and time, and an audit entry.
+- `python -m tools.market_status LIST.json [--dry-run]` records a list kept in `tools/curated/`, such as
+  [lseg-lme-status-2026-11-04.json](../tools/curated/lseg-lme-status-2026-11-04.json). It holds no data values.
+
+The latest decision per observation is its status in quality, the summary and the export, where the observation also
+carries the code `STATUS_CORRECTED`. The stored observation keeps the delivered status, so build replay is unchanged. A
+frozen bundle carries the decisions behind the corrected statuses, and its replay checks every exported status against
+the source row or the recorded decision.
 
 ## Export: MarketDataPackage 1.0.0
 
@@ -191,9 +210,10 @@ same for one stored build.
   (from 1988, delivered 2026-11-04). Left out: Datastream's official mid, the unofficial prices (stale since
   February 2024), high, low and opening prices of an unstated session. LME holidays repeat the previous day
   (`POSSIBLE_CARRY_FORWARD`). Datastream also fills some trading days with the previous value (the licence holder's
-  check, 2026-11-04): 3M on 2026-06-22, 15M and 27M from 2026-08-31 to 2026-09-30 and from 2025-03-24 to 2025-03-28,
-  and the cash official prices on 2024-10-02, 2025-05-08 and 2025-12-04 (declared `carried_forward` in the cash ask
-  build only).
+  check, 2026-11-04): 3M on 2026-06-22, 15M and 27M from 2026-09-01 to 2026-09-30 and from 2025-03-24 to 2025-03-28,
+  and the cash official prices on 2024-10-02, 2025-05-08 and 2025-12-04. All are `carried_forward`: the cash ask by its
+  import settings, the others by the status corrections in
+  [lseg-lme-status-2026-11-04.json](../tools/curated/lseg-lme-status-2026-11-04.json).
 - Publication times are rarely in vendor exports and stay null unless stated.
 - No currency conversion, no derived values, no curve construction: downstream work.
 - Data from LSEG stays internal (`export_allowed: false`) until its onward use is confirmed.

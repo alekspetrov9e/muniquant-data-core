@@ -194,6 +194,16 @@ class MarketColumnIn(Input):
     field: Literal['bid', 'ask', 'open', 'high', 'low', 'close', 'settlement', 'volume', 'open_interest']
     source_series: str | None = Field(default=None, max_length=128)
 
+class StatusCorrectionIn(Input):
+    """A curator's status for the observations of one series on the given dates; values are never changed."""
+    instrument: str = Field(min_length=1, max_length=64)
+    price_type: Literal['official', 'closing', 'settlement', 'daily', 'assessment', 'intraday']
+    dates: list[date] = Field(min_length=1, max_length=400)
+    # Only observations read from this vendor series, e.g. LAHCASH(OB) when another delivery gives the ask
+    source_series: str | None = Field(default=None, min_length=1, max_length=128)
+    data_status: Literal['reported', 'provisional', 'final', 'carried_forward', 'corrected']
+    reason: str = Field(min_length=10, max_length=2000)
+
 class MarketImportIn(Input):
     """How to read one market data table; the file itself is a registered document."""
     adapter: Literal['market-csv-v1', 'market-xlsx-v1', 'market-lseg-json-v1']

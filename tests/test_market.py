@@ -212,6 +212,59 @@ def test_damaged_files_block_export_and_frozen_bundles_replay(client, tmp_path):
     assert client.get('/api/market/quality').json()['status'] == 'FAIL'
     assert client.get('/api/market/export').status_code == 422
 
+def test_a_curator_status_correction_keeps_the_delivery_and_replays(client, tmp_path):
+    instruments(client, LME)
+    content = 'Date,LAHCASH\n2025-01-02,2500\n2025-01-03,2500\n2025-01-06,2510\n'
+    spec = {**WIDE_SPEC, 'header_row': 1, 'date_format': '%Y-%m-%d', 'columns': [{**WIDE_SPEC['columns'][0], 'source_series': 'LAHCASH(OO)'}]}
+    build = post(client, f"documents/{table(client, source(client), content)['id']}/market-import", spec)['build']
+    found = {f['code']: f for f in client.get('/api/market/quality').json()['findings']}
+    assert found['POSSIBLE_CARRY_FORWARD']['examples'] == ['2025-01-03']
+    correction = {'instrument': 'LME_AL_CASH', 'price_type': 'official', 'dates': ['2025-01-03'], 'data_status': 'carried_forward',
+                  'reason': 'Vendor repeated the previous value on a trading day (licence holder check)'}
+    assert post(client, 'market/status-corrections', correction)['corrected'] == 1
+    assert post(client, 'market/status-corrections', correction)['corrected'] == 0  # already that status
+    post(client, 'market/status-corrections', {**correction, 'dates': ['2025-01-07']}, 422)
+    post(client, 'market/status-corrections', {**correction, 'source_series': 'LAHCASH(OB)'}, 422)
+    post(client, 'market/status-corrections', {**correction, 'instrument': 'LME_AL_NONE'}, 422)
+    # Documented now: no longer a possible carry-forward, but a corrected status
+    found = {f['code']: f for f in client.get('/api/market/quality').json()['findings']}
+    assert 'POSSIBLE_CARRY_FORWARD' not in found and found['STATUS_CORRECTED']['examples'] == ['2025-01-03']
+    # The delivery is unchanged: the stored row keeps the source's status and the build replays
+    stored = client.get('/api/records/instrument_observations', params={'limit': 10}).json()['records']
+    assert {row['data_status'] for row in stored} == {'reported'}
+    assert post(client, f"market/builds/{build['id']}/replay", {}, 200)['equivalent']
+    exported = {row['effective_date']: row for row in client.get('/api/market/export').json()['observations']}
+    assert exported['2025-01-03']['data_status'] == 'carried_forward' and 'STATUS_CORRECTED' in exported['2025-01-03']['quality_codes']
+    assert exported['2025-01-02']['data_status'] == 'reported' and 'STATUS_CORRECTED' not in exported['2025-01-02']['quality_codes']
+    with Session(client.app.state.engine) as s:
+        bundle = tmp_path / 'market.zip'
+        build_hash = freeze_market_v1(s, client.app.state.storage, bundle)
+    assert replay_market_v1(bundle)['build_hash'] == build_hash
+    # A bundle that drops the decision cannot prove the corrected status
+    import zipfile
+    from app.pipeline import logical_hash
+    with zipfile.ZipFile(bundle) as archive: recipe, files = json.loads(archive.read('recipe.json')), {i.filename: archive.read(i) for i in archive.infolist()}
+    recipe.pop('status_corrections'); recipe.pop('recipe_hash'); recipe['recipe_hash'] = logical_hash(recipe)
+    stripped = tmp_path / 'stripped.zip'
+    with zipfile.ZipFile(stripped, 'x') as archive:
+        for name, raw in files.items(): archive.writestr(name, json.dumps(recipe) if name == 'recipe.json' else raw)
+    with pytest.raises(ValueError, match='status corrections differ'): replay_market_v1(stripped)
+
+def test_status_decisions_load_from_a_curated_list(client):
+    from tools import market_status
+    instruments(client, LME)
+    spec = {**WIDE_SPEC, 'header_row': 1, 'date_format': '%Y-%m-%d', 'columns': WIDE_SPEC['columns'][:1]}
+    post(client, f"documents/{table(client, source(client), 'Date,LAHCASH\n2025-01-02,2500\n2025-01-03,2500\n')['id']}/market-import", spec)
+    decisions = {'name': 'Synthetic decisions', 'corrections': [{'instrument': 'LME_AL_CASH', 'price_type': 'official', 'dates': ['2025-01-03'],
+                                                                 'data_status': 'carried_forward', 'reason': 'Synthetic vendor-filled day'}]}
+    url = client.app.state.engine.url.render_as_string(hide_password=False)
+    assert market_status.run(decisions, dry_run=True, database_url=url)['series'][0]['corrected'] == 1
+    assert client.get('/api/records/market_status_corrections').json()['total'] == 0
+    assert market_status.run(decisions, database_url=url)['series'][0]['corrected'] == 1
+    assert market_status.run(decisions, database_url=url)['series'][0]['corrected'] == 0
+    correction = client.get('/api/records/market_status_corrections').json()['records'][0]
+    assert correction['data_status'] == 'carried_forward' and correction['reviewer'] == 'market-curator'
+
 def test_xlsx_tables_are_read_from_the_registered_workbook(client):
     from openpyxl import Workbook
     from datetime import datetime

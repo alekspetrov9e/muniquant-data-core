@@ -52,7 +52,7 @@ REFERENCE_TABLES = ('country', 'commodity', 'facility_type')
 LATER_COLUMNS = {('source_access', 'credential_ref'): None, ('source_access', 'auth_header'): None,
                  ('source_access', 'export_allowed'): True}
 # Core tables added after DC1; a database without them has none of their rows.
-LATER_TABLES = {'market_instrument', 'market_build', 'market_observation'}
+LATER_TABLES = {'market_instrument', 'market_build', 'market_observation', 'market_status_correction'}
 STATUSES = ('operating', 'closed', 'suspended', 'planned', 'construction')
 # A column default the tool can compare with: a quoted string (optionally cast) or a plain number.
 LITERAL_DEFAULT = re.compile(r"^'((?:[^']|'')*)'(?:::[\w ]+)?$|^(-?\d+(?:\.\d+)?)$")

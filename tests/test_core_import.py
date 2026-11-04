@@ -31,7 +31,7 @@ def test_dry_run_reports_without_creating_the_target(client, example, tmp_path):
 def test_copy_keeps_every_row_and_verifies_it(client, example, new_database):
     report = core_import.copy(source_url(client), new_database('copy'))
     assert report['status'] == 'PASS' and report['target']['revision']
-    assert all(entry['equal'] for entry in report['tables'].values()) and len(report['tables']) == 29
+    assert all(entry['equal'] for entry in report['tables'].values()) and len(report['tables']) == 30
     assert report['tables']['country']['seeded_by_baseline'] == 30
 
 def test_refuses_targets_that_are_not_new(client, example, new_database, tmp_path):

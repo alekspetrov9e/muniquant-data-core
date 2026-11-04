@@ -128,9 +128,10 @@ def create_app(database_url=None, storage=None, write_token=None):
         return result
 
     def record_model(record_type):
-        from .models import Candidate,EvidenceBuild,RetrievalAttempt,SourceAccess,EntitySupersession,Instrument,InstrumentObservation,MarketBuild
+        from .models import Candidate,EvidenceBuild,RetrievalAttempt,SourceAccess,EntitySupersession,Instrument,InstrumentObservation,MarketBuild,MarketStatusCorrection
         models={'entities':Entity,'sources':Source,'documents':Document,'observations':Observation,'relationships':Relationship,'reviews':Review,'runs':Run,'audit':Audit,'candidates':Candidate,'builds':EvidenceBuild,'retrieval_attempts':RetrievalAttempt,'source_access':SourceAccess,'supersessions':EntitySupersession,
-                'instruments':Instrument,'instrument_observations':InstrumentObservation,'market_builds':MarketBuild}
+                'instruments':Instrument,'instrument_observations':InstrumentObservation,'market_builds':MarketBuild,
+                'market_status_corrections':MarketStatusCorrection}
         model=models.get(record_type)
         if model is None: raise HTTPException(404,'Unknown record type')
         return model
@@ -339,6 +340,12 @@ def create_app(database_url=None, storage=None, write_token=None):
         build,duplicate=import_table(s,app.state.storage,identifier,data,actor);s.commit()
         count=s.scalar(select(func.count()).select_from(InstrumentObservation).where(InstrumentObservation.build_id==build.id))
         return {'build':{k:v for k,v in record(build).items() if k!='logical_output'},'duplicate':duplicate,'observations':count}
+
+    from .schemas import StatusCorrectionIn
+    @app.post('/api/market/status-corrections',status_code=201)
+    def market_status(data:StatusCorrectionIn,s:Session=Depends(session),actor=Depends(writer)):
+        from .market import correct_status
+        result=correct_status(s,data,actor);s.commit();return result
 
     @app.post('/api/market/builds/{identifier}/replay')
     def market_replay(identifier:str,s:Session=Depends(session),actor=Depends(writer)):

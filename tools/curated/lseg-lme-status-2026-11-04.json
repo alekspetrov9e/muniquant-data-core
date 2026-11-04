@@ -1,0 +1,110 @@
+{
+ "name": "LME vendor-filled trading days, LSEG Datastream deliveries of 2026-10-27, confirmed 2026-11-04",
+ "note": "The licence holder compared each repeat with the other LME series of the same day. Every listed date repeats the previous trading day exactly (checked against the stored observations). Repeats on LME holidays are not listed: they stay as delivered, as in every LME build. The cash official ask of the 2026-11-04 delivery already declares its three days carried_forward in its own import settings.",
+ "corrections": [
+  {
+   "instrument": "LME_AL_3M",
+   "price_type": "closing",
+   "source_series": "LAH3MTH",
+   "dates": [
+    "2026-06-22"
+   ],
+   "data_status": "carried_forward",
+   "reason": "LME was open (the December 2026 contract traded, and cash and 15M moved), but 3M closing, official bid and ask all copy Friday 2026-06-19 and its high and low are empty (licence holder's check, 2026-11-04)"
+  },
+  {
+   "instrument": "LME_AL_3M",
+   "price_type": "official",
+   "source_series": "LAH3MTH(OB)",
+   "dates": [
+    "2026-06-22"
+   ],
+   "data_status": "carried_forward",
+   "reason": "LME was open (the December 2026 contract traded, and cash and 15M moved), but 3M closing, official bid and ask all copy Friday 2026-06-19 and its high and low are empty (licence holder's check, 2026-11-04)"
+  },
+  {
+   "instrument": "LME_AL_15M",
+   "price_type": "closing",
+   "source_series": "LAH15MT",
+   "dates": [
+    "2025-03-24",
+    "2025-03-25",
+    "2025-03-26",
+    "2025-03-27",
+    "2025-03-28",
+    "2026-09-01",
+    "2026-09-02",
+    "2026-09-03",
+    "2026-09-04",
+    "2026-09-07",
+    "2026-09-08",
+    "2026-09-09",
+    "2026-09-10",
+    "2026-09-11",
+    "2026-09-14",
+    "2026-09-15",
+    "2026-09-16",
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30"
+   ],
+   "data_status": "carried_forward",
+   "reason": "Datastream filled these trading days with the previous value; the December contracts move normally on the same days, so it is a stale feed, not an unchanged price (licence holder's check, 2026-11-04)"
+  },
+  {
+   "instrument": "LME_AL_27M",
+   "price_type": "closing",
+   "source_series": "LAH27MT",
+   "dates": [
+    "2025-03-24",
+    "2025-03-25",
+    "2025-03-26",
+    "2025-03-27",
+    "2025-03-28",
+    "2026-09-01",
+    "2026-09-02",
+    "2026-09-03",
+    "2026-09-04",
+    "2026-09-07",
+    "2026-09-08",
+    "2026-09-09",
+    "2026-09-10",
+    "2026-09-11",
+    "2026-09-14",
+    "2026-09-15",
+    "2026-09-16",
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30"
+   ],
+   "data_status": "carried_forward",
+   "reason": "Datastream filled these trading days with the previous value; the December contracts move normally on the same days, so it is a stale feed, not an unchanged price (licence holder's check, 2026-11-04)"
+  },
+  {
+   "instrument": "LME_AL_CASH",
+   "price_type": "official",
+   "source_series": "LAHCASH(OB)",
+   "dates": [
+    "2024-10-02",
+    "2025-05-08",
+    "2025-12-04"
+   ],
+   "data_status": "carried_forward",
+   "reason": "Official bid and official seller both repeat the previous trading day exactly while the closing price moves; named as possibly stale in the 2026-11-04 delivery README"
+  }
+ ]
+}
