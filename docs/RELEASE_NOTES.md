@@ -1,5 +1,20 @@
 # Release notes
 
+## Unreleased: scale and hardening fixes from the review (2026-11-04)
+
+- Extraction: a number in the literal-context pattern is at most 40 digits and commas with up to 12 decimals, so a long
+  run of digits no longer makes the scan quadratic (40,000 digits: 0.06 s instead of about 28 s). Every value that can
+  be stored is found as before.
+- Quality writes at most one `CONFLICTING_OBSERVATIONS` finding per fact instead of one per conflicting pair, and the
+  export reads warning codes by record once. 1,000 open-ended facts on one plant: export 0.27 s instead of 136 s,
+  1,799 findings instead of 500,300; the package is unchanged.
+- The public-address check reads the IPv4 address inside a NAT64 address (`64:ff9b::/96`), which Python counts as
+  global.
+- Entity names and aliases longer than 256 characters after Unicode normalisation are refused, the limit of the C++
+  name distance; resolve no longer fails when such a name is already stored.
+- certifi 2026.7.22 → 2026.10.23, opentelemetry-api 1.45.0 → 1.45.2, setuptools 84.0.0 → 84.2.1 (published advisories).
+- The A6 pilot comparison passes unchanged (all 15 checks, WARN 11, the same build hash and a byte-identical export).
+
 ## Unreleased: input, token and parallel-write fixes (2026-11-03)
 
 - Plant values are plain decimals only, as market values already were: digits with an optional decimal point and

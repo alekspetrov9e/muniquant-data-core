@@ -1,6 +1,7 @@
 """Requirement-driven UAT, ambiguity, conflict, load and concurrent-write checks."""
 import json
 import threading
+import time
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from sqlalchemy import select,text
@@ -22,6 +23,20 @@ def test_fifty_difficult_names_never_trust_ambiguity(client):
             if case['expected_status']=='resolved':
                 assert result['candidates'][0]['name']==case['expected_name'],case
             else: assert result['entity_id'] is None,case
+
+def test_a_name_that_grows_under_normalisation_cannot_break_resolve(client):
+    expanding='ﷺ'*20  # 20 characters, about 380 after NFKC
+    assert client.post('/api/entities',json={'name':expanding,'country':'NO','facility_type':'smelter'}).status_code==422
+    plant=client.post('/api/entities',json={'name':'Fjordvik Works','country':'NO','facility_type':'smelter'}).json()
+    reason={'reason':'test case'}
+    assert client.post(f"/api/entities/{plant['id']}/aliases",json={'name':expanding,**reason}).status_code==422
+    # One such name stored before the check must not make every fuzzy search fail
+    with Session(client.app.state.engine) as session:
+        session.add(Entity(name=expanding,kind='facility',country='NO',facility_type='smelter',commodity='aluminium',region='',aliases=[]))
+        session.commit()
+    result=client.post('/api/resolve',json={'name':'Fjordvik Work','country':'NO'}).json()
+    assert result['status']=='unresolved' and result['candidates'][0]['id']==plant['id']
+    assert client.post('/api/resolve',json={'name':expanding,'country':'NO'}).json()['status']=='resolved'
 
 def test_larger_dataset_csv_and_pagination(client,example):
     _,_,_,payload=example
@@ -47,7 +62,12 @@ def test_overlapping_capacity_conflicts_and_historical_status(client,example):
     assert client.post('/api/observations',json={**base,'attribute':'status','reported_value':'closed','reported_unit':'status'}).status_code==201
     assert client.post('/api/observations',json={**base,'valid_from':'2026-01-01','valid_to':None,'attribute':'status','reported_value':'operating','reported_unit':'status'}).status_code==201
     findings=client.get('/api/quality').json()['findings']
-    assert sum(f['code']=='CONFLICTING_OBSERVATIONS' for f in findings)==2
+    # One finding per fact that conflicts with an earlier one in id order (the records list keeps that order):
+    # 410,000 t against 400 kt and 0.4 Mt; 400 kt and 0.4 Mt agree
+    capacities=[r for r in client.get('/api/records/observations').json()['records'] if r['attribute']=='capacity']
+    expected=[r['id'] for i,r in enumerate(capacities) if any(p['normalized_value']!=r['normalized_value'] for p in capacities[:i])]
+    conflicts=[f['record_id'] for f in findings if f['code']=='CONFLICTING_OBSERVATIONS']
+    assert sorted(conflicts)==sorted(expected) and expected
     assert len(client.get('/api/export').json()['records'])==5
     with client.app.state.engine.begin() as connection:
         import pytest
@@ -68,6 +88,26 @@ def test_failed_parser_manifest_and_new_identity_review(client,example):
     assert client.post(review+'/candidates',json={'entity_id':entity['id'],'reason':'Registered after checking the original facility source'}).status_code==201
     assert client.post(review+'/decision',json={'selected_entity_id':entity['id'],'reason':'Verified source country and canonical site'}).status_code==200
     assert client.get('/api/export').json()['records'][0]['external_entity_id']==entity['id']
+
+def test_extraction_stays_fast_on_long_digit_runs(client,example):
+    _,_,_,payload=example
+    doc=client.post('/api/documents',json={**payload,'content':'1'*40_000,'media_type':'text/html'}).json()
+    spec={'adapter':'html-v1','facility_name':'Test Works','country':'NO','valid_from':'2025-01-01','prefix':'1','suffix':'kt','unit':'kt/year'}
+    started=time.monotonic()
+    response=client.post('/api/documents/'+doc['id']+'/extract',json=spec)
+    # About 28 s while the number pattern was unbounded
+    assert response.status_code==422 and time.monotonic()-started<5
+
+def test_conflicting_facts_give_one_finding_each(client,example):
+    entity,_,doc,_=example
+    for day in range(1,31):
+        fact={'entity_id':entity['id'],'document_id':doc['id'],'reported_value':str(400+day),'reported_unit':'kt/year','valid_from':f'2025-01-{day:02}','evidence_reference':f'row {day}'}
+        assert client.post('/api/observations',json=fact).status_code==201
+    conflicts=[f for f in client.get('/api/quality').json()['findings'] if f['code']=='CONFLICTING_OBSERVATIONS']
+    # 29 facts overlap an earlier one; one finding per conflicting pair gave 435
+    assert len(conflicts)==len({f['record_id'] for f in conflicts})==29
+    records=client.get('/api/export').json()['records']
+    assert sum('CONFLICTING_OBSERVATIONS' in r['quality_codes'] for r in records)==29
 
 def test_concurrent_import_has_one_build_and_observation(client,example):
     _,_,_,payload=example

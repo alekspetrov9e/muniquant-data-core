@@ -45,7 +45,7 @@ def record(obj):
         return value
     return {c.name: encode(getattr(obj,c.name)) for c in obj.__table__.columns}
 
-from .domain import canonical
+from .domain import canonical, NAME_LIMIT
 
 def resolve(session,name,country=None,entity_kind='facility'):
     from .models import EntitySupersession,EntityAlias
@@ -64,7 +64,12 @@ def resolve(session,name,country=None,entity_kind='facility'):
     if len(exact)==1:
         e=next(iter(exact.values()));return {'status':'resolved','entity_id':e.id,'candidates':[record(e)]}
     if exact: return {'status':'ambiguous','entity_id':None,'candidates':[record(exact[k]) for k in sorted(exact)]}
-    ranked=sorted([(min(muniquant_core.name_distance(key,canonical(n)) for n in [e.name,*e.aliases]),e) for e in entities if e.id not in links],key=lambda x:(x[0],x[1].id))
+    # Names over the kernel's limit (stored before it was checked) can still match exactly above, but are not ranked.
+    def nearest(e):
+        names=[n for n in map(canonical,[e.name,*e.aliases]) if len(n)<=NAME_LIMIT]
+        return min(muniquant_core.name_distance(key,n) for n in names) if names else None
+    scored=[(nearest(e),e) for e in entities if e.id not in links] if len(key)<=NAME_LIMIT else []
+    ranked=sorted([(distance,e) for distance,e in scored if distance is not None],key=lambda x:(x[0],x[1].id))
     return {'status':'unresolved','entity_id':None,'candidates':[record(e) for distance,e in ranked[:5] if distance<=max(3,len(key)//3)]}
 
 def acquire(session,storage,data):
