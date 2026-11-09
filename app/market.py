@@ -18,8 +18,8 @@ from uuid import uuid5, NAMESPACE_URL
 from zoneinfo import ZoneInfo
 from jsonschema import Draft202012Validator, FormatChecker
 from sqlalchemy import select
-from .models import (Audit, Commodity, Document, Instrument, InstrumentObservation, MarketBuild, Run, Source, SourceAccess,
-                     PRICE_FIELDS, PRICE_UNITS, QUANTITY_FIELDS)
+from .models import (Audit, Commodity, Document, Instrument, InstrumentObservation, MarketBuild, MarketStatusCorrection, Run, Source,
+                     SourceAccess, PRICE_FIELDS, PRICE_UNITS, QUANTITY_FIELDS)
 from .pipeline import logical_hash, snapshot_bytes
 from .services import record
 
@@ -279,6 +279,35 @@ def replay(s, storage, build_id):
     return {'build_id': build.id, 'parser_version': build.parser_version, 'input_hash': build.content_hash, 'output_hash': build.output_hash,
             'equivalent': True, 'observation_count': len(rows)}
 
+def status_corrections(s):
+    """The latest curator status decision per observation id."""
+    latest = {}
+    for item in s.scalars(select(MarketStatusCorrection).order_by(MarketStatusCorrection.decided_at, MarketStatusCorrection.id)):
+        latest[item.observation_id] = item
+    return latest
+
+def effective_status(obs, corrections):
+    correction = corrections.get(obs.id)
+    return correction.data_status if correction else obs.data_status
+
+def correct_status(s, data, actor):
+    """Record a curator's status for one series on the given dates; the observations and their builds stay as delivered."""
+    instrument = s.scalar(select(Instrument).where(Instrument.code == data.instrument))
+    if not instrument: raise ValueError('Unknown instrument: ' + data.instrument)
+    found = s.scalars(select(InstrumentObservation).where(InstrumentObservation.instrument_id == instrument.id, InstrumentObservation.price_type == data.price_type,
+                      InstrumentObservation.effective_date.in_(data.dates)).order_by(InstrumentObservation.effective_date, InstrumentObservation.id)).all()
+    if data.source_series: found = [obs for obs in found if data.source_series in obs.source_series.values()]
+    missing = sorted(set(data.dates) - {obs.effective_date for obs in found})
+    if missing: raise ValueError(f'{instrument.code} {data.price_type} has no observation on ' + ', '.join(day.isoformat() for day in missing))
+    corrections = status_corrections(s)
+    changed = []
+    for obs in found:
+        if effective_status(obs, corrections) == data.data_status: continue
+        item = MarketStatusCorrection(observation_id=obs.id, data_status=data.data_status, reason=data.reason, reviewer=actor); s.add(item); s.flush()
+        s.add(Audit(actor=actor, action='market_status_correction', record_id=item.id, detail={'observation_id': obs.id, 'data_status': data.data_status}))
+        changed.append(obs.id)
+    return {'instrument': instrument.code, 'price_type': data.price_type, 'matched': len(found), 'corrected': len(changed), 'observation_ids': changed}
+
 def latest_access(s, source_id):
     return s.scalar(select(SourceAccess).where(SourceAccess.source_id == source_id).order_by(SourceAccess.decided_at.desc(), SourceAccess.id.desc()))
 
@@ -335,11 +364,14 @@ def inspect_market_quality(s, storage):
     for status, code in (('carried_forward', 'DECLARED_CARRIED_FORWARD'), ('provisional', 'DECLARED_PROVISIONAL')):
         declared = [obs.id for obs in observations if obs.data_status == status]
         if declared: add(code, 'INFO', 'observation', declared[0], f'The source marks {len(declared)} values as {status.replace("_", " ")}', len(declared), declared[:5])
+    corrections = status_corrections(s)
     series = defaultdict(list)
     for obs in observations: series[(obs.instrument_id, obs.price_type, obs.contract_code)].append(obs)
     for (instrument_id, price_type, contract), items in sorted(series.items(), key=lambda item: (instruments[item[0][0]].code, item[0][1], item[0][2] or '')):
         instrument = instruments[instrument_id]
         name = '/'.join(filter(None, (instrument.code, price_type, contract)))
+        changed = sorted({obs.effective_date.isoformat() for obs in items if effective_status(obs, corrections) != obs.data_status})
+        if changed: add('STATUS_CORRECTED', 'INFO', 'series', name, f'A curator changed the data status on {len(changed)} dates; the values are as delivered', len(changed), changed[:5])
         by_moment = defaultdict(list)
         for obs in items: by_moment[(obs.effective_date, obs.effective_at or '')].append(obs)
         conflicts, duplicates = [], []
@@ -366,7 +398,9 @@ def inspect_market_quality(s, storage):
             prices = [field for field in PRICE_FIELDS if field in before and field in after]
             # A padded day copies everything: changed volume or open interest means real trading.
             quantities_equal = all(before.get(f) == after.get(f) for f in QUANTITY_FIELDS)
-            if prices and quantities_equal and all(before[f] == after[f] for f in prices) and previous.effective_date != current.effective_date:
+            # A repeat already marked carried forward, by the source or a curator, is documented and not counted again.
+            if prices and quantities_equal and all(before[f] == after[f] for f in prices) and previous.effective_date != current.effective_date \
+               and effective_status(current, corrections) != 'carried_forward':
                 repeats.append(current.effective_date.isoformat())
             if weekdays_between(previous.effective_date, current.effective_date) > 7: gaps.append(current.effective_date.isoformat())
             if instrument.market != 'physical' and any(Decimal(before[f]) and abs(Decimal(after[f]) - Decimal(before[f])) > abs(Decimal(before[f])) / 5 for f in prices):
@@ -434,6 +468,7 @@ def export_market_v1(s, storage, codes=None, start=None, end=None):
     codes_by_record = defaultdict(set)
     for finding in quality['findings']:
         if finding['severity'] == 'WARN': codes_by_record[finding['record_id']].add(finding['code'])
+    corrections = status_corrections(s)
     builds = {}
     for build_id in sorted({obs.build_id for obs in selected}):
         replay(s, storage, build_id)
@@ -444,7 +479,10 @@ def export_market_v1(s, storage, codes=None, start=None, end=None):
         source = sources[doc.source_id]
         series = '/'.join(filter(None, (instrument.code, obs.price_type, obs.contract_code)))
         row = logical_row(obs, instrument)
-        quality_codes = sorted(codes_by_record[series] | codes_by_record[obs.id] | codes_by_record[doc.id] | codes_by_record[source.id])
+        status = effective_status(obs, corrections)
+        # A curator's status is marked on the observation, so the package says which statuses are not the source's.
+        quality_codes = sorted(codes_by_record[series] | codes_by_record[obs.id] | codes_by_record[doc.id] | codes_by_record[source.id] |
+                               ({'STATUS_CORRECTED'} if status != obs.data_status else set()))
         records.append({'observation_id': obs.id, 'instrument_code': instrument.code, 'instrument_name': instrument.name, 'exchange': instrument.exchange,
                         'market': instrument.market, 'commodity': instrument.commodity, 'grade': instrument.grade, 'region': instrument.region,
                         'tenor': instrument.tenor, 'contract_code': obs.contract_code or instrument.contract_code,
@@ -452,7 +490,7 @@ def export_market_v1(s, storage, codes=None, start=None, end=None):
                         'price_type': obs.price_type, **{field: row['values'].get(field) for field in VALUE_FIELDS},
                         'currency': instrument.currency, 'unit': instrument.unit, 'quantity_unit': instrument.quantity_unit,
                         'effective_date': row['effective_date'], 'effective_at': obs.effective_at, 'published_at': obs.published_at,
-                        'retrieved_at': obs.retrieved_at, 'data_status': obs.data_status, 'source_id': source.id, 'publisher': source.publisher,
+                        'retrieved_at': obs.retrieved_at, 'data_status': status, 'source_id': source.id, 'publisher': source.publisher,
                         'source_series': obs.source_series, 'document_id': doc.id, 'content_hash': doc.content_hash,
                         'evidence_reference': obs.evidence_reference, 'build_id': obs.build_id, 'quality_status': 'WARN' if quality_codes else 'PASS',
                         'quality_codes': quality_codes, 'synthetic': source.source_type == 'synthetic', 'parser_version': PARSER_VERSION,
@@ -478,6 +516,10 @@ def freeze_market_v1(s, storage, target, codes=None, start=None, end=None):
     package = export_market_v1(s, storage, codes, start, end)
     builds = [record(s.get(MarketBuild, item['build_id'])) for item in package['build_manifest']]
     recipe = {'package': package, 'builds': builds}
+    # The curator decisions behind statuses that differ from the source, so replay can prove those too.
+    corrections = status_corrections(s)
+    decided = [record(corrections[item['observation_id']]) for item in package['observations'] if 'STATUS_CORRECTED' in item['quality_codes']]
+    if decided: recipe['status_corrections'] = decided
     recipe['recipe_hash'] = logical_hash(recipe)
     with zipfile.ZipFile(target, 'x', compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr('recipe.json', json.dumps(recipe, sort_keys=True, indent=2))
@@ -507,11 +549,15 @@ def replay_market_v1(target):
             rows = parse(raw, docs[build['document_id']]['media_type'], build['specification'])
             if rows != build['logical_output'] or logical_hash(rows) != build['output_hash']: raise ValueError('Frozen market extraction differs')
             for index, row in enumerate(rows): expected[observation_id(build['id'], index)] = row
+        decided = {item['observation_id']: item for item in recipe.get('status_corrections', [])}
+        if set(decided) != {item['observation_id'] for item in package['observations'] if 'STATUS_CORRECTED' in item['quality_codes']}:
+            raise ValueError('Frozen status corrections differ from the package')
         for item in package['observations']:
             row = expected.get(item['observation_id'])
             if not row: raise ValueError('Exported observation has no frozen source row')
+            status = decided[item['observation_id']]['data_status'] if item['observation_id'] in decided else row['data_status']
             if (item['instrument_code'], item['price_type'], item['effective_date'], item['effective_at'], item['prompt_date'], item['source_series'], item['evidence_reference'], item['data_status']) != \
-               (row['instrument'], row['price_type'], row['effective_date'], row['effective_at'], row['prompt_date'], row['source_series'], row['evidence_reference'], row['data_status']) or \
+               (row['instrument'], row['price_type'], row['effective_date'], row['effective_at'], row['prompt_date'], row['source_series'], row['evidence_reference'], status) or \
                any(item[field] != row['values'].get(field) for field in VALUE_FIELDS):
                 raise ValueError('Exported observation differs from its frozen source row')
         return {'equivalent': True, 'build_hash': package['build_hash'], 'builds': len(recipe['builds']), 'observations': len(package['observations'])}
@@ -522,9 +568,10 @@ def market_summary(s):
     spans = {row[0]: row[1:] for row in s.execute(select(InstrumentObservation.instrument_id, func.count(), func.min(InstrumentObservation.effective_date),
                                                          func.max(InstrumentObservation.effective_date)).group_by(InstrumentObservation.instrument_id))}
     result = []
+    corrections = status_corrections(s)
     for instrument in s.scalars(select(Instrument).order_by(Instrument.code)):
         count, first, last = spans.get(instrument.id, (0, None, None))
-        latest = [logical_row(obs, instrument) | {'document_id': obs.document_id} for obs in s.scalars(select(InstrumentObservation).where(
+        latest = [logical_row(obs, instrument) | {'document_id': obs.document_id, 'data_status': effective_status(obs, corrections)} for obs in s.scalars(select(InstrumentObservation).where(
             InstrumentObservation.instrument_id == instrument.id, InstrumentObservation.effective_date == last).order_by(InstrumentObservation.price_type, InstrumentObservation.id))] if last else []
         result.append({**{k: v for k, v in record(instrument).items() if k != 'created_at'}, 'observations': count,
                        'first_date': first.isoformat() if first else None, 'last_date': last.isoformat() if last else None, 'latest': latest})

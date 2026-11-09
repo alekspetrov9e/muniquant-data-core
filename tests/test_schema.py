@@ -16,7 +16,7 @@ CORE_TABLES = {'entities', 'company', 'facility', 'country', 'region', 'facility
                'source_snapshot', 'source_document_relation', 'runs', 'retrieval_attempt', 'observations',
                'observation_detail', 'relationships', 'company_facility_relationship', 'evidence_build', 'candidate',
                'reviews', 'audit'}
-MARKET_TABLES = {'market_instrument', 'market_build', 'market_observation'}
+MARKET_TABLES = {'market_instrument', 'market_build', 'market_observation', 'market_status_correction'}
 VIEWS = {'capacity_observation', 'status_observation', 'facility_alias'}
 BASELINE = '34e9de7241cf'
 # Today's databases (platform revision d8317b920a11, 2026-10-13), Core tables only.

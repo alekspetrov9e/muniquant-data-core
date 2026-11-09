@@ -97,7 +97,7 @@ def test_upstream_boundary(client, example):
     # Market data (approved 2026-10-26) is recorded, checked and exported, never traded or scored.
     assert sorted(path for path in paths if 'market' in path) == ['/api/documents/{identifier}/market-import', '/api/market/builds/{identifier}/replay',
                                                                '/api/market/export', '/api/market/export/schema', '/api/market/instruments', '/api/market/quality',
-                                                               '/api/market/summary']
+                                                               '/api/market/status-corrections', '/api/market/summary']
     assert 'market' not in client.get('/api/workspace').json()
     assert 'market_observations' not in client.get('/api/export').json()
     # The old draft package is a tool (tools/legacy_bundle.py), not a second runtime export.
