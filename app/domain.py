@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Controlled master data, audited aliases and immutable supersession."""
 import unicodedata
 from sqlalchemy import select, text, update

@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 from datetime import datetime, timezone
 from uuid import uuid4
 from sqlalchemy import Column, String, Integer, Float, Text, ForeignKey, JSON, CheckConstraint, UniqueConstraint, Boolean, true

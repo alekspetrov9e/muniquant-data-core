@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Machine-readable upstream findings; blocking corruption cannot cross the export boundary."""
 from collections import Counter
 from datetime import date

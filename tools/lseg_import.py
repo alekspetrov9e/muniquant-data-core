@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Load an LSEG export folder (lseg-data historical-pricing downloads) into the market data area.
 
 The folder holds manifest.json and, per series, the untouched API response (*.raw.json) next to a

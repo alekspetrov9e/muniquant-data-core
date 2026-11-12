@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Export and replay the real-source pilot baseline inside the Data Core and compare with its own results.
 
 DC1 steps A6 and B4. The baseline is a real-source pilot captured on 2026-10-21 by the platform at

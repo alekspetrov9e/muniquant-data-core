@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Freeze and independently replay upstream evidence and market data without downstream code."""
 import argparse,json,os
 from pathlib import Path

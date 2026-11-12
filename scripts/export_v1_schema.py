@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Explicit upstream v1 contract. Increment version before breaking this mapping."""
 import json
 from pathlib import Path

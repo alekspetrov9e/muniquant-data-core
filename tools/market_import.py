@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Register a market data file (CSV, XLSX or an LSEG JSON response) as a document and read it into market observations.
 
 The file is stored unchanged under its SHA-256 like any other evidence; the import settings say how

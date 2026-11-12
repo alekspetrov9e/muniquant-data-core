@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Copy the Data Core tables of an existing MuniQuant database into a new, empty Data Core database.
 
 The source is opened read-only and never changed; a SQLite source is fingerprinted before and after.

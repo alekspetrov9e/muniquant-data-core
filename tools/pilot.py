@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Small real, source-linked aluminium pilot. Explicit URLs, not a crawler.
 
 No raw third-party documents are distributed with the repository. --online captures

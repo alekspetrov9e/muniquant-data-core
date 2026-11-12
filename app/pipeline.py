@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Versioned configurable adapters and deterministic frozen-snapshot parser replay."""
 import csv
 import hashlib

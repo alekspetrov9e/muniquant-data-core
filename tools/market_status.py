@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Record curator status decisions for market data from a list kept in tools/curated/.
 
 Each entry names one series (instrument, price type and, where two deliveries give the same series, the vendor
