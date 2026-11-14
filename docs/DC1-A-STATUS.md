@@ -35,7 +35,7 @@ Status on 2026-10-21, in the team's report form: Done, Evidence, Blockers, Decis
 
 Each follows the specification as closely as possible.
 
-1. **Own repository**, as A1 asks, with the suggested name. It is private on GitHub until the team decides otherwise; the v1.0.0 tag comes with the DC1 handover.
+1. **Own repository**, as A1 asks, with the suggested name. It started private on GitHub and is public now; the DC1 handover is tagged `v1.0.0` (2026-11-14).
 2. **The platform is untouched in DC1-A.** Every feature keeps working there, including its own copy of the Core code, until DC1-B reconnects the Workspace.
 3. **No lead code in the Core.** The specification says the Core has no code that refers to leads and that Permutable data stays in the Workspace. So the platform's `source_access.usage_scope` column and its lead-only checks are not in the Core; `quality.py` and `pipeline.py` are in their 10 October form. Licensed-credential support stays as generic source access, with no credential registered by default.
 4. **One export.** CommodityEvidencePackage 1.0.0 is "the one and only export". `GET /api/export/draft` and the 0.1.0 draft package left the runtime; the draft tool is `tools/legacy_bundle.py`, marked as a demo and migration utility, as the specification describes `bundle.py`.

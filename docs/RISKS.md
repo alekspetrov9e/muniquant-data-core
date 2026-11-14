@@ -30,6 +30,6 @@ State on 2026-10-26, after the DC1 sign-off and the market data area.
    changes over vintages, closures and restarts, conflicting sources, aliases) from 5–10 official source families.
 2. **Market data**: load the first LSEG files (LME cash and 3-month, SHFE contracts, CME premium futures), then further
    forward points and premiums as sources allow.
-3. **Release v1.0.0** with the handover documents, final demonstration ([DEMO.md](DEMO.md)) and the Workspace CI pinned
-   to the tag.
+3. **Release v1.0.0**: done 2026-11-14 (tag `v1.0.0`, with the handover documents and the final demonstration,
+   [DEMO.md](DEMO.md)). The Workspace CI pins the tag.
 4. **DC3 Shared use**: login, encryption and tested backups for both parts.

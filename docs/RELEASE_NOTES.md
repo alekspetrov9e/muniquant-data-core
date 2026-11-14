@@ -1,6 +1,14 @@
 # Release notes
 
-## Unreleased: scale and hardening fixes from the review (2026-11-04)
+## 1.0.0 (2026-11-14)
+
+The Data Core as signed off for DC1 on 2026-10-26 (1.0.0rc1 below), with everything merged since. The Workspace
+CI pins this tag.
+
+- Licence: Apache-2.0, with `LICENSE`, `NOTICE`, a header in the source files and the package licence (#9).
+- The three parts below: the market data area, then the fixes from the independent review.
+
+### Scale and hardening fixes from the review (2026-11-04)
 
 - Extraction: a number in the literal-context pattern is at most 40 digits and commas with up to 12 decimals, so a long
   run of digits no longer makes the scan quadratic (40,000 digits: 0.06 s instead of about 28 s). Every value that can
@@ -15,7 +23,7 @@
 - certifi 2026.7.22 → 2026.10.23, opentelemetry-api 1.45.0 → 1.45.2, setuptools 84.0.0 → 84.2.1 (published advisories).
 - The A6 pilot comparison passes unchanged (all 15 checks, WARN 11, the same build hash and a byte-identical export).
 
-## Unreleased: input, token and parallel-write fixes (2026-11-03)
+### Input, token and parallel-write fixes (2026-11-03)
 
 - Plant values are plain decimals only, as market values already were: digits with an optional decimal point and
   `,` thousands grouping. A sign, an exponent, `.5` or `1_000` are refused; "-0" and "1e-999999999" stored a value the
@@ -32,7 +40,7 @@
 - pypdf 6.20.0 → 6.21.4, which fixes 16 published advisories. The A6 pilot comparison passes unchanged (all 15 checks,
   the same build hash and a byte-identical export).
 
-## Unreleased: market data area (2026-10-26)
+### Market data area (2026-10-26)
 
 - Three new tables, `market_instrument`, `market_build` and `market_observation` (migration `5b1e0c7d9a42`), and
   `source_access.export_allowed`. Instruments keep exchange, market, commodity, grade, region, tenor or contract,
