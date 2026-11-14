@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Market data area: separate, source-traceable observations of aluminium market instruments.
 
 A table file (one registered document version) is read by a versioned adapter into a replayable

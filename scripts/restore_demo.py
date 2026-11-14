@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Restore the bundled fictional SQLite demo without overwriting existing data."""
 import argparse
 import hashlib

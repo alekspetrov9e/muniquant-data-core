@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Load a vendor delivery into the market data area from a recipe: which file, column and instrument.
 
 A recipe (JSON, kept in tools/curated/) names the source and its licence, the instruments, the files to

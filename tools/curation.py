@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Load a curated set of official sources into the Core: explicit URLs, verified identities and facts.
 
 A curation file (JSON) lists sources with their exact hosts, documents (URLs), plants and companies,

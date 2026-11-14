@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Reproducible developer benchmark; timing is evidence, not a CI threshold."""
 import json,random,time,platform
 import muniquant_core

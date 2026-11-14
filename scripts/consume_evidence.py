@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Example upstream-package consumer: no application database or private system access."""
 import argparse
 import json

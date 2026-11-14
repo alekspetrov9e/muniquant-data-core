@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Demo and migration utility for the old 0.1.0-draft package. NOT the evidence contract.
 
 Freezes, verifies and restores draft bundles (stored outputs, no document re-extraction).

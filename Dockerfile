@@ -1,7 +1,7 @@
 FROM python:3.12-slim AS builder
 WORKDIR /build
 RUN apt-get update && apt-get install -y --no-install-recommends g++ && rm -rf /var/lib/apt/lists/*
-COPY requirements.lock pyproject.toml setup.py ./
+COPY requirements.lock pyproject.toml setup.py LICENSE NOTICE ./
 COPY cpp ./cpp
 COPY app ./app
 RUN pip install --no-cache-dir -r requirements.lock && pip wheel --no-build-isolation --no-deps . -w /wheels
@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir -r requirements.lock && pip wheel --no-build-isol
 FROM python:3.12-slim
 WORKDIR /app
 COPY --from=builder /wheels /wheels
-COPY requirements.lock ./
+COPY requirements.lock LICENSE NOTICE ./
 RUN pip install --no-cache-dir -r requirements.lock && pip install --no-deps /wheels/*.whl && rm -rf /wheels && useradd -m appuser
 COPY app ./app
 COPY migrations ./migrations

@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Closed, upstream-only CommodityEvidencePackage v1 and frozen parser bundles."""
 import json
 import zipfile

@@ -106,3 +106,9 @@ docs/         Status, decision records, data dictionary, source taxonomy, review
 ```
 
 No licence for redistribution of third-party source data is implied by this repository. Raw publisher snapshots are kept in local evidence storage, never in git.
+
+## Licence
+
+Apache License 2.0: see [LICENSE](LICENSE) and [NOTICE](NOTICE). Anyone who passes on a copy keeps both files and
+marks the files they changed (section 4 of the licence). Source files start with
+`Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.`; new source files carry the same line.

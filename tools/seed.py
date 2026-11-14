@@ -1,3 +1,4 @@
+# Copyright 2026 muniQuant. Licensed under the Apache License, Version 2.0.
 """Opt-in fictional fixtures. Never represent these as market or facility facts."""
 import os
 from datetime import date
