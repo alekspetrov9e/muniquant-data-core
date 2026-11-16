@@ -1,5 +1,16 @@
 # Release notes
 
+## Unreleased: second DC2 batch, Gulf plants (2026-11-16)
+
+- `tools/curated/dc2-2026-11-gulf.json`: six plants in the four Gulf countries that were in the country registry
+  without a plant (BH, QA, OM, SA): the Sitra, Mesaieed, Sohar and Ras Al Khair smelters, the Ras Al Khair alumina
+  refinery and the Al Ba'itha bauxite mine, with 2024 capacities, eight companies and ten owner and operator links.
+- Source: the USGS Minerals Yearbook 2024 chapters for the four countries (published August 2026), under the existing
+  `usgs` source. No code, migration or schema change.
+- Owner links are limited to calendar 2024. Left out with reasons in the file: Hydro Aluminium Qatalum Holding B.V.
+  (NL is not in the registry), Alcoa Saudi Smelting Inversiones S.L. (jurisdiction not stated; Alcoa sold its 25.1 %
+  on 2025-07-01 per its 10-K), operators without a country-specific legal form, company-site capacities.
+
 ## 1.0.0 (2026-11-14)
 
 The Data Core as signed off for DC1 on 2026-10-26 (1.0.0rc1 below), with everything merged since. The Workspace

@@ -1,0 +1,431 @@
+{
+ "name": "DC2 official sources, second batch (Gulf)",
+ "curated_on": "2026-11-16",
+ "policy": "Every name, link and status appears verbatim in its captured document; capacities go through the versioned extractor. USGS 2024 facilities tables give the unit t without a period; as in batch 1 the yearbook year is used: period = calendar 2024. USGS lists major equity owners of the operating company; those are recorded as owners of the plant, valid for 2024 only.",
+ "to_confirm": [
+  "USGS 2024 facilities tables have no table title with a year (only the page header 'BAHRAIN—2024' and the cover '2024 Minerals Yearbook'); capacities and owner links are read as calendar 2024",
+  "Values marked 'e' (USGS estimate), e.g. Alba 1,620,000e t, are kept as capacities, as with the 'Annual capacity e' column in batch 1 (Australia 2023)",
+  "Company countries from the name or legal form: Bahrain Mumtalakat Holding Co. (BH), Saudi Arabian Mining Co. (Ma'aden) (SA), Qatar Aluminium Manufacturing Co. Q.P.S.C. (QA), Abu Dhabi National Energy Co. P.J.S.C. (AE), OQ S.A.O.C. (OM), Aluminium Bahrain B.S.C. (BH), Qatar Aluminium Ltd. Q.S.C. (QA)",
+  "Ownership change: the Alcoa 10-K for 2025 says Alcoa sold its 25.1% in MBAC and MAC to Ma'aden on 2025-07-01; USGS names the holder as Alcoa Saudi Smelting Inversiones S.L., which the 10-K does not name. Not recorded as a fact; owner links here end on 2024-12-31"
+ ],
+ "excluded": [
+  {
+   "link": "Hydro Aluminium Qatalum Holding B.V. OWNS 50% Mesaieed smelter",
+   "reason": "B.V. points to the Netherlands, which is not in the country registry (needs a migration); the jurisdiction is also not stated"
+  },
+  {
+   "link": "Alcoa Saudi Smelting Inversiones S.L. OWNS 25.1% Ras Al Khair smelter / alumina refinery",
+   "reason": "company jurisdiction not stated (S.L. is Spanish, but the Alcoa 10-K XBRL tags the sister company Alcoa Saudi Rolling Inversiones S.L. as NL)"
+  },
+  {
+   "link": "Private entity (generic) OWNS 10% Sitra smelter",
+   "reason": "no identifiable company"
+  },
+  {
+   "link": "Sohar Aluminium Co. LLC OPERATES Sohar smelter",
+   "reason": "company jurisdiction not stated (LLC is used in many countries)"
+  },
+  {
+   "link": "Ma'aden Aluminium Co. (MAC) / Ma'aden Bauxite and Alumina Co. (MBAC) OPERATES Ras Al Khair plants",
+   "reason": "company jurisdiction not stated (no legal form written)"
+  },
+  {
+   "link": "any owner of Al Ba'itha bauxite mine",
+   "reason": "the company cell says 'do.' (ditto); a link would be an inference from the row above"
+  },
+  {
+   "link": "Az Zabirah Mine",
+   "reason": "non-metallurgical bauxite, not part of the aluminium chain"
+  },
+  {
+   "link": "rolling mills, extrusion, casting and recycling plants",
+   "reason": "not a Core facility type"
+  },
+  {
+   "link": "company-site capacities (Alba 'more than 1.623M', Sohar 'more than 400,000', Ma'aden 'over 4Mt', Qatalum 'more than 600,000')",
+   "reason": "lower bounds or production, not capacity values; company sites are not in this batch"
+  }
+ ],
+ "sources": [
+  {
+   "key": "usgs",
+   "publisher": "U.S. Geological Survey (National Minerals Information Center)",
+   "source_type": "government",
+   "url": "https://pubs.usgs.gov/myb/vol3/",
+   "hosts": [
+    "pubs.usgs.gov"
+   ]
+  }
+ ],
+ "documents": [
+  {
+   "key": "usgs_bahrain_2024",
+   "source": "usgs",
+   "url": "https://pubs.usgs.gov/myb/vol3/2024/myb3-2024-bahrain.pdf",
+   "title": "The Mineral Industry of Bahrain, 2024 (USGS Minerals Yearbook vol. III)",
+   "published_at": null,
+   "published_evidence": "U.S. Department of the Interior August 2026 U.S. Geological Survey 2024 Minerals Yearbook BAHRAIN"
+  },
+  {
+   "key": "usgs_qatar_2024",
+   "source": "usgs",
+   "url": "https://pubs.usgs.gov/myb/vol3/2024/myb3-2024-qatar.pdf",
+   "title": "The Mineral Industry of Qatar, 2024 (USGS Minerals Yearbook vol. III)",
+   "published_at": null,
+   "published_evidence": "U.S. Department of the Interior August 2026 U.S. Geological Survey 2024 Minerals Yearbook QATAR"
+  },
+  {
+   "key": "usgs_oman_2024",
+   "source": "usgs",
+   "url": "https://pubs.usgs.gov/myb/vol3/2024/myb3-2024-oman.pdf",
+   "title": "The Mineral Industry of Oman, 2024 (USGS Minerals Yearbook vol. III)",
+   "published_at": null,
+   "published_evidence": "U.S. Department of the Interior August 2026 U.S. Geological Survey 2024 Minerals Yearbook OMAN"
+  },
+  {
+   "key": "usgs_saudi_arabia_2024",
+   "source": "usgs",
+   "url": "https://pubs.usgs.gov/myb/vol3/2024/myb3-2024-saudi-arabia.pdf",
+   "title": "The Mineral Industry of Saudi Arabia, 2024 (USGS Minerals Yearbook vol. III)",
+   "published_at": null,
+   "published_evidence": "U.S. Department of the Interior August 2026 U.S. Geological Survey 2024 Minerals Yearbook SAUDI ARABIA"
+  }
+ ],
+ "facilities": [
+  {
+   "name": "Sitra smelter",
+   "aliases": [],
+   "country": "BH",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_bahrain_2024",
+   "identity_snippet": "Smelter at Sitra Askar, Janubiyah Governorate"
+  },
+  {
+   "name": "Mesaieed smelter",
+   "aliases": [],
+   "country": "QA",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_qatar_2024",
+   "identity_snippet": "Smelter at Mesaieed Industrial City Mesaieed Industrial City, Al Wakrah Municipality"
+  },
+  {
+   "name": "Sohar smelter",
+   "aliases": [],
+   "country": "OM",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_oman_2024",
+   "identity_snippet": "Smelter at Sohar Sohar, Al Batinah North Governorate"
+  },
+  {
+   "name": "Ras Al Khair smelter",
+   "aliases": [],
+   "country": "SA",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_saudi_arabia_2024",
+   "identity_snippet": "Smelter at Ras Al Khair Ras Al Khair, Jubail Industrial City, Eastern Region"
+  },
+  {
+   "name": "Ras Al Khair alumina refinery",
+   "aliases": [],
+   "country": "SA",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_saudi_arabia_2024",
+   "identity_snippet": "Refinery at Ras Al Khair Ras Al Khair, Jubail Industrial City, Eastern Region"
+  },
+  {
+   "name": "Al Ba'itha bauxite mine",
+   "aliases": [],
+   "country": "SA",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "usgs_saudi_arabia_2024",
+   "identity_snippet": "Bauxite, metallurgical grade do. Al Ba'itha Mine Al Ba'itha, Al Qasim Region"
+  }
+ ],
+ "companies": [
+  {
+   "name": "Aluminium Bahrain B.S.C. (Alba)",
+   "country": "BH",
+   "document": "usgs_bahrain_2024",
+   "snippet": "Aluminium Bahrain B.S.C. (Alba) [Bahrain Mumtalakat",
+   "country_basis": "B.S.C. is a Bahraini legal form"
+  },
+  {
+   "name": "Bahrain Mumtalakat Holding Co.",
+   "country": "BH",
+   "document": "usgs_bahrain_2024",
+   "snippet": "Bahrain Mumtalakat Holding Co., 69.38%",
+   "country_basis": "country named in the company name"
+  },
+  {
+   "name": "Saudi Arabian Mining Co. (Ma'aden)",
+   "country": "SA",
+   "document": "usgs_saudi_arabia_2024",
+   "snippet": "Saudi Arabian Mining Co. (Ma'aden), 74.9%",
+   "country_basis": "country named in the company name"
+  },
+  {
+   "name": "Qatar Aluminium Ltd. Q.S.C. (Qatalum)",
+   "country": "QA",
+   "document": "usgs_qatar_2024",
+   "snippet": "Qatar Aluminium Ltd. Q.S.C. (Qatalum)",
+   "country_basis": "Q.S.C. is a Qatari legal form"
+  },
+  {
+   "name": "Qatar Aluminium Manufacturing Co. Q.P.S.C.",
+   "country": "QA",
+   "document": "usgs_qatar_2024",
+   "snippet": "Qatar Aluminium Manufacturing Co. Q.P.S.C., 50%",
+   "country_basis": "Q.P.S.C. is a Qatari legal form"
+  },
+  {
+   "name": "Abu Dhabi National Energy Co. P.J.S.C.",
+   "country": "AE",
+   "document": "usgs_oman_2024",
+   "snippet": "Abu Dhabi National Energy Co. P.J.S.C., 40%",
+   "country_basis": "P.J.S.C. is a UAE legal form; Abu Dhabi named in the company name"
+  },
+  {
+   "name": "OQ S.A.O.C.",
+   "country": "OM",
+   "document": "usgs_oman_2024",
+   "snippet": "OQ S.A.O.C., 40%",
+   "country_basis": "S.A.O.C. is an Omani legal form"
+  },
+  {
+   "name": "Rio Tinto",
+   "country": "GB",
+   "document": "usgs_oman_2024",
+   "snippet": "Rio Tinto Group, 20%",
+   "country_basis": "same entity as batch 1 (Rio Tinto, GB); USGS writes \"Rio Tinto Group\""
+  }
+ ],
+ "relationships": [
+  {
+   "company": "Aluminium Bahrain B.S.C. (Alba)",
+   "facility": "Sitra smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_bahrain_2024",
+   "snippet": "Aluminium Bahrain B.S.C. (Alba) [Bahrain Mumtalakat Holding Co., 69.38%; Saudi Arabian Mining Co. (Ma'aden), 20.62%; Private entity (generic), 10%] Smelter at Sitra Askar",
+   "valid_from": "2024-01-01",
+   "valid_to": "2024-12-31",
+   "as_of_text": "BAHRAIN—2024 FACILITIES TABLE—BAHRAIN"
+  },
+  {
+   "company": "Bahrain Mumtalakat Holding Co.",
+   "facility": "Sitra smelter",
+   "role": "OWNS",
+   "percentage": 69.38,
+   "document": "usgs_bahrain_2024",
+   "snippet": "Bahrain Mumtalakat Holding Co., 69.38%",
+   "valid_from": "2024-01-01",
+   "valid_to": "2024-12-31",
+   "as_of_text": "BAHRAIN—2024 FACILITIES TABLE—BAHRAIN"
+  },
+  {
+   "company": "Saudi Arabian Mining Co. (Ma'aden)",
+   "facility": "Sitra smelter",
+   "role": "OWNS",
+   "percentage": 20.62,
+   "document": "usgs_bahrain_2024",
+   "snippet": "Saudi Arabian Mining Co. (Ma'aden), 20.62%",
+   "valid_from": "2024-01-01",
+   "valid_to": "2024-12-31",
+   "as_of_text": "BAHRAIN—2024 FACILITIES TABLE—BAHRAIN"
+  },
+  {
+   "company": "Qatar Aluminium Ltd. Q.S.C. (Qatalum)",
+   "facility": "Mesaieed smelter",
+   "role": "OPERATES",
+   "percentage": null,
+   "document": "usgs_qatar_2024",
+   "snippet": "Qatar Aluminium Ltd. Q.S.C. (Qatalum) (Hydro Aluminium Qatalum Holding B.V ., 50%; Qatar Aluminium Manufacturing Co. Q.P.S.C., 50%) Smelter at Mesaieed Industrial City",
+   "valid_from": "2024-01-01",
+   "valid_to": "2024-12-31",
+   "as_of_text": "FACILITIES TABLE—QATAR"
+  },
+  {
+   "company": "Qatar Aluminium Manufacturing Co. Q.P.S.C.",
+   "facility": "Mesaieed smelter",
+   "role": "OWNS",
+   "percentage": 50,
+   "document": "usgs_qatar_2024",
+   "snippet": "Qatar Aluminium Manufacturing Co. Q.P.S.C., 50%) Smelter at Mesaieed Industrial City",
+   "valid_from": "2024-01-01",
+   "valid_to": "2024-12-31",
+   "as_of_text": "FACILITIES TABLE—QATAR"
+  },
+  {
+   "company": "Abu Dhabi National Energy Co. P.J.S.C.",
+   "facility": "Sohar smelter",
+   "role": "OWNS",
+   "percentage": 40,
+   "document": "usgs_oman_2024",
+   "snippet": "Sohar Aluminium Co. LLC (Abu Dhabi National Energy Co. P.J.S.C., 40%",
+   "valid_from": "2024-01-01",
+   "valid_to": "2024-12-31",
+   "as_of_text": "FACILITIES TABLE—OMAN"
+  },
+  {
+   "company": "OQ S.A.O.C.",
+   "facility": "Sohar smelter",
+   "role": "OWNS",
+   "percentage": 40,
+   "document": "usgs_oman_2024",
+   "snippet": "Abu Dhabi National Energy Co. P.J.S.C., 40%; OQ S.A.O.C., 40%; Rio Tinto Group, 20%) Smelter at Sohar",
+   "valid_from": "2024-01-01",
+   "valid_to": "2024-12-31",
+   "as_of_text": "FACILITIES TABLE—OMAN"
+  },
+  {
+   "company": "Rio Tinto",
+   "facility": "Sohar smelter",
+   "role": "OWNS",
+   "percentage": 20,
+   "document": "usgs_oman_2024",
+   "snippet": "Rio Tinto Group, 20%) Smelter at Sohar",
+   "valid_from": "2024-01-01",
+   "valid_to": "2024-12-31",
+   "as_of_text": "FACILITIES TABLE—OMAN"
+  },
+  {
+   "company": "Saudi Arabian Mining Co. (Ma'aden)",
+   "facility": "Ras Al Khair alumina refinery",
+   "role": "OWNS",
+   "percentage": 74.9,
+   "document": "usgs_saudi_arabia_2024",
+   "snippet": "Saudi Arabian Mining Co. (Ma'aden), 74.9%; Alcoa Saudi Smelting Inversiones S.L., 25.1%] Refinery at Ras Al Khair",
+   "valid_from": "2024-01-01",
+   "valid_to": "2024-12-31",
+   "as_of_text": "SAUDI ARABIA—2024 FACILITIES TABLE—SAUDI ARABIA"
+  },
+  {
+   "company": "Saudi Arabian Mining Co. (Ma'aden)",
+   "facility": "Ras Al Khair smelter",
+   "role": "OWNS",
+   "percentage": 74.9,
+   "document": "usgs_saudi_arabia_2024",
+   "snippet": "Saudi Arabian Mining Co. (Ma'aden), 74.9%; Alcoa Saudi Smelting Inversiones S.L., 25.1%] Smelter at Ras Al Khair",
+   "valid_from": "2024-01-01",
+   "valid_to": "2024-12-31",
+   "as_of_text": "SAUDI ARABIA—2024 FACILITIES TABLE—SAUDI ARABIA"
+  }
+ ],
+ "capacities": [
+  {
+   "facility": "Sitra smelter",
+   "document": "usgs_bahrain_2024",
+   "value": "1,620,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Sitra smelter",
+    "country": "BH",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Smelter at Sitra Askar, Janubiyah Governorate",
+    "suffix": "e t Products Alloys",
+    "page": 5
+   }
+  },
+  {
+   "facility": "Mesaieed smelter",
+   "document": "usgs_qatar_2024",
+   "value": "636,000",
+   "period_basis": "USGS 2024 facilities table, unit t; period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Mesaieed smelter",
+    "country": "QA",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Smelter at Mesaieed Industrial City Mesaieed Industrial City, Al Wakrah Municipality",
+    "suffix": "t Cement and clinker",
+    "page": 6
+   }
+  },
+  {
+   "facility": "Sohar smelter",
+   "document": "usgs_oman_2024",
+   "value": "395,000",
+   "period_basis": "USGS 2024 facilities table, unit t; period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Sohar smelter",
+    "country": "OM",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Smelter at Sohar Sohar, Al Batinah North Governorate",
+    "suffix": "t Secondary, metal",
+    "page": 6
+   }
+  },
+  {
+   "facility": "Ras Al Khair smelter",
+   "document": "usgs_saudi_arabia_2024",
+   "value": "1,000,000",
+   "period_basis": "USGS 2024 facilities table, unit t; period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Ras Al Khair smelter",
+    "country": "SA",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Smelter at Ras Al Khair Ras Al Khair, Jubail Industrial City, Eastern Region",
+    "suffix": "t Secondary, metal, products",
+    "page": 9
+   }
+  },
+  {
+   "facility": "Ras Al Khair alumina refinery",
+   "document": "usgs_saudi_arabia_2024",
+   "value": "1,825,000",
+   "period_basis": "USGS 2024 facilities table, unit t; period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Ras Al Khair alumina refinery",
+    "country": "SA",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Refinery at Ras Al Khair Ras Al Khair, Jubail Industrial City, Eastern Region",
+    "suffix": "t Bauxite, metallurgical grade",
+    "page": 9
+   }
+  },
+  {
+   "facility": "Al Ba'itha bauxite mine",
+   "document": "usgs_saudi_arabia_2024",
+   "value": "5,000,000",
+   "period_basis": "USGS 2024 facilities table, unit t; period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Al Ba'itha bauxite mine",
+    "country": "SA",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Al Ba'itha Mine Al Ba'itha, Al Qasim Region",
+    "suffix": "t Bauxite, nonmetallurgical grade",
+    "page": 9
+   }
+  }
+ ],
+ "statuses": []
+}

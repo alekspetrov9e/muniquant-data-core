@@ -116,7 +116,9 @@ leaves out a source that cannot be captured yet and everything that depends on i
 receives the evidence package, a frozen bundle with its replay result and a summary; captured pages stay under `data/`.
 
 The first DC2 batch is [tools/curated/dc2-2026-10.json](../tools/curated/dc2-2026-10.json): 57 plants from seven official
-source families, with its period policy, the points a curator should confirm and what was left out and why.
+source families, with its period policy, the points a curator should confirm and what was left out and why. The second,
+[tools/curated/dc2-2026-11-gulf.json](../tools/curated/dc2-2026-11-gulf.json), adds six plants in Bahrain, Qatar, Oman
+and Saudi Arabia from the USGS 2024 country chapters (no new source family).
 
 ## Coordinated backup and restore
 
