@@ -1,5 +1,18 @@
 # Release notes
 
+## Unreleased: third DC2 batch, China plants (2026-11-20)
+
+- `tools/curated/dc2-2026-11-china.json`: 29 single-site plants in China (14 smelters, 10 alumina refineries, 5 bauxite
+  mines) and 24 capacities for 2024, from the USGS Minerals Yearbook 2024 China chapter (published August 2026), under
+  the existing `usgs` source. No companies or owner and operator links: the chapter does not state where the companies
+  are registered. No code, migration or schema change.
+- The USGS capacities were checked against the 2024 annual reports of the listed operators or their parents: 4 agree,
+  5 are contradicted or put in doubt by the operator (Jingxi Tiangui refinery, Nanshan Longkou, Jiaozuo Wanfang, Henan
+  Zhongfu Gongyi and Linzhou smelters); those plants are kept without a capacity. The other 20 capacities rest on USGS
+  estimates alone. Left out with reasons in the file: multi-province rows (Chalco, Xinfa, SPIC, Yidian), the Zouping
+  row, ditto names, doubtful places, every company and link. The Wenshan ownership conflict (USGS: Chinalco 100 %;
+  Yunnan Aluminium's report: its 100 % subsidiary) is in `to_confirm`.
+
 ## Unreleased: second DC2 batch, Gulf plants (2026-11-16)
 
 - `tools/curated/dc2-2026-11-gulf.json`: six plants in the four Gulf countries that were in the country registry

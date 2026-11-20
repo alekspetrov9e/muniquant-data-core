@@ -16,3 +16,8 @@ regexes = ['''key": "sec_century_10k_2024"''']
 description = "A curation document key (tools/curated/dc2-2026-11-gulf.json), not a credential"
 regexTarget = "match"
 regexes = ['''key": "usgs_bahrain_2024"''']
+
+[[allowlists]]
+description = "A curation document key (tools/curated/dc2-2026-11-china.json), not a credential"
+regexTarget = "match"
+regexes = ['''key": "usgs_china_2024"''']
