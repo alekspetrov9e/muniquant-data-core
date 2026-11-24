@@ -1,0 +1,900 @@
+{
+ "name": "DC2 official sources, third batch (China)",
+ "curated_on": "2026-11-20",
+ "policy": "Every name appears verbatim in its captured document; capacities go through the versioned extractor. USGS 2024 facilities table, unit t (metric tons, checked), no year in the table title: period = calendar 2024, as for the Gulf batch. Only rows that name one site are recorded; rows for several provinces or several bases are left out. No company or owner link in this batch: no company's jurisdiction is stated in the source. A row is left out when anything in it is uncertain (ditto facility names, a doubtful spelling, an aggregate). Labels use only what the row itself writes, never a ditto company name. USGS capacities were cross-checked against the listed operators' 2024 annual reports; where the operator's report contradicts or casts doubt on the USGS figure, the plant is kept and its capacity left out.",
+ "to_confirm": [
+  "Every China capacity is a USGS estimate (e); kept as with the Gulf and Australia batches",
+  "Unit checked: the Facilities table has a Unit column with 't' on every aluminium row, and the chapter defines t as metric tons ('29,209 metric tons (t)'); the values are tonnes, not thousand t (e.g. Weiqiao Zouping metal 6,500,000 t)",
+  "Wenshan ownership, sources disagree (recorded, not resolved here): USGS 2024 Facilities table, pages 17-18: 'Yunnan Wenshan Aluminium Co. Ltd. [Aluminum Corporation of China (Chinalco), 100%]'. Chalco (Aluminum Corporation of China Ltd.) 2024 annual report, HKEX 2025041600473: 'the Company owned 29.10% of the total issued share capital of Yunnan Aluminum' and 'controls in aggregate 42.10% voting rights'; no figure for Wenshan itself. Yunnan Aluminium (云铝股份, 000807) 2024 annual report, http://static.cninfo.com.cn/finalpage/2025-03-27/1222911954.PDF, subsidiary table: '云铝文山 ... 云南文山 云南文山 制造 100.00%' (Wenshan Aluminium, registered and operating in Wenshan, Yunnan, 100% held by Yunnan Aluminium), and '全资子公司云南文山铝业有限公司'. So the direct holder is Yunnan Aluminium (100%), not Chinalco; no ownership link is recorded in this batch",
+  "Company cross-check of the capacities (2024 annual reports on cninfo, the exchanges' official disclosure site). Agree with USGS: Shenhuo Wenshan smelter (Shenhuo (神火股份, 000933) 2024 annual report summary, http://static.cninfo.com.cn/finalpage/2025-03-25/1222881394.PDF: '云南神火 90 万吨/年'), Tianshan Shihezi smelter (Tianshan Aluminum (天山铝业, 002532) 2024 annual report, http://static.cninfo.com.cn/finalpage/2025-04-18/1223122101.PDF: '已建成 120 万吨电解铝产能'), Wenshan alumina refinery (Yunnan Aluminium (云铝股份, 000807) 2024 annual report, http://static.cninfo.com.cn/finalpage/2025-03-27/1222911954.PDF: '云铝文山已形成年产 140 万吨氧化铝生产规模'), Longkou Donghai alumina refinery (Nanshan Aluminium (南山铝业, 600219) 2024 annual report, http://static.cninfo.com.cn/finalpage/2025-03-25/1222881062.PDF: alumina '国内在产产能 140 万吨'). Disagree or doubtful: Jingxi Tiangui refinery, Nanshan Longkou smelter, Jiaozuo Wanfang smelter, Henan Zhongfu Gongyi and Linzhou smelters (capacities left out, see excluded). Also read: Jiuquan Steel (酒钢宏兴, 600307) 2024 annual report, http://static.cninfo.com.cn/finalpage/2025-04-30/1223412908.PDF (Gansu Dongxing is a fellow subsidiary, '母公司的全资子公司'; no smelter figure). Searched on cninfo without a listed company: East Hope, Huayin, Bosai, Qingtongxia. Not checked: Jinsheng (Hangzhou Jinjiang), Huayang, Xiangjiang Wanji, Jinxin, Zhongrui, Yugang; their USGS capacities stand uncorroborated",
+  "Chinese company reports give capacities in 万吨 (10,000 t); the Core takes t, kt or Mt only, so a 万吨 figure cannot be extracted verbatim. Capacities from these reports (e.g. Shenhuo's Xinjiang smelter, '新疆煤电 80 万吨/年', which USGS does not list) need a Core unit change first; they are not in this batch",
+  "Company and owner links for a later batch: needs a source that states each company's jurisdiction, e.g. the subsidiary table of Chalco's annual report ('PRC/Mainland China') or of Yunnan Aluminium's (注册地 per subsidiary)"
+ ],
+ "excluded": [
+  {
+   "link": "Aluminum Corporation of China (Chinalco): alumina 21,900,000 t, bauxite 30,400,000 t, metal 6,900,000 t 'Plants in multiple provinces'",
+   "reason": "several plants in one row, not a plant"
+  },
+  {
+   "link": "Xinfa Aluminium Group: alumina 15,800,000 t and metal 3,480,000 t 'Plants in multiple provinces'",
+   "reason": "several plants in one row"
+  },
+  {
+   "link": "State Power Investment Corp. metal 3,200,000 t and Yidian Holding Group metal 2,010,000 t 'multiple provinces'",
+   "reason": "several plants in one row"
+  },
+  {
+   "link": "Shandong Weiqiao Aluminum and Power 'Site in Zouping': alumina 15,000,000 t, metal 6,500,000 t",
+   "reason": "China Hongqiao's 2024 ESG report lists production bases in Zouping, Weiqiao, Bincheng, Huimin, Zhanhua, Boxing and others: the row aggregates several bases"
+  },
+  {
+   "link": "SPIC Shanxi Aluminum alumina refinery 'Site in Yuaping', 2,900,000 t",
+   "reason": "place name as written ('Yuaping', Xinzhou) is doubtful (the county in Xinzhou is Yuanping); not recorded until confirmed"
+  },
+  {
+   "link": "Baotou Xinhengfeng Energy smelter, 500,000 t",
+   "reason": "facility name is 'do.' (ditto); left out to record only rows whose identity is written out"
+  },
+  {
+   "link": "Yunnan Hongtai New Material: 'Site in Wenshan Yanshan Industrial Park' 1,000,000 t and 'Site in Yanshan' 2,030,000 t",
+   "reason": "China Hongqiao's 2024 ESG report names its Yunnan bases in Wenshan Prefecture (Yanshan County) and Honghe Prefecture; both USGS rows are in Wenshan, so they may be one site or one may be the Honghe base: identity not safe"
+  },
+  {
+   "link": "Yunnan Wenshan Aluminium smelter, 500,000 t ('do. do.')",
+   "reason": "facility and location are both ditto and read exactly as the Shenhuo Wenshan row: identity not safe"
+  },
+  {
+   "link": "Aluminum Corporation of China (Chinalco) OWNS 100% Yunnan Wenshan Aluminium Co. Ltd. (Wenshan alumina refinery, Wenshan bauxite mine)",
+   "reason": "the holding is uncertain (see to_confirm: USGS says Chinalco 100%; Chalco's 2024 annual report says Chalco owns 29.10% of Yunnan Aluminum and reports Wenshan within its group) and Chinalco's jurisdiction is not stated"
+  },
+  {
+   "link": "China Hongqiao Group Ltd. as a CN company",
+   "reason": "its 2024 annual results state it is incorporated in the Cayman Islands: the name does not give the jurisdiction"
+  },
+  {
+   "link": "Vimetco N.V. OWNS 100% Henan Zhongfu",
+   "reason": "N.V. points to the Netherlands, not in the country registry; jurisdiction not stated"
+  },
+  {
+   "link": "East Hope (Sanmenxia) Aluminium Co. Ltd. OPERATES East Hope Zuoquan alumina refinery and East Hope Sanmenxia smelter",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "East Hope Group Co. Ltd. OWNS 100% East Hope (Sanmenxia) Aluminium Co. Ltd. and Baotou Rare Earth Aluminum Industry Co. Ltd.",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "any operator or owner of Mianchi alumina refinery and Linzhou smelter",
+   "reason": "the company cell says 'do.' (ditto); a link would be an inference from the row above"
+  },
+  {
+   "link": "Guangxi Huayin Aluminium Industry Co. Ltd. OPERATES Huayin Debao alumina refinery",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Guangxi Tiandong Jinsheng Chemical Co. Ltd. OPERATES Tiandong Jinsheng alumina refinery; Hangzhou Jinjiang Group Co. Ltd. OWNS 100% of it",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Huayang New Material Technology Group Co. Ltd. OPERATES Huayang Yangquan alumina refinery, Huayang Pingan bauxite mine and Huayang Yangquan smelter",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Jingxi Tiangui Aluminum Co. Ltd. OPERATES Jingxi Tiangui alumina refinery; Tianshan Aluminum Co. Ltd. OWNS 100% of it",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Longkou Donghai Alumina Co. Ltd. OPERATES Longkou Donghai alumina refinery; Shandong Nanshan (Group) Co. Ltd. OWNS 100% of it",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Luoyang Xiangjiang Wanji Aluminium Industry Co. Ltd. OPERATES Xiangjiang Wanji Xin'an alumina refinery, bauxite mine and smelter",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Nanchuan Pioneer Alumina Refinery Co. Ltd. OPERATES Nanchuan Pioneer alumina refinery; Bosai Minerals Group Co. Ltd. OWNS 100% of it",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Yunnan Wenshan Aluminium Co. Ltd. OPERATES Wenshan alumina refinery and Wenshan bauxite mine",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Guangxi Tiandong Jinxin Chemical Co. Ltd. OPERATES Tiandong Jinxin bauxite mine",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Yunnan Aluminium Co. Ltd. OPERATES Yunnan Aluminium Kunming bauxite mine",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Baotou Rare Earth Aluminum Industry Co. Ltd. OPERATES Baotou Rare Earth smelter",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Gansu Dongxing Aluminum Co. Ltd. OPERATES Gansu Dongxing Anning smelter; Jiuquan Iron & Steel (Group) Co. Ltd. OWNS 100% of it",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Gansu Zhongrui Aluminum Co. Ltd. OPERATES Gansu Zhongrui Lichuan smelter",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Henan Yugang Longquan Aluminium Co. Ltd. OPERATES Henan Yugang Longquan smelter",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Henan Zhongfu Industry Co. Ltd. OPERATES Henan Zhongfu Gongyi smelter",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Jiaozuo Wanfang Aluminum Co. Ltd. OPERATES Jiaozuo Wanfang smelter",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Ningxia Power Investment Corp. OPERATES Qingtongxia smelter",
+   "reason": "company jurisdiction not stated in the source (no legal form written)"
+  },
+  {
+   "link": "Shandong Nanshan Aluminum Co. Ltd. OPERATES Nanshan Longkou smelter",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Tianshan Aluminum Co. Ltd. OPERATES Tianshan Shihezi smelter",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "Yunnan Shenhuo Aluminium Co. Ltd. OPERATES Shenhuo Wenshan smelter",
+   "reason": "company jurisdiction not stated in the source (the legal form 'Co. Ltd.' does not give it; China Hongqiao, for example, is a Cayman Islands company)"
+  },
+  {
+   "link": "State-owned Assets Supervision Administration Commission of the State Council OWNS 100% Aluminum Corporation of China (Chinalco)",
+   "reason": "Chinalco's row is a multi-province aggregate (not a plant), and neither is a company with a stated jurisdiction"
+  },
+  {
+   "link": "capacity of Jingxi Tiangui alumina refinery",
+   "reason": "conflicts with the operator's parent: Tianshan Aluminum (天山铝业, 002532) 2024 annual report, http://static.cninfo.com.cn/finalpage/2025-04-18/1223122101.PDF says the Guangxi Baise alumina base '建成 250 万吨氧化铝生产线' (a 2.5 Mt line) and 2024 alumina output '227.89 万吨'; USGS gives 800,000 t. The plant is kept, its capacity is not recorded (see to_confirm)"
+  },
+  {
+   "link": "capacity of Nanshan Longkou smelter",
+   "reason": "doubtful for 2024: Nanshan Aluminium (南山铝业, 600219) 2024 annual report, http://static.cninfo.com.cn/finalpage/2025-03-25/1222881062.PDF says Nanshan is selling '33.6 万吨电解铝产能指标' (smelting capacity quota), '已处置 13.6 万吨，尚余 20 万吨' at 2024-12-31, and 2024 output 67.82 万吨; USGS gives 820,000 t. The plant is kept, its capacity is not recorded"
+  },
+  {
+   "link": "capacity of Jiaozuo Wanfang smelter",
+   "reason": "doubtful for 2024: Jiaozuo Wanfang (焦作万方, 000612) 2024 annual report, http://static.cninfo.com.cn/finalpage/2025-03-29/1222940732.PDF says the company moved '7 万吨闲置电解铝产能指标' (an idle 70,000 t quota) to its Ningxia subsidiary, its line is '年产 35.2 万吨电解铝' and 2024 output 352,875 t; USGS gives 420,000 t. The plant is kept, its capacity is not recorded"
+  },
+  {
+   "link": "capacity of Henan Zhongfu Gongyi smelter",
+   "reason": "doubtful for 2024: Zhongfu (中孚实业, 600595) 2024 annual report, http://static.cninfo.com.cn/finalpage/2025-04-16/1223101362.PDF says its smelting is in Guangyuan, Sichuan ('公司已在水电资源丰富的四川省广元市构建“绿色水电铝”产业布局'), 2024 output was 40.88 万吨 and assets stand idle after a capacity transfer ('因子公司产能转移部分资产暂时闲置'); USGS gives Gongyi 490,000 t and Linzhou 250,000 t in Henan. The plant is kept, its capacity is not recorded"
+  },
+  {
+   "link": "capacity of Linzhou smelter",
+   "reason": "doubtful for 2024: Zhongfu (中孚实业, 600595) 2024 annual report, http://static.cninfo.com.cn/finalpage/2025-04-16/1223101362.PDF says its smelting is in Guangyuan, Sichuan ('公司已在水电资源丰富的四川省广元市构建“绿色水电铝”产业布局'), 2024 output was 40.88 万吨 and assets stand idle after a capacity transfer ('因子公司产能转移部分资产暂时闲置'); USGS gives Gongyi 490,000 t and Linzhou 250,000 t in Henan. The plant is kept, its capacity is not recorded"
+  },
+  {
+   "link": "downstream and secondary aluminium, gallium",
+   "reason": "not a Core facility type"
+  }
+ ],
+ "sources": [
+  {
+   "key": "usgs",
+   "publisher": "U.S. Geological Survey (National Minerals Information Center)",
+   "source_type": "government",
+   "url": "https://pubs.usgs.gov/myb/vol3/",
+   "hosts": [
+    "pubs.usgs.gov"
+   ]
+  }
+ ],
+ "documents": [
+  {
+   "key": "usgs_china_2024",
+   "source": "usgs",
+   "url": "https://pubs.usgs.gov/myb/vol3/2024/myb3-2024-china.pdf",
+   "title": "The Mineral Industry of China, 2024 (USGS Minerals Yearbook vol. III)",
+   "published_at": null,
+   "published_evidence": "U.S. Department of the Interior August 2026 U.S. Geological Survey 2024 Minerals Yearbook CHINA"
+  }
+ ],
+ "facilities": [
+  {
+   "name": "East Hope Zuoquan alumina refinery",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_china_2024",
+   "identity_snippet": "East Hope (Sanmenxia) Aluminium Co. Ltd. (East Hope Group Co. Ltd., 100%) Site in Zuoquan Zuoquan, Jinzhong, Shanxi Province"
+  },
+  {
+   "name": "Mianchi alumina refinery",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Site in Mianchi Mianchi, Sanmenxia, Henan Province"
+  },
+  {
+   "name": "Huayin Debao alumina refinery",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Guangxi Huayin Aluminium Industry Co. Ltd. Site in Debao Debao, Baise, Guangxi Autonomous Region"
+  },
+  {
+   "name": "Tiandong Jinsheng alumina refinery",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Guangxi Tiandong Jinsheng Chemical Co. Ltd. (Hangzhou Jinjiang Group Co. Ltd., 100%) Site in Tiandong Tiandong, Baise, Guangxi Autonomous Region"
+  },
+  {
+   "name": "Huayang Yangquan alumina refinery",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Huayang New Material Technology Group Co. Ltd. Site in Yangquan Yangquan, Shanxi Province 1,100,000e t"
+  },
+  {
+   "name": "Jingxi Tiangui alumina refinery",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Jingxi Tiangui Aluminum Co. Ltd. (Tianshan Aluminum Co. Ltd., 100%) Site in Jingxi Jingxi, Baise, Guangxi Autonomous Region"
+  },
+  {
+   "name": "Longkou Donghai alumina refinery",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Longkou Donghai Alumina Co. Ltd. [Shandong Nanshan (Group) Co. Ltd., 100%] Site in Longkou Longkou, Yantai, Shandong Province"
+  },
+  {
+   "name": "Xiangjiang Wanji Xin'an alumina refinery",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Luoyang Xiangjiang Wanji Aluminium Industry Co. Ltd. Site in Xin'an Xin'an, Luoyang, Henan Province 1,400,000e t"
+  },
+  {
+   "name": "Nanchuan Pioneer alumina refinery",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Nanchuan Pioneer Alumina Refinery Co. Ltd. (Bosai Minerals Group Co. Ltd., 100%) Site in Wenfeng Wenfeng, Nanchuan, Chongqing Municipality"
+  },
+  {
+   "name": "Wenshan alumina refinery",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "refinery",
+   "commodity": "alumina",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Yunnan Wenshan Aluminium Co. Ltd. [Aluminum Corporation of China (Chinalco), 100%] Site in Wenshan Wenshan, Y unnan Province 1,400,000e t"
+  },
+  {
+   "name": "Tiandong Jinxin bauxite mine",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Guangxi Tiandong Jinxin Chemical Co. Ltd. Site in Tiandong Tiandong, Guangxi Autonomous Region"
+  },
+  {
+   "name": "Huayang Pingan bauxite mine",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Huayang New Material Technology Group Co. Ltd. Site in Pingan Pingan, Yangquan, Shanxi Province"
+  },
+  {
+   "name": "Xiangjiang Wanji Xin'an bauxite mine",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Luoyang Xiangjiang Wanji Aluminium Industry Co. Ltd. Site in Xin'an Xin'an, Luoyang, Henan Province 2,000,000e t"
+  },
+  {
+   "name": "Yunnan Aluminium Kunming bauxite mine",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Yunnan Aluminium Co. Ltd. Site in Kunming Kunming, Y unnan Province"
+  },
+  {
+   "name": "Wenshan bauxite mine",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "bauxite_mine",
+   "commodity": "bauxite",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Site in Wenshan Wenshan, Y unnan Province 3,000,000e t"
+  },
+  {
+   "name": "Baotou Rare Earth smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Baotou Rare Earth Aluminum Industry Co. Ltd. (East Hope Group Co. Ltd., 100%) Site in Baotou Baotou Rare Earth High- Tech Industrial Development Zone"
+  },
+  {
+   "name": "East Hope Sanmenxia smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "East Hope (Sanmenxia) Aluminium Co. Ltd. (East Hope Group Co. Ltd., 100%) Site in Tiantan Industrial Zone Mianchi, Sanmenxia, Henan Province"
+  },
+  {
+   "name": "Gansu Dongxing Anning smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Gansu Dongxing Aluminum Co. Ltd. [Jiuquan Iron & Steel (Group) Co. Ltd., 100%] Site in Anning Anning, Lanzhou, Gansu Province"
+  },
+  {
+   "name": "Gansu Zhongrui Lichuan smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Gansu Zhongrui Aluminum Co. Ltd. Site in Lichuan Lichuan Industrial Park, Lichuan, Baiyin, Gansu Province"
+  },
+  {
+   "name": "Henan Yugang Longquan smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Henan Yugang Longquan Aluminium Co. Ltd. Site in Yichuan Aluminum Electricity Industrial Park, Shuizhai, Yichuan, Luoyang, Henan Province"
+  },
+  {
+   "name": "Henan Zhongfu Gongyi smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Henan Zhongfu Industry Co. Ltd. (Vimetco N.V ., 100%) Site in Gongyi Gongyi, Zhengzhou, Henan Province"
+  },
+  {
+   "name": "Linzhou smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Site in Linzhou Linzhou, Anyang, Henan Province"
+  },
+  {
+   "name": "Huayang Yangquan smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Huayang New Material Technology Group Co. Ltd. Site in Yangquan Yangquan, Shanxi Province 230,000e t"
+  },
+  {
+   "name": "Jiaozuo Wanfang smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Jiaozuo Wanfang Aluminum Co. Ltd. Site in Macun Macun, Jiaozuo, Henan Province"
+  },
+  {
+   "name": "Xiangjiang Wanji Xin'an smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Luoyang Xiangjiang Wanji Aluminium Industry Co. Ltd. Site in Xin'an Xin'an, Luoyang, Henan Province 580,000e t"
+  },
+  {
+   "name": "Qingtongxia smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Ningxia Power Investment Corp. Site in Qingtongxia Qingtongxia, Wuzhong, Ningxia Autonomous Region"
+  },
+  {
+   "name": "Nanshan Longkou smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Shandong Nanshan Aluminum Co. Ltd. Site in Longkou Longkou, Yantai, Shandong Province"
+  },
+  {
+   "name": "Tianshan Shihezi smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Tianshan Aluminum Co. Ltd. Site in Shihezi Shihezi, Xinjiang Autonomous Region"
+  },
+  {
+   "name": "Shenhuo Wenshan smelter",
+   "aliases": [],
+   "country": "CN",
+   "facility_type": "smelter",
+   "commodity": "aluminium",
+   "document": "usgs_china_2024",
+   "identity_snippet": "Yunnan Shenhuo Aluminium Co. Ltd. Site in Wenshan Wenshan, Y unnan Province"
+  }
+ ],
+ "companies": [],
+ "relationships": [],
+ "capacities": [
+  {
+   "facility": "East Hope Zuoquan alumina refinery",
+   "document": "usgs_china_2024",
+   "value": "2,400,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "East Hope Zuoquan alumina refinery",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Site in Zuoquan Zuoquan, Jinzhong, Shanxi Province",
+    "suffix": "e t Do. do. Site in Mianchi",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Mianchi alumina refinery",
+   "document": "usgs_china_2024",
+   "value": "2,200,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Mianchi alumina refinery",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Site in Mianchi Mianchi, Sanmenxia, Henan Province",
+    "suffix": "e t Do. Guangxi Huayin",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Huayin Debao alumina refinery",
+   "document": "usgs_china_2024",
+   "value": "2,200,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Huayin Debao alumina refinery",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Site in Debao Debao, Baise, Guangxi Autonomous Region",
+    "suffix": "e t Do. Guangxi Tiandong Jinsheng",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Tiandong Jinsheng alumina refinery",
+   "document": "usgs_china_2024",
+   "value": "1,000,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Tiandong Jinsheng alumina refinery",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "(Hangzhou Jinjiang Group Co. Ltd., 100%) Site in Tiandong Tiandong, Baise, Guangxi Autonomous Region",
+    "suffix": "e t Do. Huayang New Material",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Huayang Yangquan alumina refinery",
+   "document": "usgs_china_2024",
+   "value": "1,100,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Huayang Yangquan alumina refinery",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Huayang New Material Technology Group Co. Ltd. Site in Yangquan Yangquan, Shanxi Province",
+    "suffix": "e t Do. Jingxi Tiangui",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Longkou Donghai alumina refinery",
+   "document": "usgs_china_2024",
+   "value": "1,400,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Longkou Donghai alumina refinery",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "[Shandong Nanshan (Group) Co. Ltd., 100%] Site in Longkou Longkou, Yantai, Shandong Province",
+    "suffix": "e t Do. Luoyang Xiangjiang Wanji",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Xiangjiang Wanji Xin'an alumina refinery",
+   "document": "usgs_china_2024",
+   "value": "1,400,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Xiangjiang Wanji Xin'an alumina refinery",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Luoyang Xiangjiang Wanji Aluminium Industry Co. Ltd. Site in Xin'an Xin'an, Luoyang, Henan Province",
+    "suffix": "e t Do. Nanchuan Pioneer",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Nanchuan Pioneer alumina refinery",
+   "document": "usgs_china_2024",
+   "value": "800,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Nanchuan Pioneer alumina refinery",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Site in Wenfeng Wenfeng, Nanchuan, Chongqing Municipality",
+    "suffix": "e t Do. Shandong Weiqiao",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Wenshan alumina refinery",
+   "document": "usgs_china_2024",
+   "value": "1,400,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Wenshan alumina refinery",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Yunnan Wenshan Aluminium Co. Ltd. [Aluminum Corporation of China (Chinalco), 100%] Site in Wenshan Wenshan, Y unnan Province",
+    "suffix": "e t Bauxite Aluminum Corporation",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Tiandong Jinxin bauxite mine",
+   "document": "usgs_china_2024",
+   "value": "1,000,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Tiandong Jinxin bauxite mine",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Guangxi Tiandong Jinxin Chemical Co. Ltd. Site in Tiandong Tiandong, Guangxi Autonomous Region",
+    "suffix": "e t Do. Huayang New Material Technology Group Co. Ltd. Site in Pingan",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Huayang Pingan bauxite mine",
+   "document": "usgs_china_2024",
+   "value": "2,200,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Huayang Pingan bauxite mine",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Site in Pingan Pingan, Yangquan, Shanxi Province",
+    "suffix": "e t Do. Luoyang Xiangjiang Wanji",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Xiangjiang Wanji Xin'an bauxite mine",
+   "document": "usgs_china_2024",
+   "value": "2,000,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Xiangjiang Wanji Xin'an bauxite mine",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Luoyang Xiangjiang Wanji Aluminium Industry Co. Ltd. Site in Xin'an Xin'an, Luoyang, Henan Province",
+    "suffix": "e t Do. Yunnan Aluminium",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Yunnan Aluminium Kunming bauxite mine",
+   "document": "usgs_china_2024",
+   "value": "2,500,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Yunnan Aluminium Kunming bauxite mine",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Yunnan Aluminium Co. Ltd. Site in Kunming Kunming, Y unnan Province",
+    "suffix": "e t Do. Yunnan Wenshan",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Wenshan bauxite mine",
+   "document": "usgs_china_2024",
+   "value": "3,000,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Wenshan bauxite mine",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Kunming, Y unnan Province 2,500,000e t Do. Yunnan Wenshan Aluminium Co. Ltd. [Aluminum Corporation of China (Chinalco), 100%] Site in Wenshan Wenshan, Y unnan Province",
+    "suffix": "e t",
+    "page": 17
+   }
+  },
+  {
+   "facility": "Baotou Rare Earth smelter",
+   "document": "usgs_china_2024",
+   "value": "860,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Baotou Rare Earth smelter",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Baotou Rare Earth High- Tech Industrial Development Zone, Baotou, Inner Mongolia Autonomous Region",
+    "suffix": "e t Do. Baotou Xinhengfeng",
+    "page": 18
+   }
+  },
+  {
+   "facility": "East Hope Sanmenxia smelter",
+   "document": "usgs_china_2024",
+   "value": "800,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "East Hope Sanmenxia smelter",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Site in Tiantan Industrial Zone Mianchi, Sanmenxia, Henan Province",
+    "suffix": "e t Do. Gansu Dongxing",
+    "page": 18
+   }
+  },
+  {
+   "facility": "Gansu Dongxing Anning smelter",
+   "document": "usgs_china_2024",
+   "value": "1,350,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Gansu Dongxing Anning smelter",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Site in Anning Anning, Lanzhou, Gansu Province",
+    "suffix": "e t Do. Gansu Zhongrui",
+    "page": 18
+   }
+  },
+  {
+   "facility": "Gansu Zhongrui Lichuan smelter",
+   "document": "usgs_china_2024",
+   "value": "100,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Gansu Zhongrui Lichuan smelter",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Site in Lichuan Lichuan Industrial Park, Lichuan, Baiyin, Gansu Province",
+    "suffix": "e t Do. Henan Yugang",
+    "page": 18
+   }
+  },
+  {
+   "facility": "Henan Yugang Longquan smelter",
+   "document": "usgs_china_2024",
+   "value": "600,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Henan Yugang Longquan smelter",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Aluminum Electricity Industrial Park, Shuizhai, Yichuan, Luoyang, Henan Province",
+    "suffix": "e t Do. Henan Zhongfu",
+    "page": 18
+   }
+  },
+  {
+   "facility": "Huayang Yangquan smelter",
+   "document": "usgs_china_2024",
+   "value": "230,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Huayang Yangquan smelter",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Huayang New Material Technology Group Co. Ltd. Site in Yangquan Yangquan, Shanxi Province",
+    "suffix": "e t Do. Jiaozuo Wanfang",
+    "page": 18
+   }
+  },
+  {
+   "facility": "Xiangjiang Wanji Xin'an smelter",
+   "document": "usgs_china_2024",
+   "value": "580,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Xiangjiang Wanji Xin'an smelter",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Luoyang Xiangjiang Wanji Aluminium Industry Co. Ltd. Site in Xin'an Xin'an, Luoyang, Henan Province",
+    "suffix": "e t Do. Ningxia Power",
+    "page": 18
+   }
+  },
+  {
+   "facility": "Qingtongxia smelter",
+   "document": "usgs_china_2024",
+   "value": "990,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Qingtongxia smelter",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Site in Qingtongxia Qingtongxia, Wuzhong, Ningxia Autonomous Region",
+    "suffix": "e t Do. Shandong Nanshan",
+    "page": 18
+   }
+  },
+  {
+   "facility": "Tianshan Shihezi smelter",
+   "document": "usgs_china_2024",
+   "value": "1,200,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Tianshan Shihezi smelter",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Site in Shihezi Shihezi, Xinjiang Autonomous Region",
+    "suffix": "e t Do. Xinfa",
+    "page": 18
+   }
+  },
+  {
+   "facility": "Shenhuo Wenshan smelter",
+   "document": "usgs_china_2024",
+   "value": "900,000",
+   "period_basis": "USGS 2024 facilities table, unit t, value marked e (estimated); period = calendar 2024.",
+   "spec": {
+    "adapter": "pdf-v1",
+    "facility_name": "Shenhuo Wenshan smelter",
+    "country": "CN",
+    "valid_from": "2024-01-01",
+    "valid_to": "2024-12-31",
+    "unit": "t/year",
+    "attribute": "capacity",
+    "prefix": "Yunnan Shenhuo Aluminium Co. Ltd. Site in Wenshan Wenshan, Y unnan Province",
+    "suffix": "e t Do. Yunnan Wenshan",
+    "page": 18
+   }
+  }
+ ],
+ "statuses": []
+}
