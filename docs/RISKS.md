@@ -13,7 +13,7 @@ State on 2026-10-26, after the DC1 sign-off and the market data area.
 | Vendor data artefacts | Vendors can pad holidays or copy the last value forward | Market quality flags weekend dates, repeated prices, gaps and jumps; the file is never altered; curator records the decision |
 | Saved bytes and database drift apart | Hashes checked on every export; missing or damaged bytes block | Back up database and snapshots together; restore drill; SE2 |
 | Live pages change | Changed bytes create new versions; frozen replay uses saved bytes | Versioned literal recipes and failure logs; SE2 |
-| Coverage | 72 real plants in 11 countries from 10 source families on 2026-10-26 (pilot plus the first DC2 batch) | More families for Gulf, Chinese and Russian plants; PM/SE1 |
+| Coverage | 107 real plants in 16 countries from 10 source families on 2026-11-24 (pilot plus the three DC2 batches: first, Gulf, China) | More families for Gulf, Chinese and Russian plants; PM/SE1 |
 | Shared deployment | Read protection and individual credentials exist but are optional; loopback by default | DC3: login, TLS/private ingress, credential lifecycle, rehearsed backups; SE2 |
 
 ## Known limitations
